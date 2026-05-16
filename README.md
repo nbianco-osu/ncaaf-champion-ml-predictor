@@ -4,6 +4,8 @@ Static web app for exploring machine-learning champion predictions for the last 
 
 ## Run locally
 
+### Static app
+
 ```bash
 python -m http.server 8765 --bind 127.0.0.1
 ```
@@ -14,11 +16,27 @@ Then open:
 http://127.0.0.1:8765/
 ```
 
+### Streamlit app
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+## Deploy on Streamlit Cloud
+
+1. Connect Streamlit Cloud to this GitHub repository.
+2. Set the app entrypoint to `streamlit_app.py`.
+3. Keep `requirements.txt` in the repository root so Streamlit installs `streamlit`, `pandas`, and `altair`.
+4. Deploy from the `main` branch.
+
 ## Contents
 
 - `index.html` - app shell
 - `styles.css` - dashboard styling
 - `app.js` - season navigation, charts, search, and sorting
+- `streamlit_app.py` - Streamlit Cloud entrypoint
+- `requirements.txt` - Streamlit dependencies
 - `data/app-data.json` - trained model outputs and season prediction records
 - `data/cfb_top25_2005_2025.csv` - augmented top-25 dataset
 
