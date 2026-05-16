@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NCAAF Champion ML Predictor</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-rail" aria-label="Dashboard navigation">
+        <div class="brand">
+          <div class="brand-mark">CFB</div>
+          <div>
+            <h1>NCAAF Champion ML Predictor</h1>
+            <p>2005-2025 top-25 model</p>
+          </div>
+        </div>
+        <nav class="nav-stack">
+          <a href="#prediction">Prediction</a>
+          <a href="#model">Model</a>
+          <a href="#backtest">Backtest</a>
+          <a href="#data">Data</a>
+        </nav>
+        <div class="source-box">
+          <span>Data refresh</span>
+          <strong>2025 final season</strong>
+          <p>ESPN FPI metrics and final AP top 25.</p>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <p class="small-label">Season pages</p>
+            <h2>Predictions for the last 5 national champions</h2>
+          </div>
+          <div class="toolbar">
+            <label>
+              Search team
+              <input id="teamSearch" type="search" placeholder="Indiana, Oregon..." />
+            </label>
+            <label>
+              Sort table
+              <select id="sortMode">
+                <option value="predictedRank">Predicted rank</option>
+                <option value="Ranking">Final AP rank</option>
+                <option value="championProbability">ML probability</option>
+                <option value="FPI">FPI rank</option>
+              </select>
+            </label>
+          </div>
+        </header>
+
+        <section class="season-tabs" aria-label="Choose season">
+          <button class="season-tab" data-year="2025" type="button">2025</button>
+          <button class="season-tab" data-year="2024" type="button">2024</button>
+          <button class="season-tab" data-year="2023" type="button">2023</button>
+          <button class="season-tab" data-year="2022" type="button">2022</button>
+          <button class="season-tab" data-year="2021" type="button">2021</button>
+        </section>
+
+        <section id="prediction" class="summary-grid" aria-label="Prediction summary">
+          <article class="metric-card primary">
+            <span>Predicted champion</span>
+            <strong id="predictedChampion">-</strong>
+            <p id="predictionNote">-</p>
+          </article>
+          <article class="metric-card">
+            <span>Actual champion</span>
+            <strong id="actualChampion">-</strong>
+            <p id="actualRankNote">-</p>
+          </article>
+          <article class="metric-card">
+            <span>Backtest hit rate</span>
+            <strong id="hitRate">-</strong>
+            <p>Leave-one-season-forward test through 2024.</p>
+          </article>
+          <article class="metric-card">
+            <span>Top-3 coverage</span>
+            <strong id="top3Rate">-</strong>
+            <p>Actual champ landed in the model top 3.</p>
+          </article>
+        </section>
+
+        <section class="panel-grid">
+          <article class="panel wide">
+            <div class="panel-head">
+              <div>
+              <p class="small-label" id="chartSeasonLabel">Top 10</p>
+              <h3>ML champion probability</h3>
+              </div>
+              <span class="model-chip" id="modelChip">-</span>
+            </div>
+            <div id="probabilityChart" class="bar-chart" role="img" aria-label="Top ten champion probabilities"></div>
+          </article>
+
+          <article id="model" class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Signal</p>
+                <h3>Feature importance</h3>
+              </div>
+            </div>
+            <div id="importanceChart" class="mini-bars"></div>
+          </article>
+        </section>
+
+        <section class="panel-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Model comparison</p>
+                <h3>2025 holdout</h3>
+              </div>
+            </div>
+            <div id="modelCards" class="model-cards"></div>
+          </article>
+
+          <article id="backtest" class="panel wide">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Historical test</p>
+                <h3>Actual champion projected rank</h3>
+              </div>
+            </div>
+            <div id="backtestChart" class="line-chart" aria-label="Actual champion projected rank by year"></div>
+          </article>
+        </section>
+
+        <section id="data" class="panel table-panel">
+          <div class="panel-head">
+            <div>
+              <p class="small-label" id="tableSeasonLabel">Final top 25</p>
+              <h3>Prediction table</h3>
+            </div>
+            <p id="rowCount" class="muted"></p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pred</th>
+                  <th>Team</th>
+                  <th>ML Prob.</th>
+                  <th>Final AP</th>
+                  <th>SOR</th>
+                  <th>SOS</th>
+                  <th>Off</th>
+                  <th>Def</th>
+                  <th>FPI</th>
+                  <th>GC</th>
+                </tr>
+              </thead>
+              <tbody id="resultsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer>
+          <div id="sourceLinks"></div>
+        </footer>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
