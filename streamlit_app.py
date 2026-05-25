@@ -96,6 +96,50 @@ def backtest_chart(payload: dict, selected_year: str) -> alt.Chart:
     ).properties(height=300)
 
 
+def weekly_chart(payload: dict, selected_year: str) -> alt.Chart:
+    frame = pd.DataFrame(payload.get("weeklyPredictions", {}).get(selected_year, []))
+    if frame.empty:
+        return alt.Chart(pd.DataFrame({"week": [], "predictedChampion": [], "predictedProbabilityPct": []}))
+    frame["predictedProbabilityPct"] = frame["predictedProbability"] * 100
+    frame["pickedActualChampion"] = frame["predictedChampion"] == frame["actualChampion"]
+    return (
+        alt.Chart(frame)
+        .mark_bar(cornerRadiusTopRight=5, cornerRadiusBottomRight=5)
+        .encode(
+            y=alt.Y("week:O", sort=list(frame["week"]), title="Week"),
+            x=alt.X("predictedProbabilityPct:Q", title="Predicted winner probability (%)"),
+            color=alt.condition(
+                alt.datum.pickedActualChampion,
+                alt.value("#22735f"),
+                alt.value("#2f72b7"),
+            ),
+            tooltip=[
+                "week:O",
+                "predictedChampion:N",
+                alt.Tooltip("predictedProbabilityPct:Q", format=".1f"),
+                "actualChampion:N",
+                "actualChampionPredictedRank:Q",
+            ],
+        )
+        .properties(height=390)
+    )
+
+
+def weekly_table(payload: dict, selected_year: str) -> pd.DataFrame:
+    frame = pd.DataFrame(payload.get("weeklyPredictions", {}).get(selected_year, []))
+    if frame.empty:
+        return frame
+    frame["Probability"] = frame["predictedProbability"].map(pct)
+    frame["Actual Champ Rank"] = frame["actualChampionPredictedRank"].fillna("Not in snapshot")
+    return frame[["week", "predictedChampion", "Probability", "actualChampion", "Actual Champ Rank"]].rename(
+        columns={
+            "week": "Week",
+            "predictedChampion": "Predicted Winner",
+            "actualChampion": "Actual Champion",
+        }
+    )
+
+
 def model_comparison(payload: dict) -> pd.DataFrame:
     frame = pd.DataFrame(payload["models"])
     frame["Top Probability"] = frame["championProbability"].map(pct)
@@ -137,6 +181,18 @@ def main() -> None:
     with feature_col:
         st.subheader("Feature Importance")
         st.altair_chart(feature_chart(payload), use_container_width=True)
+
+    st.subheader(f"{selected_year} Week-by-Week Predicted Winner")
+    st.caption(payload["meta"].get("weeklySourceNote", "Weekly predictions use ESPN playoff-picture snapshots."))
+    weekly_col, weekly_table_col = st.columns([1.4, 1])
+    with weekly_col:
+        st.altair_chart(weekly_chart(payload, selected_year), use_container_width=True)
+    with weekly_table_col:
+        table = weekly_table(payload, selected_year)
+        if table.empty:
+            st.info("No weekly snapshots available for this season.")
+        else:
+            st.dataframe(table, use_container_width=True, hide_index=True)
 
     st.subheader("Prediction Table")
     query = st.text_input("Search team", "")

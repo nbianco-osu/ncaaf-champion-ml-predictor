@@ -1,6 +1,6 @@
 # NCAAF Champion ML Predictor
 
-Static web app for exploring machine-learning champion predictions for the last five national champion seasons: 2025, 2024, 2023, 2022, and 2021.
+Static and Streamlit web app for exploring machine-learning champion predictions for the last five national champion seasons: 2025, 2024, 2023, 2022, and 2021. The app also includes week-by-week predicted winners through each season using ESPN playoff-picture snapshots.
 
 ## Run locally
 
@@ -37,6 +37,7 @@ streamlit run streamlit_app.py
 - `app.js` - season navigation, charts, search, and sorting
 - `streamlit_app.py` - Streamlit Cloud entrypoint
 - `requirements.txt` - Streamlit dependencies
+- `build_weekly_predictions.py` - utility script that refreshes weekly prediction snapshots
 - `data/app-data.json` - trained model outputs and season prediction records
 - `data/cfb_top25_2005_2025.csv` - augmented top-25 dataset
 

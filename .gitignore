@@ -1,4 +1,6 @@
 data/raw/
+__pycache__/
+tmp_*.html
 *.log
 .DS_Store
 Thumbs.db

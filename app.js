@@ -35,6 +35,7 @@ function renderSummary() {
   document.getElementById("actualRankNote").textContent = `Actual champion projected rank: ${season.actualChampionPredictedRank}.`;
   document.getElementById("chartSeasonLabel").textContent = `${season.year} top 10`;
   document.getElementById("tableSeasonLabel").textContent = `Final ${season.year} top 25`;
+  document.getElementById("weeklySeasonLabel").textContent = `${season.year} week by week`;
   document.getElementById("hitRate").textContent = fmtPct(summary.backtestHitRate);
   document.getElementById("top3Rate").textContent = fmtPct(summary.backtestTop3Rate);
   document.getElementById("modelChip").textContent = meta.selectedModel;
@@ -55,6 +56,31 @@ function renderProbabilityChart() {
           <strong>${row.predictedRank}. ${row.Team}</strong>
           <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
           <span>${fmtPct(row.championProbability)}</span>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function renderWeeklyTimeline() {
+  const container = document.getElementById("weeklyTimeline");
+  const rows = state.data.weeklyPredictions?.[state.selectedYear] || [];
+  if (!rows.length) {
+    container.innerHTML = `<p class="muted">No weekly snapshots available for this season.</p>`;
+    return;
+  }
+  const cap = Math.max(...rows.map((row) => row.predictedProbability));
+  container.innerHTML = rows
+    .map((row) => {
+      const width = Math.max(4, (row.predictedProbability / cap) * 100);
+      const actual = row.predictedChampion === row.actualChampion;
+      const selected = row.week === rows[rows.length - 1].week;
+      return `
+        <div class="weekly-row ${actual ? "is-actual" : ""} ${selected ? "is-selected" : ""}">
+          <span class="weekly-week">Week ${row.week}</span>
+          <span class="weekly-team">${row.predictedChampion}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+          <span class="weekly-prob">${fmtPct(row.predictedProbability)}</span>
         </div>
       `;
     })
@@ -168,6 +194,7 @@ function renderAll() {
   renderFeatureImportance();
   renderModelCards();
   renderBacktestChart();
+  renderWeeklyTimeline();
   renderTable();
   renderSources();
 }

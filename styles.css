@@ -386,6 +386,56 @@ h3 {
   overflow: visible;
 }
 
+.weekly-timeline {
+  display: grid;
+  gap: 12px;
+}
+
+.weekly-row {
+  display: grid;
+  grid-template-columns: 72px 170px minmax(140px, 1fr) 74px;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  background: #f7fafb;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.weekly-week {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.weekly-team {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.weekly-prob {
+  text-align: right;
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.weekly-row.is-actual {
+  background: #f2faf5;
+  border-color: #bdd9ca;
+}
+
+.weekly-row.is-selected {
+  background: #fff8e4;
+  border-color: #e7c76b;
+}
+
+.weekly-row.is-selected .bar-fill {
+  background: linear-gradient(90deg, var(--gold), #49a27d);
+}
+
 .table-panel {
   margin-top: 14px;
 }
@@ -509,6 +559,15 @@ footer {
   .bar-row {
     grid-template-columns: 1fr;
     gap: 5px;
+  }
+
+  .weekly-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .weekly-prob {
+    text-align: left;
   }
 
   .panel-head {
