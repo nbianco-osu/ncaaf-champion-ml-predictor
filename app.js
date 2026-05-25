@@ -8,6 +8,24 @@ const state = {
 const fmtPct = (value) => `${(value * 100).toFixed(1)}%`;
 const fmtRank = (value) => Number(value).toLocaleString();
 const max = (items, key) => Math.max(...items.map((item) => Number(item[key])));
+const teamLogoIds = {
+  Alabama: 333,
+  BYU: 252,
+  Georgia: 61,
+  Indiana: 84,
+  Michigan: 130,
+  "Ohio State": 194,
+  Oklahoma: 201,
+  Oregon: 2483,
+  Tennessee: 2633,
+  Texas: 251,
+  "Texas A&M": 245,
+};
+
+function logoUrl(team) {
+  const id = teamLogoIds[team];
+  return id ? `https://a.espncdn.com/i/teamlogos/ncaa/500/${id}.png` : "";
+}
 
 function currentSeason() {
   return state.data.seasonPredictions[state.selectedYear];
@@ -69,22 +87,50 @@ function renderWeeklyTimeline() {
     container.innerHTML = `<p class="muted">No weekly snapshots available for this season.</p>`;
     return;
   }
-  const cap = Math.max(...rows.map((row) => row.predictedProbability));
-  container.innerHTML = rows
+  const width = 980;
+  const height = 430;
+  const pad = { top: 30, right: 24, bottom: 66, left: 58 };
+  const maxProb = Math.max(0.5, Math.max(...rows.map((row) => row.predictedProbability)) * 1.12);
+  const x = (week) => pad.left + ((week - rows[0].week) / (rows[rows.length - 1].week - rows[0].week || 1)) * (width - pad.left - pad.right);
+  const y = (prob) => pad.top + (1 - prob / maxProb) * (height - pad.top - pad.bottom);
+  const points = rows.map((row) => `${x(row.week)},${y(row.predictedProbability)}`).join(" ");
+  const yTicks = [0, 0.1, 0.2, 0.3, 0.4, 0.5].filter((tick) => tick <= maxProb);
+  const grid = yTicks
+    .map((tick) => {
+      const yPos = y(tick);
+      return `<line x1="${pad.left}" y1="${yPos}" x2="${width - pad.right}" y2="${yPos}" stroke="#e5ecef"/><text x="${pad.left - 12}" y="${yPos + 4}" text-anchor="end">${Math.round(tick * 100)}%</text>`;
+    })
+    .join("");
+  const weekLabels = rows
+    .map((row) => `<text x="${x(row.week)}" y="${height - 30}" text-anchor="middle">${row.week}</text>`)
+    .join("");
+  const logoMarkers = rows
     .map((row) => {
-      const width = Math.max(4, (row.predictedProbability / cap) * 100);
+      const xPos = x(row.week);
+      const yPos = y(row.predictedProbability);
       const actual = row.predictedChampion === row.actualChampion;
-      const selected = row.week === rows[rows.length - 1].week;
+      const logo = logoUrl(row.predictedChampion);
       return `
-        <div class="weekly-row ${actual ? "is-actual" : ""} ${selected ? "is-selected" : ""}">
-          <span class="weekly-week">Week ${row.week}</span>
-          <span class="weekly-team">${row.predictedChampion}</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
-          <span class="weekly-prob">${fmtPct(row.predictedProbability)}</span>
-        </div>
+        <g class="weekly-logo-point">
+          <circle cx="${xPos}" cy="${yPos}" r="${actual ? 24 : 21}" fill="${actual ? "#f2faf5" : "#ffffff"}" stroke="${actual ? "#22735f" : "#d7e1e6"}" stroke-width="2"/>
+          ${logo ? `<image href="${logo}" x="${xPos - 16}" y="${yPos - 16}" width="32" height="32" preserveAspectRatio="xMidYMid meet"/>` : `<text x="${xPos}" y="${yPos + 4}" text-anchor="middle">${row.predictedChampion.slice(0, 2)}</text>`}
+          <text x="${xPos}" y="${yPos - 30}" text-anchor="middle" class="weekly-prob-label">${fmtPct(row.predictedProbability)}</text>
+          <text x="${xPos}" y="${height - 12}" text-anchor="middle" class="weekly-team-label">${row.predictedChampion}</text>
+          <title>Week ${row.week}: ${row.predictedChampion} (${fmtPct(row.predictedProbability)})</title>
+        </g>
       `;
     })
     .join("");
+
+  container.innerHTML = `
+    <svg class="weekly-logo-chart" viewBox="0 0 ${width} ${height}" role="img">
+      <g class="axis">${grid}${weekLabels}</g>
+      <text x="${width / 2}" y="${height - 46}" text-anchor="middle" class="axis-title">Week</text>
+      <text x="18" y="${height / 2}" transform="rotate(-90 18 ${height / 2})" text-anchor="middle" class="axis-title">Predicted winner probability</text>
+      <polyline points="${points}" fill="none" stroke="#2f72b7" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+      ${logoMarkers}
+    </svg>
+  `;
 }
 
 function renderFeatureImportance() {

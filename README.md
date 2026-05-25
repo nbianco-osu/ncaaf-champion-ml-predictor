@@ -1,6 +1,6 @@
 # NCAAF Champion ML Predictor
 
-Static and Streamlit web app for exploring machine-learning champion predictions for the last five national champion seasons: 2025, 2024, 2023, 2022, and 2021. The app also includes week-by-week predicted winners through each season using ESPN playoff-picture snapshots.
+Static and Streamlit web app for exploring machine-learning champion predictions for the last five national champion seasons: 2025, 2024, 2023, 2022, and 2021. The app also includes week-by-week predicted winners through each season using ESPN playoff-picture snapshots, plotted as team logos by week and model probability.
 
 ## Run locally
 

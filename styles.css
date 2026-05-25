@@ -387,18 +387,52 @@ h3 {
 }
 
 .weekly-timeline {
-  display: grid;
-  gap: 12px;
+  overflow-x: auto;
+  padding: 6px 0 2px;
 }
 
+.weekly-logo-chart {
+  display: block;
+  width: 100%;
+  min-width: 860px;
+  height: auto;
+}
+
+.weekly-logo-chart .axis text,
+.weekly-logo-chart .axis-title {
+  fill: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.weekly-prob-label {
+  fill: var(--navy);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.weekly-team-label {
+  fill: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.weekly-logo-point image {
+  filter: drop-shadow(0 4px 8px rgba(20, 33, 43, 0.16));
+}
+
+.weekly-logo-point:hover circle {
+  stroke: var(--gold);
+  stroke-width: 3;
+}
+
+/* Legacy weekly row classes are kept for older cached markup. */
 .weekly-row {
-  display: grid;
-  grid-template-columns: 72px 170px minmax(140px, 1fr) 74px;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 12px;
-  background: #f7fafb;
-  border: 1px solid var(--line);
+  display: none;
+}
+
+/*
+.weekly-row {
   border-radius: 8px;
 }
 
@@ -435,6 +469,7 @@ h3 {
 .weekly-row.is-selected .bar-fill {
   background: linear-gradient(90deg, var(--gold), #49a27d);
 }
+*/
 
 .table-panel {
   margin-top: 14px;
@@ -561,13 +596,8 @@ footer {
     gap: 5px;
   }
 
-  .weekly-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .weekly-prob {
-    text-align: left;
+  .weekly-logo-chart {
+    min-width: 760px;
   }
 
   .panel-head {

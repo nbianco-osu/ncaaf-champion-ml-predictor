@@ -11,6 +11,19 @@ import streamlit as st
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
 SEASONS = ["2025", "2024", "2023", "2022", "2021"]
+TEAM_LOGO_IDS = {
+    "Alabama": 333,
+    "BYU": 252,
+    "Georgia": 61,
+    "Indiana": 84,
+    "Michigan": 130,
+    "Ohio State": 194,
+    "Oklahoma": 201,
+    "Oregon": 2483,
+    "Tennessee": 2633,
+    "Texas": 251,
+    "Texas A&M": 245,
+}
 
 
 @st.cache_data
@@ -21,6 +34,11 @@ def load_data() -> dict:
 
 def pct(value: float) -> str:
     return f"{value * 100:.1f}%"
+
+
+def logo_url(team: str) -> str:
+    team_id = TEAM_LOGO_IDS.get(team)
+    return f"https://a.espncdn.com/i/teamlogos/ncaa/500/{team_id}.png" if team_id else ""
 
 
 def season_frame(payload: dict, year: str) -> pd.DataFrame:
@@ -102,27 +120,34 @@ def weekly_chart(payload: dict, selected_year: str) -> alt.Chart:
         return alt.Chart(pd.DataFrame({"week": [], "predictedChampion": [], "predictedProbabilityPct": []}))
     frame["predictedProbabilityPct"] = frame["predictedProbability"] * 100
     frame["pickedActualChampion"] = frame["predictedChampion"] == frame["actualChampion"]
-    return (
-        alt.Chart(frame)
-        .mark_bar(cornerRadiusTopRight=5, cornerRadiusBottomRight=5)
-        .encode(
-            y=alt.Y("week:O", sort=list(frame["week"]), title="Week"),
-            x=alt.X("predictedProbabilityPct:Q", title="Predicted winner probability (%)"),
-            color=alt.condition(
-                alt.datum.pickedActualChampion,
-                alt.value("#22735f"),
-                alt.value("#2f72b7"),
-            ),
-            tooltip=[
-                "week:O",
-                "predictedChampion:N",
-                alt.Tooltip("predictedProbabilityPct:Q", format=".1f"),
-                "actualChampion:N",
-                "actualChampionPredictedRank:Q",
-            ],
-        )
-        .properties(height=390)
+    frame["logoUrl"] = frame["predictedChampion"].map(logo_url)
+    base = alt.Chart(frame).encode(
+        x=alt.X("week:O", title="Week"),
+        y=alt.Y("predictedProbabilityPct:Q", title="Predicted winner probability (%)"),
+        tooltip=[
+            "week:O",
+            "predictedChampion:N",
+            alt.Tooltip("predictedProbabilityPct:Q", format=".1f"),
+            "actualChampion:N",
+            "actualChampionPredictedRank:Q",
+        ],
     )
+    line = base.mark_line(color="#2f72b7", strokeWidth=3)
+    labels = base.mark_text(dy=-28, fontSize=11, fontWeight="bold", color="#163449").encode(
+        text=alt.Text("predictedProbabilityPct:Q", format=".1f")
+    )
+    logos = (
+        alt.Chart(frame)
+        .mark_image(width=34, height=34)
+        .encode(
+            x=alt.X("week:O", title="Week"),
+            y=alt.Y("predictedProbabilityPct:Q", title="Predicted winner probability (%)"),
+            url="logoUrl:N",
+            tooltip=["week:O", "predictedChampion:N", alt.Tooltip("predictedProbabilityPct:Q", format=".1f")],
+        )
+    )
+    teams = base.mark_text(dy=30, fontSize=10, color="#60707c").encode(text="predictedChampion:N")
+    return (line + logos + labels + teams).properties(height=390)
 
 
 def weekly_table(payload: dict, selected_year: str) -> pd.DataFrame:
