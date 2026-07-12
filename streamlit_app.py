@@ -114,10 +114,25 @@ def backtest_chart(payload: dict, selected_year: str) -> alt.Chart:
     ).properties(height=300)
 
 
-def weekly_chart(payload: dict, selected_year: str) -> alt.Chart:
+def weekly_chart(payload: dict, selected_year: str, weekly_model: str) -> alt.Chart:
     frame = pd.DataFrame(payload.get("weeklyPredictions", {}).get(selected_year, []))
     if frame.empty:
         return alt.Chart(pd.DataFrame({"week": [], "predictedChampion": [], "predictedProbabilityPct": []}))
+    model_rows = []
+    for row in payload.get("weeklyPredictions", {}).get(selected_year, []):
+        selected = next(
+            (prediction for prediction in row.get("modelPredictions", []) if prediction["model"] == weekly_model),
+            row,
+        )
+        model_rows.append(
+            {
+                **row,
+                "predictedChampion": selected["predictedChampion"],
+                "predictedProbability": selected["predictedProbability"],
+                "actualChampionPredictedRank": selected.get("actualChampionPredictedRank"),
+            }
+        )
+    frame = pd.DataFrame(model_rows)
     frame["predictedProbabilityPct"] = frame["predictedProbability"] * 100
     frame["pickedActualChampion"] = frame["predictedChampion"] == frame["actualChampion"]
     frame["logoUrl"] = frame["predictedChampion"].map(logo_url)
@@ -150,8 +165,22 @@ def weekly_chart(payload: dict, selected_year: str) -> alt.Chart:
     return (line + logos + labels + teams).properties(height=390)
 
 
-def weekly_table(payload: dict, selected_year: str) -> pd.DataFrame:
-    frame = pd.DataFrame(payload.get("weeklyPredictions", {}).get(selected_year, []))
+def weekly_table(payload: dict, selected_year: str, weekly_model: str) -> pd.DataFrame:
+    model_rows = []
+    for row in payload.get("weeklyPredictions", {}).get(selected_year, []):
+        selected = next(
+            (prediction for prediction in row.get("modelPredictions", []) if prediction["model"] == weekly_model),
+            row,
+        )
+        model_rows.append(
+            {
+                **row,
+                "predictedChampion": selected["predictedChampion"],
+                "predictedProbability": selected["predictedProbability"],
+                "actualChampionPredictedRank": selected.get("actualChampionPredictedRank"),
+            }
+        )
+    frame = pd.DataFrame(model_rows)
     if frame.empty:
         return frame
     frame["Probability"] = frame["predictedProbability"].map(pct)
@@ -187,6 +216,7 @@ def main() -> None:
 
     st.sidebar.markdown("### Model")
     st.sidebar.write(payload["meta"]["selectedModel"])
+    weekly_model = st.sidebar.selectbox("Weekly model", payload["meta"].get("weeklyModels", ["Balanced ML Blend"]))
     st.sidebar.markdown("### Data")
     st.sidebar.write("Top-25 seasons: 2005-2025")
 
@@ -211,9 +241,9 @@ def main() -> None:
     st.caption(payload["meta"].get("weeklySourceNote", "Weekly predictions use ESPN playoff-picture snapshots."))
     weekly_col, weekly_table_col = st.columns([1.4, 1])
     with weekly_col:
-        st.altair_chart(weekly_chart(payload, selected_year), use_container_width=True)
+        st.altair_chart(weekly_chart(payload, selected_year, weekly_model), use_container_width=True)
     with weekly_table_col:
-        table = weekly_table(payload, selected_year)
+        table = weekly_table(payload, selected_year, weekly_model)
         if table.empty:
             st.info("No weekly snapshots available for this season.")
         else:

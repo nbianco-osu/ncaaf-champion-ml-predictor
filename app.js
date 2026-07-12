@@ -3,6 +3,7 @@ const state = {
   query: "",
   sortMode: "predictedRank",
   selectedYear: "2025",
+  weeklyModel: "Balanced ML Blend",
 };
 
 const fmtPct = (value) => `${(value * 100).toFixed(1)}%`;
@@ -57,6 +58,15 @@ function renderSummary() {
   document.getElementById("hitRate").textContent = fmtPct(summary.backtestHitRate);
   document.getElementById("top3Rate").textContent = fmtPct(summary.backtestTop3Rate);
   document.getElementById("modelChip").textContent = meta.selectedModel;
+  const weeklySelect = document.getElementById("weeklyModel");
+  const weeklyModels = meta.weeklyModels || ["Balanced ML Blend"];
+  if (!weeklySelect.options.length) {
+    weeklySelect.innerHTML = weeklyModels.map((model) => `<option value="${model}">${model}</option>`).join("");
+  }
+  if (!weeklyModels.includes(state.weeklyModel)) {
+    state.weeklyModel = weeklyModels[0];
+  }
+  weeklySelect.value = state.weeklyModel;
   document.querySelectorAll(".season-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.year === state.selectedYear);
   });
@@ -87,13 +97,23 @@ function renderWeeklyTimeline() {
     container.innerHTML = `<p class="muted">No weekly snapshots available for this season.</p>`;
     return;
   }
+  const chartRows = rows.map((row) => {
+    const modelPrediction = (row.modelPredictions || []).find((item) => item.model === state.weeklyModel) || row;
+    return {
+      ...row,
+      predictedChampion: modelPrediction.predictedChampion,
+      predictedProbability: modelPrediction.predictedProbability,
+      actualChampionPredictedRank: modelPrediction.actualChampionPredictedRank,
+      actualChampionProbability: modelPrediction.actualChampionProbability,
+    };
+  });
   const width = 980;
   const height = 430;
   const pad = { top: 30, right: 24, bottom: 66, left: 58 };
-  const maxProb = Math.max(0.5, Math.max(...rows.map((row) => row.predictedProbability)) * 1.12);
-  const x = (week) => pad.left + ((week - rows[0].week) / (rows[rows.length - 1].week - rows[0].week || 1)) * (width - pad.left - pad.right);
+  const maxProb = Math.max(0.5, Math.max(...chartRows.map((row) => row.predictedProbability)) * 1.12);
+  const x = (week) => pad.left + ((week - chartRows[0].week) / (chartRows[chartRows.length - 1].week - chartRows[0].week || 1)) * (width - pad.left - pad.right);
   const y = (prob) => pad.top + (1 - prob / maxProb) * (height - pad.top - pad.bottom);
-  const points = rows.map((row) => `${x(row.week)},${y(row.predictedProbability)}`).join(" ");
+  const points = chartRows.map((row) => `${x(row.week)},${y(row.predictedProbability)}`).join(" ");
   const yTicks = [0, 0.1, 0.2, 0.3, 0.4, 0.5].filter((tick) => tick <= maxProb);
   const grid = yTicks
     .map((tick) => {
@@ -101,10 +121,10 @@ function renderWeeklyTimeline() {
       return `<line x1="${pad.left}" y1="${yPos}" x2="${width - pad.right}" y2="${yPos}" stroke="#e5ecef"/><text x="${pad.left - 12}" y="${yPos + 4}" text-anchor="end">${Math.round(tick * 100)}%</text>`;
     })
     .join("");
-  const weekLabels = rows
+  const weekLabels = chartRows
     .map((row) => `<text x="${x(row.week)}" y="${height - 30}" text-anchor="middle">${row.week}</text>`)
     .join("");
-  const logoMarkers = rows
+  const logoMarkers = chartRows
     .map((row) => {
       const xPos = x(row.week);
       const yPos = y(row.predictedProbability);
@@ -116,7 +136,7 @@ function renderWeeklyTimeline() {
           ${logo ? `<image href="${logo}" x="${xPos - 16}" y="${yPos - 16}" width="32" height="32" preserveAspectRatio="xMidYMid meet"/>` : `<text x="${xPos}" y="${yPos + 4}" text-anchor="middle">${row.predictedChampion.slice(0, 2)}</text>`}
           <text x="${xPos}" y="${yPos - 30}" text-anchor="middle" class="weekly-prob-label">${fmtPct(row.predictedProbability)}</text>
           <text x="${xPos}" y="${height - 12}" text-anchor="middle" class="weekly-team-label">${row.predictedChampion}</text>
-          <title>Week ${row.week}: ${row.predictedChampion} (${fmtPct(row.predictedProbability)})</title>
+          <title>${state.weeklyModel} - Week ${row.week}: ${row.predictedChampion} (${fmtPct(row.predictedProbability)})</title>
         </g>
       `;
     })
@@ -258,6 +278,12 @@ async function init() {
   document.getElementById("sortMode").addEventListener("change", (event) => {
     state.sortMode = event.target.value;
     renderTable();
+  });
+
+  document.getElementById("weeklyModel").addEventListener("change", (event) => {
+    state.weeklyModel = event.target.value;
+    renderSummary();
+    renderWeeklyTimeline();
   });
 
   document.querySelectorAll(".season-tab").forEach((button) => {
