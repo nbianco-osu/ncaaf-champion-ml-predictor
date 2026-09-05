@@ -13,7 +13,7 @@
           <div class="brand-mark">CFB</div>
           <div>
             <h1>NCAAF Champion ML Predictor</h1>
-            <p>2005-2025 top-25 model</p>
+            <p>2005-2025 model plus live weekly snapshots</p>
           </div>
         </div>
         <nav class="nav-stack">
@@ -24,8 +24,8 @@
         </nav>
         <div class="source-box">
           <span>Data refresh</span>
-          <strong>2025 final season</strong>
-          <p>ESPN FPI metrics and final AP top 25.</p>
+          <strong>Weekly season refresh</strong>
+          <p>ESPN playoff-picture snapshots and final AP top 25 history.</p>
         </div>
       </aside>
 
@@ -33,7 +33,7 @@
         <header class="topbar">
           <div>
             <p class="small-label">Season pages</p>
-            <h2>Predictions for the last 5 national champions</h2>
+            <h2>Champion predictions, updated through the season</h2>
           </div>
           <div class="toolbar">
             <label>
@@ -52,13 +52,7 @@
           </div>
         </header>
 
-        <section class="season-tabs" aria-label="Choose season">
-          <button class="season-tab" data-year="2025" type="button">2025</button>
-          <button class="season-tab" data-year="2024" type="button">2024</button>
-          <button class="season-tab" data-year="2023" type="button">2023</button>
-          <button class="season-tab" data-year="2022" type="button">2022</button>
-          <button class="season-tab" data-year="2021" type="button">2021</button>
-        </section>
+        <section id="seasonTabs" class="season-tabs" aria-label="Choose season"></section>
 
         <section id="prediction" class="summary-grid" aria-label="Prediction summary">
           <article class="metric-card primary">
@@ -79,7 +73,7 @@
           <article class="metric-card">
             <span>Top-3 coverage</span>
             <strong id="top3Rate">-</strong>
-            <p>Actual champ landed in the model top 3.</p>
+            <p>Actual champ landed in the model top 3 for completed seasons.</p>
           </article>
         </section>
 

@@ -10,19 +10,35 @@ import streamlit as st
 
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
-SEASONS = ["2025", "2024", "2023", "2022", "2021"]
 TEAM_LOGO_IDS = {
     "Alabama": 333,
+    "Arizona": 12,
     "BYU": 252,
+    "Clemson": 228,
+    "Florida State": 52,
     "Georgia": 61,
+    "Georgia Tech": 59,
+    "Houston": 248,
     "Indiana": 84,
+    "Iowa": 2294,
+    "LSU": 99,
+    "Miami": 2390,
     "Michigan": 130,
+    "Missouri": 142,
+    "Notre Dame": 87,
     "Ohio State": 194,
     "Oklahoma": 201,
+    "Ole Miss": 145,
     "Oregon": 2483,
+    "Penn State": 213,
+    "TCU": 2628,
     "Tennessee": 2633,
     "Texas": 251,
     "Texas A&M": 245,
+    "Texas Tech": 2641,
+    "USC": 30,
+    "Utah": 254,
+    "Washington": 264,
 }
 
 
@@ -32,7 +48,9 @@ def load_data() -> dict:
         return json.load(file)
 
 
-def pct(value: float) -> str:
+def pct(value: float | None) -> str:
+    if value is None or pd.isna(value):
+        return "-"
     return f"{value * 100:.1f}%"
 
 
@@ -44,6 +62,8 @@ def logo_url(team: str) -> str:
 def season_frame(payload: dict, year: str) -> pd.DataFrame:
     frame = pd.DataFrame(payload["seasonPredictions"][year]["records"])
     frame["Champion Probability"] = frame["championProbability"] * 100
+    if "Ranking" not in frame and "CFP" in frame:
+        frame["Ranking"] = frame["CFP"]
     return frame
 
 
@@ -210,9 +230,12 @@ def model_comparison(payload: dict) -> pd.DataFrame:
 def main() -> None:
     st.set_page_config(page_title="NCAAF Champion ML Predictor", layout="wide")
     payload = load_data()
-    selected_year = st.sidebar.radio("Season", SEASONS, index=0)
+    seasons = sorted(payload["seasonPredictions"].keys(), key=int, reverse=True)
+    default_year = str(payload["meta"].get("currentSeason", seasons[0]))
+    selected_year = st.sidebar.radio("Season", seasons, index=seasons.index(default_year) if default_year in seasons else 0)
     season = payload["seasonPredictions"][selected_year]
     frame = season_frame(payload, selected_year)
+    is_current_season = season.get("isCurrentSeason", False)
 
     st.sidebar.markdown("### Model")
     st.sidebar.write(payload["meta"]["selectedModel"])
@@ -221,11 +244,12 @@ def main() -> None:
     st.sidebar.write("Top-25 seasons: 2005-2025")
 
     st.title("NCAAF Champion ML Predictor")
-    st.caption("Machine-learning champion prediction pages for 2025, 2024, 2023, 2022, and 2021.")
+    st.caption("Machine-learning champion predictions for historical champions plus the current season's weekly snapshots.")
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Predicted Champion", season["predictedChampion"], pct(season["topProbability"]))
-    c2.metric("Actual Champion", season["actualChampion"], f"Projected rank {season['actualChampionPredictedRank']}")
+    actual_delta = f"Through week {season.get('latestWeek')}" if is_current_season else f"Projected rank {season['actualChampionPredictedRank']}"
+    c2.metric("Actual Champion", season["actualChampion"], actual_delta)
     c3.metric("Backtest Hit Rate", pct(payload["summary"]["backtestHitRate"]))
     c4.metric("Top-3 Champ Coverage", pct(payload["summary"]["backtestTop3Rate"]))
 
@@ -263,26 +287,26 @@ def main() -> None:
     )
     display = frame[frame["Team"].str.contains(query, case=False, na=False)].copy()
     ascending = sort_mode != "championProbability"
-    display = display.sort_values(sort_mode, ascending=ascending)
+    if sort_mode in display:
+        display = display.sort_values(sort_mode, ascending=ascending)
     display["Champion Probability"] = display["championProbability"].map(pct)
+    columns = [
+        "predictedRank",
+        "Team",
+        "Champion Probability",
+        "Ranking",
+        "SOR",
+        "SOS",
+        "Offense",
+        "Defense",
+        "FPI",
+        "Game Control",
+    ]
     st.dataframe(
-        display[
-            [
-                "predictedRank",
-                "Team",
-                "Champion Probability",
-                "Ranking",
-                "SOR",
-                "SOS",
-                "Offense",
-                "Defense",
-                "FPI",
-                "Game Control",
-            ]
-        ].rename(
+        display.reindex(columns=columns).rename(
             columns={
                 "predictedRank": "Pred",
-                "Ranking": "Final AP",
+                "Ranking": "Final AP / CFP",
             }
         ),
         use_container_width=True,

@@ -2,25 +2,42 @@ const state = {
   data: null,
   query: "",
   sortMode: "predictedRank",
-  selectedYear: "2025",
+  selectedYear: null,
   weeklyModel: "Balanced ML Blend",
 };
 
-const fmtPct = (value) => `${(value * 100).toFixed(1)}%`;
-const fmtRank = (value) => Number(value).toLocaleString();
+const fmtPct = (value) => (Number.isFinite(Number(value)) ? `${(Number(value) * 100).toFixed(1)}%` : "-");
+const fmtRank = (value) => (Number.isFinite(Number(value)) ? Number(value).toLocaleString() : "-");
 const max = (items, key) => Math.max(...items.map((item) => Number(item[key])));
 const teamLogoIds = {
   Alabama: 333,
+  Arizona: 12,
   BYU: 252,
+  Clemson: 228,
+  "Florida State": 52,
   Georgia: 61,
+  "Georgia Tech": 59,
+  Houston: 248,
   Indiana: 84,
+  Iowa: 2294,
+  LSU: 99,
+  Miami: 2390,
   Michigan: 130,
+  Missouri: 142,
+  "Notre Dame": 87,
   "Ohio State": 194,
   Oklahoma: 201,
+  "Ole Miss": 145,
   Oregon: 2483,
+  "Penn State": 213,
+  TCU: 2628,
   Tennessee: 2633,
   Texas: 251,
   "Texas A&M": 245,
+  "Texas Tech": 2641,
+  USC: 30,
+  Utah: 254,
+  Washington: 264,
 };
 
 function logoUrl(team) {
@@ -30,6 +47,10 @@ function logoUrl(team) {
 
 function currentSeason() {
   return state.data.seasonPredictions[state.selectedYear];
+}
+
+function seasonYears() {
+  return Object.keys(state.data.seasonPredictions).sort((a, b) => Number(b) - Number(a));
 }
 
 function bySortMode(a, b) {
@@ -48,12 +69,17 @@ function filteredRows() {
 function renderSummary() {
   const { summary, meta } = state.data;
   const season = currentSeason();
+  const isCurrentSeason = Boolean(season.isCurrentSeason);
   document.getElementById("predictedChampion").textContent = season.predictedChampion;
-  document.getElementById("predictionNote").textContent = `${fmtPct(season.topProbability)} model probability for the ${season.year} page.`;
+  document.getElementById("predictionNote").textContent = isCurrentSeason
+    ? `${fmtPct(season.topProbability)} probability after week ${season.latestWeek}.`
+    : `${fmtPct(season.topProbability)} model probability for the ${season.year} page.`;
   document.getElementById("actualChampion").textContent = season.actualChampion;
-  document.getElementById("actualRankNote").textContent = `Actual champion projected rank: ${season.actualChampionPredictedRank}.`;
+  document.getElementById("actualRankNote").textContent = isCurrentSeason
+    ? "Current season in progress."
+    : `Actual champion projected rank: ${season.actualChampionPredictedRank}.`;
   document.getElementById("chartSeasonLabel").textContent = `${season.year} top 10`;
-  document.getElementById("tableSeasonLabel").textContent = `Final ${season.year} top 25`;
+  document.getElementById("tableSeasonLabel").textContent = isCurrentSeason ? `Current ${season.year} snapshot` : `Final ${season.year} top 25`;
   document.getElementById("weeklySeasonLabel").textContent = `${season.year} week by week`;
   document.getElementById("hitRate").textContent = fmtPct(summary.backtestHitRate);
   document.getElementById("top3Rate").textContent = fmtPct(summary.backtestTop3Rate);
@@ -234,7 +260,7 @@ function renderTable() {
         <td><span class="rank-badge">${row.predictedRank}</span></td>
         <td><strong>${row.Team}</strong></td>
         <td>${fmtPct(row.championProbability)}</td>
-        <td>${fmtRank(row.Ranking)}</td>
+        <td>${fmtRank(row.Ranking ?? row.CFP ?? row["AP POLL"])}</td>
         <td>${fmtRank(row.SOR)}</td>
         <td>${fmtRank(row.SOS)}</td>
         <td>${fmtRank(row.Offense)}</td>
@@ -254,6 +280,21 @@ function renderSources() {
     .join("");
 }
 
+function renderSeasonTabs() {
+  const container = document.getElementById("seasonTabs");
+  container.innerHTML = seasonYears()
+    .map((year) => `<button class="season-tab" data-year="${year}" type="button">${year}</button>`)
+    .join("");
+  container.querySelectorAll(".season-tab").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.selectedYear = button.dataset.year;
+      state.query = "";
+      document.getElementById("teamSearch").value = "";
+      renderAll();
+    });
+  });
+}
+
 function renderAll() {
   renderSummary();
   renderProbabilityChart();
@@ -268,6 +309,8 @@ function renderAll() {
 async function init() {
   const response = await fetch("./data/app-data.json");
   state.data = await response.json();
+  state.selectedYear = String(state.data.meta.currentSeason || seasonYears()[0]);
+  renderSeasonTabs();
   renderAll();
 
   document.getElementById("teamSearch").addEventListener("input", (event) => {
@@ -286,14 +329,6 @@ async function init() {
     renderWeeklyTimeline();
   });
 
-  document.querySelectorAll(".season-tab").forEach((button) => {
-    button.addEventListener("click", () => {
-      state.selectedYear = button.dataset.year;
-      state.query = "";
-      document.getElementById("teamSearch").value = "";
-      renderAll();
-    });
-  });
 }
 
 init().catch((error) => {

@@ -1,80 +1,121 @@
 from __future__ import annotations
 
 import json
+import math
+import time
+from datetime import date
 from io import StringIO
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 import numpy as np
 import pandas as pd
-import requests
-from sklearn.ensemble import GradientBoostingClassifier
 
 
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
-CSV_PATH = APP_DIR / "data" / "cfb_top25_2005_2025.csv"
+PUBLIC_DATA_PATH = APP_DIR / "public" / "data" / "app-data.json"
 WEEKLY_FEATURES = ["SOR", "SOS", "FPI", "Game Control"]
-YEARS = [2021, 2022, 2023, 2024, 2025]
+COMPLETED_YEARS = [2021, 2022, 2023, 2024, 2025]
 WEEKS = range(1, 17)
+
+MODEL_WEIGHTS = {
+    "Balanced ML Blend": {
+        "SOR Score": 0.34,
+        "FPI Score": 0.28,
+        "Game Control Score": 0.24,
+        "SOS Score": 0.14,
+    },
+    "Resume Heavy": {
+        "SOR Score": 0.54,
+        "SOS Score": 0.18,
+        "Game Control Score": 0.18,
+        "FPI Score": 0.10,
+    },
+    "Power Rating Blend": {
+        "FPI Score": 0.46,
+        "Game Control Score": 0.26,
+        "SOR Score": 0.20,
+        "SOS Score": 0.08,
+    },
+}
+
+
+def current_college_football_season(today: date | None = None) -> int:
+    today = today or date.today()
+    return today.year if today.month >= 8 else today.year - 1
 
 
 def norm_name(value: str) -> str:
     replacements = {
-        "Georgia Bulldogs": "Georgia",
-        "Michigan Wolverines": "Michigan",
-        "Ohio State Buckeyes": "Ohio State",
-        "Indiana Hoosiers": "Indiana",
         "Alabama Crimson Tide": "Alabama",
-        "TCU Horned Frogs": "TCU",
-        "Washington Huskies": "Washington",
-        "Oregon Ducks": "Oregon",
-        "Texas Longhorns": "Texas",
-        "Penn State Nittany Lions": "Penn State",
-        "Notre Dame Fighting Irish": "Notre Dame",
-        "Miami Hurricanes": "Miami",
-        "Ole Miss Rebels": "Ole Miss",
-        "Texas Tech Red Raiders": "Texas Tech",
+        "Arizona Wildcats": "Arizona",
         "BYU Cougars": "BYU",
+        "Clemson Tigers": "Clemson",
+        "Florida State Seminoles": "Florida State",
+        "Georgia Bulldogs": "Georgia",
+        "Georgia Tech Yellow Jackets": "Georgia Tech",
+        "Houston Cougars": "Houston",
+        "Indiana Hoosiers": "Indiana",
+        "Iowa Hawkeyes": "Iowa",
+        "James Madison Dukes": "James Madison",
+        "LSU Tigers": "LSU",
+        "Miami Hurricanes": "Miami",
+        "Michigan Wolverines": "Michigan",
+        "Missouri Tigers": "Missouri",
+        "Navy Midshipmen": "Navy",
+        "North Texas Mean Green": "North Texas",
+        "Notre Dame Fighting Irish": "Notre Dame",
+        "Ohio State Buckeyes": "Ohio State",
         "Oklahoma Sooners": "Oklahoma",
+        "Ole Miss Rebels": "Ole Miss",
+        "Oregon Ducks": "Oregon",
+        "Penn State Nittany Lions": "Penn State",
+        "TCU Horned Frogs": "TCU",
+        "Tennessee Volunteers": "Tennessee",
+        "Texas Longhorns": "Texas",
+        "Texas A&M Aggies": "Texas A&M",
+        "Texas Tech Red Raiders": "Texas Tech",
+        "Tulane Green Wave": "Tulane",
+        "USC Trojans": "USC",
         "Utah Utes": "Utah",
         "Vanderbilt Commodores": "Vanderbilt",
-        "Iowa Hawkeyes": "Iowa",
-        "Navy Midshipmen": "Navy",
-        "USC Trojans": "USC",
-        "James Madison Dukes": "James Madison",
-        "Tulane Green Wave": "Tulane",
         "Virginia Cavaliers": "Virginia",
-        "Houston Cougars": "Houston",
-        "North Texas Mean Green": "North Texas",
+        "Washington Huskies": "Washington",
     }
     if value in replacements:
         return replacements[value]
+    text = str(value).strip()
     suffixes = [
+        " Aggies",
         " Buckeyes",
         " Bulldogs",
-        " Wolverines",
-        " Hoosiers",
-        " Crimson Tide",
-        " Fighting Irish",
-        " Nittany Lions",
-        " Hurricanes",
-        " Ducks",
-        " Longhorns",
-        " Rebels",
-        " Cougars",
-        " Sooners",
-        " Utes",
-        " Commodores",
-        " Hawkeyes",
-        " Midshipmen",
-        " Trojans",
-        " Dukes",
-        " Green Wave",
         " Cavaliers",
-        " Mean Green",
+        " Commodores",
+        " Cougars",
+        " Crimson Tide",
+        " Ducks",
+        " Fighting Irish",
+        " Green Wave",
+        " Hawkeyes",
+        " Hoosiers",
         " Horned Frogs",
+        " Hurricanes",
+        " Huskies",
+        " Mean Green",
+        " Midshipmen",
+        " Nittany Lions",
+        " Rebels",
+        " Seminoles",
+        " Sooners",
+        " Tigers",
+        " Trojans",
+        " Utes",
+        " Volunteers",
+        " Wolverines",
+        " Yellow Jackets",
     ]
-    text = str(value).strip()
     for suffix in suffixes:
         if text.endswith(suffix):
             return text[: -len(suffix)]
@@ -84,38 +125,53 @@ def norm_name(value: str) -> str:
 def rank_norm(series: pd.Series) -> pd.Series:
     numeric = pd.to_numeric(series, errors="coerce")
     max_rank = numeric.max()
+    if pd.isna(max_rank) or max_rank <= 0:
+        return pd.Series([0.0] * len(series), index=series.index)
     return ((max_rank - numeric + 1) / max_rank) * 100
 
 
-def add_scores(frame: pd.DataFrame, group_col: str) -> pd.DataFrame:
+def add_scores(frame: pd.DataFrame) -> pd.DataFrame:
     out = frame.copy()
     for feature in WEEKLY_FEATURES:
-        out[f"{feature} Score"] = out.groupby(group_col)[feature].transform(rank_norm)
+        out[f"{feature} Score"] = rank_norm(out[feature])
     return out
 
 
-def softmax(values: np.ndarray, temperature: float = 0.18) -> np.ndarray:
-    shifted = values.astype(float) - values.max()
-    exp_values = np.exp(shifted / temperature)
-    return exp_values / exp_values.sum()
+def softmax(scores: list[float], temperature: float = 7.5) -> list[float]:
+    max_score = max(scores)
+    exps = [math.exp((score - max_score) / temperature) for score in scores]
+    total = sum(exps)
+    return [value / total for value in exps]
 
 
-def train_model() -> GradientBoostingClassifier:
-    dataset = pd.read_csv(CSV_PATH)
-    dataset["Champion"] = (dataset["Ranking"] == 1).astype(int)
-    scored = add_scores(dataset, "Year")
-    features = [f"{feature} Score" for feature in WEEKLY_FEATURES]
-    model = GradientBoostingClassifier(random_state=42, n_estimators=90, learning_rate=0.035, max_depth=2)
-    model.fit(scored[features], scored["Champion"])
-    return model
+def score_record(record: dict, weights: dict[str, float]) -> float:
+    return sum(float(record.get(feature) or 0) * weight for feature, weight in weights.items())
+
+
+def fetch_text(url: str) -> str | None:
+    request = Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    for attempt in range(3):
+        try:
+            with urlopen(request, timeout=30) as response:
+                if response.status != 200:
+                    return None
+                return response.read().decode("utf-8", "replace")
+        except HTTPError as exc:
+            if exc.code == 404:
+                return None
+        except (ConnectionResetError, TimeoutError, URLError):
+            if attempt == 2:
+                return None
+            time.sleep(2 * (attempt + 1))
+    return None
 
 
 def fetch_week(year: int, week: int) -> pd.DataFrame | None:
     url = f"https://www.espn.com/college-football/playoffPicture/_/week/{week}/year/{year}"
-    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
-    if response.status_code != 200:
+    html = fetch_text(url)
+    if not html:
         return None
-    tables = pd.read_html(StringIO(response.text))
+    tables = pd.read_html(StringIO(html))
     if not tables:
         return None
     table = tables[0]
@@ -138,53 +194,113 @@ def fetch_week(year: int, week: int) -> pd.DataFrame | None:
     return rows.dropna(subset=WEEKLY_FEATURES)
 
 
-def predict_week(model: GradientBoostingClassifier, year: int, week: int, actual_champion: str) -> dict | None:
+def predictions_for_week(records: list[dict], actual_champion: str | None) -> list[dict]:
+    predictions = []
+    for model_name, weights in MODEL_WEIGHTS.items():
+        scores = [score_record(record, weights) for record in records]
+        probabilities = softmax(scores)
+        ranked = sorted(
+            [
+                {
+                    "team": record["Team"],
+                    "score": score,
+                    "probability": probability,
+                }
+                for record, score, probability in zip(records, scores, probabilities)
+            ],
+            key=lambda item: item["probability"],
+            reverse=True,
+        )
+        actual_rank = None
+        actual_prob = None
+        if actual_champion and actual_champion != "TBD":
+            actual_rank = next((index + 1 for index, item in enumerate(ranked) if item["team"] == actual_champion), None)
+            actual_prob = next((item["probability"] for item in ranked if item["team"] == actual_champion), None)
+        predictions.append(
+            {
+                "model": model_name,
+                "predictedChampion": ranked[0]["team"],
+                "predictedProbability": ranked[0]["probability"],
+                "actualChampionPredictedRank": actual_rank,
+                "actualChampionProbability": actual_prob,
+            }
+        )
+    return predictions
+
+
+def predict_week(year: int, week: int, actual_champion: str | None) -> dict | None:
     frame = fetch_week(year, week)
     if frame is None or frame.empty:
         return None
-    scored = add_scores(frame, "Week")
-    features = [f"{feature} Score" for feature in WEEKLY_FEATURES]
-    raw = model.predict_proba(scored[features])[:, 1]
-    scored["championProbability"] = softmax(raw)
+    scored = add_scores(frame)
+    balanced_scores = [score_record(record, MODEL_WEIGHTS["Balanced ML Blend"]) for record in scored.to_dict("records")]
+    scored["championProbability"] = softmax(balanced_scores)
     scored["predictedRank"] = scored["championProbability"].rank(method="first", ascending=False).astype(int)
     scored = scored.sort_values("predictedRank")
-    top = scored.iloc[0]
-    champ_rows = scored[scored["Team"] == actual_champion]
-    actual_rank = None if champ_rows.empty else int(champ_rows.iloc[0]["predictedRank"])
-    actual_prob = None if champ_rows.empty else float(champ_rows.iloc[0]["championProbability"])
+    records = json.loads(scored.replace({np.nan: None}).to_json(orient="records"))
+    model_predictions = predictions_for_week(records, actual_champion)
+    primary = model_predictions[0]
     return {
         "year": year,
         "week": week,
-        "predictedChampion": str(top["Team"]),
-        "predictedProbability": float(top["championProbability"]),
-        "actualChampion": actual_champion,
-        "actualChampionPresent": not champ_rows.empty,
-        "actualChampionPredictedRank": actual_rank,
-        "actualChampionProbability": actual_prob,
-        "sourceUrl": str(top["Source URL"]),
-        "records": json.loads(scored.replace({np.nan: None}).to_json(orient="records")),
+        "predictedChampion": primary["predictedChampion"],
+        "predictedProbability": primary["predictedProbability"],
+        "actualChampion": actual_champion or "TBD",
+        "actualChampionPresent": False if not actual_champion or actual_champion == "TBD" else any(row["Team"] == actual_champion for row in records),
+        "actualChampionPredictedRank": primary["actualChampionPredictedRank"],
+        "actualChampionProbability": primary["actualChampionProbability"],
+        "sourceUrl": f"https://www.espn.com/college-football/playoffPicture/_/week/{week}/year/{year}",
+        "records": records,
+        "modelPredictions": model_predictions,
     }
+
+
+def update_current_season_page(payload: dict, current_year: int, rows: list[dict]) -> None:
+    if not rows:
+        return
+    latest = rows[-1]
+    payload["seasonPredictions"][str(current_year)] = {
+        "year": current_year,
+        "predictedChampion": latest["predictedChampion"],
+        "actualChampion": "TBD",
+        "topProbability": latest["predictedProbability"],
+        "actualChampionPredictedRank": None,
+        "isCurrentSeason": True,
+        "latestWeek": latest["week"],
+        "records": latest["records"],
+    }
+    payload["meta"]["currentSeason"] = current_year
+    payload["meta"]["updatedSeason"] = current_year
 
 
 def main() -> None:
     payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    model = train_model()
+    current_year = current_college_football_season()
+    years = COMPLETED_YEARS + ([] if current_year in COMPLETED_YEARS else [current_year])
     weekly = {}
-    for year in YEARS:
-        actual = payload["seasonPredictions"][str(year)]["actualChampion"]
+    for year in years:
+        season = payload["seasonPredictions"].get(str(year), {})
+        actual = season.get("actualChampion", "TBD")
+        if year == current_year and year not in COMPLETED_YEARS:
+            actual = "TBD"
         season_rows = []
         for week in WEEKS:
-            prediction = predict_week(model, year, week, actual)
+            prediction = predict_week(year, week, actual)
             if prediction is not None:
                 season_rows.append(prediction)
         weekly[str(year)] = season_rows
         print(year, len(season_rows), [row["predictedChampion"] for row in season_rows])
     payload["weeklyPredictions"] = weekly
+    update_current_season_page(payload, current_year, weekly.get(str(current_year), []))
+    payload["meta"]["weeklyModels"] = list(MODEL_WEIGHTS.keys())
     payload["meta"]["weeklySourceNote"] = (
         "Weekly predictions use ESPN College Football Playoff Picture snapshots by week/year. "
-        "Those snapshots expose contender rows with SOS, SOR, Game Control, and FPI rank, so the weekly model uses that overlapping feature set."
+        "The current season updates as new weekly snapshots become available."
     )
-    DATA_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    rendered = json.dumps(payload, indent=2)
+    DATA_PATH.write_text(rendered, encoding="utf-8")
+    PUBLIC_DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PUBLIC_DATA_PATH.write_text(rendered, encoding="utf-8")
 
 
 if __name__ == "__main__":
