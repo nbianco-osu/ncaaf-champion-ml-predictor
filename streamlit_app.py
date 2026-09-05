@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 from urllib.request import Request, urlopen
 
@@ -12,6 +13,7 @@ import streamlit as st
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
 SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=100"
+CORE_EVENTS_URL = "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/events"
 TEAM_LOGO_IDS = {
     "Alabama": 333,
     "Arizona": 12,
@@ -51,10 +53,18 @@ def load_data() -> dict:
 
 
 @st.cache_data(ttl=60)
-def load_scores() -> list[dict]:
-    request = Request(SCOREBOARD_URL, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+def fetch_json(url: str) -> dict:
+    request = Request(url.replace("http://", "https://"), headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
     with urlopen(request, timeout=20) as response:
-        payload = json.loads(response.read().decode("utf-8"))
+        return json.loads(response.read().decode("utf-8"))
+
+
+@st.cache_data(ttl=60)
+def load_scores() -> list[dict]:
+    try:
+        payload = fetch_json(SCOREBOARD_URL)
+    except Exception:
+        return load_core_scores()
     games = []
     for event in payload.get("events", []):
         competition = (event.get("competitions") or [{}])[0]
@@ -75,6 +85,39 @@ def load_scores() -> list[dict]:
                 "Game": event.get("shortName"),
                 "Venue": (competition.get("venue") or {}).get("fullName"),
                 "Broadcast": ", ".join(((competition.get("broadcasts") or [{}])[0]).get("names", [])),
+                "competitors": competitors,
+            }
+        )
+    return games
+
+
+def load_core_scores() -> list[dict]:
+    today = date.today().strftime("%Y%m%d")
+    payload = fetch_json(f"{CORE_EVENTS_URL}?dates={today}&limit=100")
+    games = []
+    for item in payload.get("items", []):
+        event = fetch_json(item["$ref"])
+        competition = (event.get("competitions") or [{}])[0]
+        status = fetch_json(competition["status"]["$ref"]) if competition.get("status") else {}
+        competitors = []
+        for competitor in competition.get("competitors", []):
+            team = fetch_json(competitor["team"]["$ref"]) if competitor.get("team") else {}
+            score = fetch_json(competitor["score"]["$ref"]) if competitor.get("score") else {}
+            rank = (competitor.get("curatedRank") or {}).get("current")
+            competitors.append(
+                {
+                    "homeAway": competitor.get("homeAway"),
+                    "Team": team.get("shortDisplayName") or team.get("displayName"),
+                    "Rank": rank if rank and rank < 99 else None,
+                    "Score": score.get("displayValue", "-"),
+                }
+            )
+        games.append(
+            {
+                "Status": ((status.get("type") or {}).get("shortDetail")),
+                "Game": event.get("shortName"),
+                "Venue": (competition.get("venue") or {}).get("fullName"),
+                "Broadcast": "",
                 "competitors": competitors,
             }
         )
