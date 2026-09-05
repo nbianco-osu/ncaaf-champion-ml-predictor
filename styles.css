@@ -384,6 +384,100 @@ h3 {
   font-weight: 850;
 }
 
+.scores-panel {
+  margin-bottom: 14px;
+}
+
+.scores-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.refresh-button {
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--navy);
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  padding: 0 12px;
+}
+
+.refresh-button:hover,
+.refresh-button:focus-visible {
+  outline: none;
+  background: #214962;
+}
+
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.score-card {
+  min-height: 154px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdfe;
+}
+
+.score-card.is-live {
+  border-color: #9ac9bb;
+  background: #f2faf5;
+}
+
+.score-card-head,
+.score-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.score-card-head {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.score-card-head strong {
+  color: var(--green);
+  font-size: 12px;
+  text-align: right;
+}
+
+.score-team {
+  min-height: 34px;
+  font-size: 15px;
+}
+
+.score-team span {
+  min-width: 0;
+  font-weight: 800;
+}
+
+.score-team strong {
+  min-width: 34px;
+  color: var(--navy);
+  font-size: 24px;
+  text-align: right;
+}
+
+.score-card p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .line-chart svg {
   width: 100%;
   min-height: 260px;
@@ -577,7 +671,8 @@ footer {
   }
 
   .topbar,
-  .toolbar {
+  .toolbar,
+  .scores-actions {
     flex-direction: column;
     align-items: stretch;
   }
@@ -614,6 +709,10 @@ footer {
 
   .model-chip {
     display: inline-block;
+    margin-top: 10px;
+  }
+
+  .scores-actions {
     margin-top: 10px;
   }
 }

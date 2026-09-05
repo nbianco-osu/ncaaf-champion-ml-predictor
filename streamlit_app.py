@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from urllib.request import Request, urlopen
 
 import altair as alt
 import pandas as pd
@@ -10,6 +11,7 @@ import streamlit as st
 
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
+SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=100"
 TEAM_LOGO_IDS = {
     "Alabama": 333,
     "Arizona": 12,
@@ -46,6 +48,37 @@ TEAM_LOGO_IDS = {
 def load_data() -> dict:
     with DATA_PATH.open("r", encoding="utf-8") as file:
         return json.load(file)
+
+
+@st.cache_data(ttl=60)
+def load_scores() -> list[dict]:
+    request = Request(SCOREBOARD_URL, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
+    with urlopen(request, timeout=20) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    games = []
+    for event in payload.get("events", []):
+        competition = (event.get("competitions") or [{}])[0]
+        competitors = []
+        for competitor in competition.get("competitors", []):
+            rank = (competitor.get("curatedRank") or {}).get("current")
+            competitors.append(
+                {
+                    "homeAway": competitor.get("homeAway"),
+                    "Team": (competitor.get("team") or {}).get("shortDisplayName") or (competitor.get("team") or {}).get("displayName"),
+                    "Rank": rank if rank and rank < 99 else None,
+                    "Score": competitor.get("score") or "-",
+                }
+            )
+        games.append(
+            {
+                "Status": ((event.get("status") or {}).get("type") or {}).get("shortDetail"),
+                "Game": event.get("shortName"),
+                "Venue": (competition.get("venue") or {}).get("fullName"),
+                "Broadcast": ", ".join(((competition.get("broadcasts") or [{}])[0]).get("names", [])),
+                "competitors": competitors,
+            }
+        )
+    return games
 
 
 def pct(value: float | None) -> str:
@@ -227,6 +260,26 @@ def model_comparison(payload: dict) -> pd.DataFrame:
     )
 
 
+def render_live_scores() -> None:
+    st.subheader("College Football Scores")
+    try:
+        games = load_scores()
+    except Exception:
+        st.info("Live scores are unavailable right now. Try refreshing again in a minute.")
+        return
+    if not games:
+        st.info("No FBS games found for today.")
+        return
+    cols = st.columns(3)
+    for index, game in enumerate(games):
+        with cols[index % 3]:
+            st.markdown(f"**{game['Game']}**")
+            st.caption(" - ".join(item for item in [game.get("Status"), game.get("Broadcast"), game.get("Venue")] if item))
+            for team in game["competitors"]:
+                label = f"{int(team['Rank'])} {team['Team']}" if team.get("Rank") else team["Team"]
+                st.metric(label, team["Score"])
+
+
 def main() -> None:
     st.set_page_config(page_title="NCAAF Champion ML Predictor", layout="wide")
     payload = load_data()
@@ -272,6 +325,8 @@ def main() -> None:
             st.info("No weekly snapshots available for this season.")
         else:
             st.dataframe(table, use_container_width=True, hide_index=True)
+
+    render_live_scores()
 
     st.subheader("Prediction Table")
     query = st.text_input("Search team", "")

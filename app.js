@@ -1,5 +1,6 @@
 const state = {
   data: null,
+  scores: [],
   query: "",
   sortMode: "predictedRank",
   selectedYear: null,
@@ -8,6 +9,7 @@ const state = {
 
 const fmtPct = (value) => (Number.isFinite(Number(value)) ? `${(Number(value) * 100).toFixed(1)}%` : "-");
 const fmtRank = (value) => (Number.isFinite(Number(value)) ? Number(value).toLocaleString() : "-");
+const fmtScore = (value) => (Number.isFinite(Number(value)) ? String(value) : "-");
 const max = (items, key) => Math.max(...items.map((item) => Number(item[key])));
 const teamLogoIds = {
   Alabama: 333,
@@ -295,6 +297,69 @@ function renderSeasonTabs() {
   });
 }
 
+function formatGameTime(game) {
+  if (game.statusType === "STATUS_SCHEDULED") {
+    return new Date(game.date).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  if (game.statusType === "STATUS_FINAL") {
+    return "Final";
+  }
+  return game.statusDetail || game.statusShort || "Live";
+}
+
+function renderScores() {
+  const container = document.getElementById("scoresGrid");
+  const status = document.getElementById("scoresStatus");
+  if (!state.scores.length) {
+    container.innerHTML = `<p class="muted">No FBS games found for today.</p>`;
+    status.textContent = "No games";
+    return;
+  }
+  status.textContent = `Updated ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  container.innerHTML = state.scores
+    .map((game) => {
+      const teams = game.competitors || [];
+      const away = teams.find((team) => team.homeAway === "away") || teams[0] || {};
+      const home = teams.find((team) => team.homeAway === "home") || teams[1] || {};
+      const isLive = game.statusType === "STATUS_IN_PROGRESS";
+      return `
+        <article class="score-card ${isLive ? "is-live" : ""}">
+          <div class="score-card-head">
+            <span>${formatGameTime(game)}</span>
+            <strong>${game.statusDetail || game.statusShort || ""}</strong>
+          </div>
+          <div class="score-team">
+            <span>${away.rank ? `${away.rank} ` : ""}${away.shortName || away.name || "Away"}</span>
+            <strong>${fmtScore(away.score)}</strong>
+          </div>
+          <div class="score-team">
+            <span>${home.rank ? `${home.rank} ` : ""}${home.shortName || home.name || "Home"}</span>
+            <strong>${fmtScore(home.score)}</strong>
+          </div>
+          <p>${game.venue || "Venue TBD"}${game.broadcast ? ` - ${game.broadcast}` : ""}</p>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+async function loadScores() {
+  const status = document.getElementById("scoresStatus");
+  status.textContent = "Refreshing";
+  try {
+    const response = await fetch(`/api/scores?ts=${Date.now()}`);
+    if (!response.ok) {
+      throw new Error(`Scoreboard returned ${response.status}`);
+    }
+    const payload = await response.json();
+    state.scores = payload.games || [];
+    renderScores();
+  } catch (error) {
+    status.textContent = "Unavailable";
+    document.getElementById("scoresGrid").innerHTML = `<p class="muted">Live scores are unavailable right now. Try refreshing again in a minute.</p>`;
+  }
+}
+
 function renderAll() {
   renderSummary();
   renderProbabilityChart();
@@ -329,6 +394,9 @@ async function init() {
     renderWeeklyTimeline();
   });
 
+  document.getElementById("refreshScores").addEventListener("click", loadScores);
+  loadScores();
+  window.setInterval(loadScores, 60_000);
 }
 
 init().catch((error) => {

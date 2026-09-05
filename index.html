@@ -18,6 +18,7 @@
         </div>
         <nav class="nav-stack">
           <a href="#prediction">Prediction</a>
+          <a href="#scores">Scores</a>
           <a href="#model">Model</a>
           <a href="#backtest">Backtest</a>
           <a href="#data">Data</a>
@@ -75,6 +76,22 @@
             <strong id="top3Rate">-</strong>
             <p>Actual champ landed in the model top 3 for completed seasons.</p>
           </article>
+        </section>
+
+        <section class="panel scores-panel" id="scores">
+          <div class="panel-head">
+            <div>
+              <p class="small-label">Live scoreboard</p>
+              <h3>College football scores</h3>
+            </div>
+            <div class="scores-actions">
+              <span class="model-chip" id="scoresStatus">Loading</span>
+              <button class="refresh-button" id="refreshScores" type="button">Refresh</button>
+            </div>
+          </div>
+          <div id="scoresGrid" class="scores-grid" aria-live="polite">
+            <p class="muted">Loading today&apos;s games.</p>
+          </div>
         </section>
 
         <section class="panel-grid">
