@@ -46853,5 +46853,995 @@
         ]
       }
     ]
+  },
+  "scoreSnapshots": {
+    "2026": {
+      "1": {
+        "year": 2026,
+        "seasonType": 2,
+        "week": 1,
+        "source": "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/types/2/weeks/1/events?limit=300",
+        "updatedAt": "2026-09-07T23:39:46.292076+00:00",
+        "gameCount": 25,
+        "completedGameCount": 24,
+        "games": [
+          {
+            "id": "401858212",
+            "name": "SMU Mustangs at Florida State Seminoles",
+            "shortName": "SMU @ FSU",
+            "date": "2026-09-07T23:30Z",
+            "statusType": "STATUS_SCHEDULED",
+            "statusDetail": "Mon, September 7th at 7:30 PM EDT",
+            "statusShort": "9/7 - 7:30 PM EDT",
+            "completed": false,
+            "period": 0,
+            "clock": "0:00",
+            "venue": "Doak Campbell Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2567",
+                "team": "SMU Mustangs",
+                "shortName": "SMU",
+                "abbreviation": "SMU",
+                "rank": 19,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": null,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "52",
+                "team": "Florida State Seminoles",
+                "shortName": "Florida St",
+                "abbreviation": "FSU",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": null,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/52.png"
+              }
+            ]
+          },
+          {
+            "id": "401864494",
+            "name": "San Jos\u00e9 State Spartans at USC Trojans",
+            "shortName": "SJSU @ USC",
+            "date": "2026-08-29T19:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Los Angeles Memorial Coliseum",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "23",
+                "team": "San Jos\u00e9 State Spartans",
+                "shortName": "San Jos\u00e9 St",
+                "abbreviation": "SJSU",
+                "rank": null,
+                "score": "26",
+                "scoreValue": 26.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/23.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "30",
+                "team": "USC Trojans",
+                "shortName": "USC",
+                "abbreviation": "USC",
+                "rank": 14,
+                "score": "42",
+                "scoreValue": 42.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png"
+              }
+            ]
+          },
+          {
+            "id": "401856768",
+            "name": "Idaho Vandals at Utah Utes",
+            "shortName": "IDHO @ UTAH",
+            "date": "2026-09-04T01:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Rice-Eccles Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "70",
+                "team": "Idaho Vandals",
+                "shortName": "Idaho",
+                "abbreviation": "IDHO",
+                "rank": null,
+                "score": "14",
+                "scoreValue": 14.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/70.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "254",
+                "team": "Utah Utes",
+                "shortName": "Utah",
+                "abbreviation": "UTAH",
+                "rank": 21,
+                "score": "66",
+                "scoreValue": 66.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png"
+              }
+            ]
+          },
+          {
+            "id": "401856663",
+            "name": "Arkansas-Pine Bluff Golden Lions at Missouri Tigers",
+            "shortName": "UAPB @ MIZ",
+            "date": "2026-09-04T00:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Memorial Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2029",
+                "team": "Arkansas-Pine Bluff Golden Lions",
+                "shortName": "AR-Pine Bluff",
+                "abbreviation": "UAPB",
+                "rank": null,
+                "score": "14",
+                "scoreValue": 14.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2029.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "142",
+                "team": "Missouri Tigers",
+                "shortName": "Missouri",
+                "abbreviation": "MIZ",
+                "rank": 25,
+                "score": "54",
+                "scoreValue": 54.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png"
+              }
+            ]
+          },
+          {
+            "id": "401858206",
+            "name": "Miami Hurricanes at Stanford Cardinal",
+            "shortName": "MIA @ STAN",
+            "date": "2026-09-05T01:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Stanford Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2390",
+                "team": "Miami Hurricanes",
+                "shortName": "Miami",
+                "abbreviation": "MIA",
+                "rank": 7,
+                "score": "45",
+                "scoreValue": 45.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "24",
+                "team": "Stanford Cardinal",
+                "shortName": "Stanford",
+                "abbreviation": "STAN",
+                "rank": null,
+                "score": "6",
+                "scoreValue": 6.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/24.png"
+              }
+            ]
+          },
+          {
+            "id": "401856664",
+            "name": "UTEP Miners at Oklahoma Sooners",
+            "shortName": "UTEP @ OU",
+            "date": "2026-09-05T00:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Memorial Stadium (Norman, OK)",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2638",
+                "team": "UTEP Miners",
+                "shortName": "UTEP",
+                "abbreviation": "UTEP",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2638.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "201",
+                "team": "Oklahoma Sooners",
+                "shortName": "Oklahoma",
+                "abbreviation": "OU",
+                "rank": 10,
+                "score": "51",
+                "scoreValue": 51.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/201.png"
+              }
+            ]
+          },
+          {
+            "id": "401858436",
+            "name": "Fresno State Bulldogs at USC Trojans",
+            "shortName": "FRES @ USC",
+            "date": "2026-09-05T01:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Los Angeles Memorial Coliseum",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "278",
+                "team": "Fresno State Bulldogs",
+                "shortName": "Fresno St",
+                "abbreviation": "FRES",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/278.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "30",
+                "team": "USC Trojans",
+                "shortName": "USC",
+                "abbreviation": "USC",
+                "rank": 14,
+                "score": "39",
+                "scoreValue": 39.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png"
+              }
+            ]
+          },
+          {
+            "id": "401858432",
+            "name": "Ball State Cardinals at Ohio State Buckeyes",
+            "shortName": "BALL @ OSU",
+            "date": "2026-09-05T16:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Ohio Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2050",
+                "team": "Ball State Cardinals",
+                "shortName": "Ball State",
+                "abbreviation": "BALL",
+                "rank": null,
+                "score": "3",
+                "scoreValue": 3.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2050.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "194",
+                "team": "Ohio State Buckeyes",
+                "shortName": "Ohio State",
+                "abbreviation": "OSU",
+                "rank": 1,
+                "score": "56",
+                "scoreValue": 56.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png"
+              }
+            ]
+          },
+          {
+            "id": "401858433",
+            "name": "Boise State Broncos at Oregon Ducks",
+            "shortName": "BOIS @ ORE",
+            "date": "2026-09-05T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Autzen Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "68",
+                "team": "Boise State Broncos",
+                "shortName": "Boise St",
+                "abbreviation": "BOIS",
+                "rank": null,
+                "score": "27",
+                "scoreValue": 27.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/68.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2483",
+                "team": "Oregon Ducks",
+                "shortName": "Oregon",
+                "abbreviation": "ORE",
+                "rank": 2,
+                "score": "34",
+                "scoreValue": 34.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png"
+              }
+            ]
+          },
+          {
+            "id": "401856658",
+            "name": "Tennessee State Tigers at Georgia Bulldogs",
+            "shortName": "TNST @ UGA",
+            "date": "2026-09-05T19:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Sanford Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2634",
+                "team": "Tennessee State Tigers",
+                "shortName": "Tennessee St",
+                "abbreviation": "TNST",
+                "rank": null,
+                "score": "3",
+                "scoreValue": 3.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2634.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "61",
+                "team": "Georgia Bulldogs",
+                "shortName": "Georgia",
+                "abbreviation": "UGA",
+                "rank": 3,
+                "score": "63",
+                "scoreValue": 63.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png"
+              }
+            ]
+          },
+          {
+            "id": "401856667",
+            "name": "Texas State Bobcats at Texas Longhorns",
+            "shortName": "TXST @ TEX",
+            "date": "2026-09-05T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "DKR-Texas Memorial Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "326",
+                "team": "Texas State Bobcats",
+                "shortName": "Texas St",
+                "abbreviation": "TXST",
+                "rank": null,
+                "score": "7",
+                "scoreValue": 7.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/326.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "251",
+                "team": "Texas Longhorns",
+                "shortName": "Texas",
+                "abbreviation": "TEX",
+                "rank": 5,
+                "score": "59",
+                "scoreValue": 59.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png"
+              }
+            ]
+          },
+          {
+            "id": "401858425",
+            "name": "North Texas Mean Green at Indiana Hoosiers",
+            "shortName": "UNT @ IU",
+            "date": "2026-09-05T16:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Memorial Stadium (Bloomington, IN)",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "249",
+                "team": "North Texas Mean Green",
+                "shortName": "North Texas",
+                "abbreviation": "UNT",
+                "rank": null,
+                "score": "16",
+                "scoreValue": 16.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/249.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "84",
+                "team": "Indiana Hoosiers",
+                "shortName": "Indiana",
+                "abbreviation": "IU",
+                "rank": 6,
+                "score": "52",
+                "scoreValue": 52.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/84.png"
+              }
+            ]
+          },
+          {
+            "id": "401856668",
+            "name": "Missouri State Bears at Texas A&M Aggies",
+            "shortName": "MOST @ TA&M",
+            "date": "2026-09-05T23:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Kyle Field",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2623",
+                "team": "Missouri State Bears",
+                "shortName": "Missouri St",
+                "abbreviation": "MOST",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2623.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "245",
+                "team": "Texas A&M Aggies",
+                "shortName": "Texas A&M",
+                "abbreviation": "TA&M",
+                "rank": 8,
+                "score": "50",
+                "scoreValue": 50.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png"
+              }
+            ]
+          },
+          {
+            "id": "401856660",
+            "name": "Clemson Tigers at LSU Tigers",
+            "shortName": "CLEM @ LSU",
+            "date": "2026-09-06T01:40Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Tiger Stadium (LA)",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "228",
+                "team": "Clemson Tigers",
+                "shortName": "Clemson",
+                "abbreviation": "CLEM",
+                "rank": null,
+                "score": "10",
+                "scoreValue": 10.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/228.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "99",
+                "team": "LSU Tigers",
+                "shortName": "LSU",
+                "abbreviation": "LSU",
+                "rank": 11,
+                "score": "51",
+                "scoreValue": 51.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png"
+              }
+            ]
+          },
+          {
+            "id": "401856770",
+            "name": "Abilene Christian Wildcats at Texas Tech Red Raiders",
+            "shortName": "ACU @ TTU",
+            "date": "2026-09-05T23:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Galaxy Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2000",
+                "team": "Abilene Christian Wildcats",
+                "shortName": "Abilene Chrstn",
+                "abbreviation": "ACU",
+                "rank": null,
+                "score": "10",
+                "scoreValue": 10.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2000.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2641",
+                "team": "Texas Tech Red Raiders",
+                "shortName": "Texas Tech",
+                "abbreviation": "TTU",
+                "rank": 12,
+                "score": "33",
+                "scoreValue": 33.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png"
+              }
+            ]
+          },
+          {
+            "id": "401856634",
+            "name": "East Carolina Pirates at Alabama Crimson Tide",
+            "shortName": "ECU @ ALA",
+            "date": "2026-09-05T16:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Bryant-Denny Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "151",
+                "team": "East Carolina Pirates",
+                "shortName": "East Carolina",
+                "abbreviation": "ECU",
+                "rank": null,
+                "score": "10",
+                "scoreValue": 10.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/151.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "333",
+                "team": "Alabama Crimson Tide",
+                "shortName": "Alabama",
+                "abbreviation": "ALA",
+                "rank": 13,
+                "score": "48",
+                "scoreValue": 48.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png"
+              }
+            ]
+          },
+          {
+            "id": "401856775",
+            "name": "Utah Tech Trailblazers at BYU Cougars",
+            "shortName": "UTU @ BYU",
+            "date": "2026-09-06T00:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "LaVell Edwards Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "3101",
+                "team": "Utah Tech Trailblazers",
+                "shortName": "Utah Tech",
+                "abbreviation": "UTU",
+                "rank": null,
+                "score": "7",
+                "scoreValue": 7.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/3101.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "252",
+                "team": "BYU Cougars",
+                "shortName": "BYU",
+                "abbreviation": "BYU",
+                "rank": 14,
+                "score": "63",
+                "scoreValue": 63.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png"
+              }
+            ]
+          },
+          {
+            "id": "401858428",
+            "name": "Western Michigan Broncos at Michigan Wolverines",
+            "shortName": "WMU @ MICH",
+            "date": "2026-09-05T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Michigan Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2711",
+                "team": "Western Michigan Broncos",
+                "shortName": "W Michigan",
+                "abbreviation": "WMU",
+                "rank": null,
+                "score": "12",
+                "scoreValue": 12.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2711.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "130",
+                "team": "Michigan Wolverines",
+                "shortName": "Michigan",
+                "abbreviation": "MICH",
+                "rank": 16,
+                "score": "13",
+                "scoreValue": 13.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/130.png"
+              }
+            ]
+          },
+          {
+            "id": "401858434",
+            "name": "Marshall Thundering Herd at Penn State Nittany Lions",
+            "shortName": "MRSH @ PSU",
+            "date": "2026-09-05T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Beaver Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "276",
+                "team": "Marshall Thundering Herd",
+                "shortName": "Marshall",
+                "abbreviation": "MRSH",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/276.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "213",
+                "team": "Penn State Nittany Lions",
+                "shortName": "Penn State",
+                "abbreviation": "PSU",
+                "rank": 18,
+                "score": "45",
+                "scoreValue": 45.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/213.png"
+              }
+            ]
+          },
+          {
+            "id": "401856666",
+            "name": "Furman Paladins at Tennessee Volunteers",
+            "shortName": "FUR @ TENN",
+            "date": "2026-09-05T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Neyland Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "231",
+                "team": "Furman Paladins",
+                "shortName": "Furman",
+                "abbreviation": "FUR",
+                "rank": null,
+                "score": "9",
+                "scoreValue": 9.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/231.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2633",
+                "team": "Tennessee Volunteers",
+                "shortName": "Tennessee",
+                "abbreviation": "TENN",
+                "rank": 20,
+                "score": "56",
+                "scoreValue": 56.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png"
+              }
+            ]
+          },
+          {
+            "id": "401858426",
+            "name": "Northern Illinois Huskies at Iowa Hawkeyes",
+            "shortName": "NIU @ IOWA",
+            "date": "2026-09-05T20:15Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Kinnick Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2459",
+                "team": "Northern Illinois Huskies",
+                "shortName": "N Illinois",
+                "abbreviation": "NIU",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2459.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2294",
+                "team": "Iowa Hawkeyes",
+                "shortName": "Iowa",
+                "abbreviation": "IOWA",
+                "rank": 22,
+                "score": "40",
+                "scoreValue": 40.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png"
+              }
+            ]
+          },
+          {
+            "id": "401856778",
+            "name": "Oregon State Beavers at Houston Cougars",
+            "shortName": "ORST @ HOU",
+            "date": "2026-09-05T16:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "TDECU Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "204",
+                "team": "Oregon State Beavers",
+                "shortName": "Oregon St",
+                "abbreviation": "ORST",
+                "rank": null,
+                "score": "20",
+                "scoreValue": 20.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "248",
+                "team": "Houston Cougars",
+                "shortName": "Houston",
+                "abbreviation": "HOU",
+                "rank": 23,
+                "score": "33",
+                "scoreValue": 33.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/248.png"
+              }
+            ]
+          },
+          {
+            "id": "401858438",
+            "name": "Wisconsin Badgers at Notre Dame Fighting Irish",
+            "shortName": "WIS VS ND",
+            "date": "2026-09-06T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Lambeau Field",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "275",
+                "team": "Wisconsin Badgers",
+                "shortName": "Wisconsin",
+                "abbreviation": "WIS",
+                "rank": null,
+                "score": "13",
+                "scoreValue": 13.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/275.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "87",
+                "team": "Notre Dame Fighting Irish",
+                "shortName": "Notre Dame",
+                "abbreviation": "ND",
+                "rank": 4,
+                "score": "41",
+                "scoreValue": 41.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png"
+              }
+            ]
+          },
+          {
+            "id": "401856661",
+            "name": "Louisville Cardinals at Ole Miss Rebels",
+            "shortName": "LOU VS MISS",
+            "date": "2026-09-06T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Nissan Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "97",
+                "team": "Louisville Cardinals",
+                "shortName": "Louisville",
+                "abbreviation": "LOU",
+                "rank": 24,
+                "score": "38",
+                "scoreValue": 38.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/97.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "145",
+                "team": "Ole Miss Rebels",
+                "shortName": "Ole Miss",
+                "abbreviation": "MISS",
+                "rank": 9,
+                "score": "41",
+                "scoreValue": 41.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png"
+              }
+            ]
+          },
+          {
+            "id": "401858437",
+            "name": "Washington State Cougars at Washington Huskies",
+            "shortName": "WSU @ WASH",
+            "date": "2026-09-06T20:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Husky Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "265",
+                "team": "Washington State Cougars",
+                "shortName": "Washington St",
+                "abbreviation": "WSU",
+                "rank": null,
+                "score": "10",
+                "scoreValue": 10.0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/265.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "264",
+                "team": "Washington Huskies",
+                "shortName": "Washington",
+                "abbreviation": "WASH",
+                "rank": 17,
+                "score": "24",
+                "scoreValue": 24.0,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/264.png"
+              }
+            ]
+          }
+        ]
+      }
+    }
   }
 }

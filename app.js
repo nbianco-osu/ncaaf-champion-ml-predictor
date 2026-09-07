@@ -343,6 +343,47 @@ function renderScores() {
     .join("");
 }
 
+function scoreCard(game) {
+  const teams = game.competitors || [];
+  const away = teams.find((team) => team.homeAway === "away") || teams[0] || {};
+  const home = teams.find((team) => team.homeAway === "home") || teams[1] || {};
+  const isLive = game.statusType === "STATUS_IN_PROGRESS";
+  return `
+    <article class="score-card ${isLive ? "is-live" : ""}">
+      <div class="score-card-head">
+        <span>${formatGameTime(game)}</span>
+        <strong>${game.statusDetail || game.statusShort || ""}</strong>
+      </div>
+      <div class="score-team">
+        <span>${away.rank ? `${away.rank} ` : ""}${away.shortName || away.name || away.team || "Away"}</span>
+        <strong>${fmtScore(away.score)}</strong>
+      </div>
+      <div class="score-team">
+        <span>${home.rank ? `${home.rank} ` : ""}${home.shortName || home.name || home.team || "Home"}</span>
+        <strong>${fmtScore(home.score)}</strong>
+      </div>
+      <p>${game.venue || "Venue TBD"}${game.broadcast ? ` - ${game.broadcast}` : ""}</p>
+    </article>
+  `;
+}
+
+function renderSavedScores() {
+  const snapshots = state.data.scoreSnapshots || {};
+  const latestYear = Object.keys(snapshots).sort((a, b) => Number(b) - Number(a))[0];
+  const latestWeek = latestYear ? Object.keys(snapshots[latestYear]).sort((a, b) => Number(b) - Number(a))[0] : null;
+  const snapshot = latestYear && latestWeek ? snapshots[latestYear][latestWeek] : null;
+  const container = document.getElementById("savedScoresGrid");
+  if (!snapshot) {
+    document.getElementById("savedScoresTitle").textContent = "Stored weekly scores";
+    document.getElementById("savedScoresCount").textContent = "No snapshot";
+    container.innerHTML = `<p class="muted">No stored weekly score snapshot is available yet.</p>`;
+    return;
+  }
+  document.getElementById("savedScoresTitle").textContent = `${latestYear} week ${latestWeek} scores`;
+  document.getElementById("savedScoresCount").textContent = `${snapshot.completedGameCount} of ${snapshot.gameCount} final`;
+  container.innerHTML = snapshot.games.map(scoreCard).join("");
+}
+
 async function loadScores() {
   const status = document.getElementById("scoresStatus");
   status.textContent = "Refreshing";
@@ -369,6 +410,7 @@ function renderAll() {
   renderWeeklyTimeline();
   renderTable();
   renderSources();
+  renderSavedScores();
 }
 
 async function init() {

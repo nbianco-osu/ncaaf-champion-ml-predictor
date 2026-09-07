@@ -323,6 +323,32 @@ def render_live_scores() -> None:
                 st.metric(label, team["Score"])
 
 
+def render_stored_scores(payload: dict) -> None:
+    snapshots = payload.get("scoreSnapshots", {})
+    if not snapshots:
+        return
+    latest_year = sorted(snapshots.keys(), key=int, reverse=True)[0]
+    latest_week = sorted(snapshots[latest_year].keys(), key=int, reverse=True)[0]
+    snapshot = snapshots[latest_year][latest_week]
+    rows = []
+    for game in snapshot.get("games", []):
+        away = next((team for team in game.get("competitors", []) if team.get("homeAway") == "away"), {})
+        home = next((team for team in game.get("competitors", []) if team.get("homeAway") == "home"), {})
+        rows.append(
+            {
+                "Status": game.get("statusShort") or game.get("statusDetail"),
+                "Away": away.get("shortName") or away.get("team"),
+                "Away Score": away.get("score"),
+                "Home": home.get("shortName") or home.get("team"),
+                "Home Score": home.get("score"),
+                "Venue": game.get("venue"),
+            }
+        )
+    st.subheader(f"{latest_year} Week {latest_week} Stored Scores")
+    st.caption(f"{snapshot.get('completedGameCount')} of {snapshot.get('gameCount')} games final.")
+    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+
 def main() -> None:
     st.set_page_config(page_title="NCAAF Champion ML Predictor", layout="wide")
     payload = load_data()
@@ -370,6 +396,7 @@ def main() -> None:
             st.dataframe(table, use_container_width=True, hide_index=True)
 
     render_live_scores()
+    render_stored_scores(payload)
 
     st.subheader("Prediction Table")
     query = st.text_input("Search team", "")

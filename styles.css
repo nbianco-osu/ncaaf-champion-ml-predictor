@@ -419,6 +419,16 @@ h3 {
   gap: 12px;
 }
 
+.saved-scores-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+  margin: 26px 0 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
 .score-card {
   min-height: 154px;
   padding: 14px;
