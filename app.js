@@ -414,7 +414,7 @@ function renderAll() {
 }
 
 async function init() {
-  const response = await fetch("./data/app-data.json");
+  const response = await fetch(`./data/app-data.json?v=${Date.now()}`, { cache: "no-store" });
   state.data = await response.json();
   state.selectedYear = String(state.data.meta.currentSeason || seasonYears()[0]);
   renderSeasonTabs();

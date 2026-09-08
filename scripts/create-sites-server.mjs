@@ -188,10 +188,11 @@ function responseFor(route, status = 200) {
     return null;
   }
 
+  const isLiveData = route.startsWith("/data/") || route.endsWith(".json");
   return new Response(asset.body, {
     status,
     headers: {
-      "cache-control": route === "/index.html" ? "no-cache" : "public, max-age=31536000, immutable",
+      "cache-control": route === "/index.html" || isLiveData ? "no-cache" : "public, max-age=31536000, immutable",
       "content-type": asset.contentType,
       "x-ncaaf-dashboard": "embedded-worker",
     },
