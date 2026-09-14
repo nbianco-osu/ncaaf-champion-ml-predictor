@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+import argparse
+from datetime import date, datetime, timezone
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
@@ -10,6 +12,10 @@ APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
 PUBLIC_DATA_PATH = APP_DIR / "public" / "data" / "app-data.json"
 CORE_WEEK_EVENTS_URL = "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/{year}/types/2/weeks/{week}/events?limit=300"
+REGULAR_SEASON_WEEKS = range(1, 17)
+SEASON_WEEK_ONE_START = {
+    2026: date(2026, 8, 31),
+}
 
 
 def https_ref(value: str) -> str:
@@ -20,6 +26,11 @@ def fetch_json(url: str) -> dict:
     request = Request(https_ref(url), headers={"Accept": "application/json", "User-Agent": "Mozilla/5.0"})
     with urlopen(request, timeout=30) as response:
         return json.loads(response.read().decode("utf-8"))
+
+
+def current_college_football_season(today: date | None = None) -> int:
+    today = today or date.today()
+    return today.year if today.month >= 8 else today.year - 1
 
 
 def get_nested(record: dict, *keys: str):
@@ -95,8 +106,41 @@ def update_scores(year: int, week: int) -> dict:
     return snapshot
 
 
+def try_update_scores(year: int, week: int) -> dict | None:
+    try:
+        snapshot = update_scores(year, week)
+    except (HTTPError, URLError, TimeoutError, ConnectionResetError):
+        return None
+    if snapshot["gameCount"] == 0:
+        return None
+    return snapshot
+
+
+def latest_completed_week(year: int) -> int:
+    today = date.today()
+    week_one_start = SEASON_WEEK_ONE_START.get(year, date(year, 9, 1))
+    guessed_week = max(1, min(max(REGULAR_SEASON_WEEKS), ((today - week_one_start).days // 7) + 1))
+    latest_snapshot = None
+    for week in range(guessed_week, 0, -1):
+        snapshot = try_update_scores(year, week)
+        if snapshot is None:
+            continue
+        if snapshot["completedGameCount"] > 0:
+            latest_snapshot = snapshot
+            break
+    if latest_snapshot is None:
+        raise RuntimeError(f"No completed regular-season games found for {year}.")
+    return int(latest_snapshot["week"])
+
+
 def main() -> None:
-    snapshot = update_scores(year=2026, week=1)
+    parser = argparse.ArgumentParser(description="Update stored college football score snapshots.")
+    parser.add_argument("--year", type=int, default=current_college_football_season())
+    parser.add_argument("--week", type=int, default=None)
+    args = parser.parse_args()
+
+    week = args.week if args.week is not None else latest_completed_week(args.year)
+    snapshot = update_scores(year=args.year, week=week)
     print(f"Updated {snapshot['year']} week {snapshot['week']}: {snapshot['gameCount']} games, {snapshot['completedGameCount']} completed")
 
 
