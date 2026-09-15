@@ -83,12 +83,11 @@ def normalize_event(event_ref: dict) -> dict:
     }
 
 
-def update_scores(year: int, week: int) -> dict:
-    payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+def fetch_score_snapshot(year: int, week: int) -> dict:
     week_url = CORE_WEEK_EVENTS_URL.format(year=year, week=week)
     events = fetch_json(week_url)
     games = [normalize_event(item) for item in events.get("items", [])]
-    snapshot = {
+    return {
         "year": year,
         "seasonType": 2,
         "week": week,
@@ -98,6 +97,11 @@ def update_scores(year: int, week: int) -> dict:
         "completedGameCount": sum(1 for game in games if game.get("completed")),
         "games": games,
     }
+
+
+def update_scores(year: int, week: int) -> dict:
+    payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    snapshot = fetch_score_snapshot(year, week)
     payload.setdefault("scoreSnapshots", {}).setdefault(str(year), {})[str(week)] = snapshot
     rendered = json.dumps(payload, indent=2)
     DATA_PATH.write_text(rendered, encoding="utf-8")
@@ -108,7 +112,7 @@ def update_scores(year: int, week: int) -> dict:
 
 def try_update_scores(year: int, week: int) -> dict | None:
     try:
-        snapshot = update_scores(year, week)
+        snapshot = fetch_score_snapshot(year, week)
     except (HTTPError, URLError, TimeoutError, ConnectionResetError):
         return None
     if snapshot["gameCount"] == 0:
