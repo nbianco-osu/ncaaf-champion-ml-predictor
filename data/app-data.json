@@ -3147,484 +3147,484 @@
       "year": 2026,
       "predictedChampion": "Texas",
       "actualChampion": "TBD",
-      "topProbability": 0.2739543751073462,
+      "topProbability": 0.27966031874923386,
       "actualChampionPredictedRank": null,
       "isCurrentSeason": true,
-      "latestWeek": 3,
+      "latestWeek": 4,
       "records": [
         {
           "Team": "Texas",
-          "RECORD": "2-0",
+          "RECORD": "3-0",
           "AP POLL": 1,
-          "SOS": 9,
+          "SOS": 21,
           "SOR": 1,
-          "Game Control": 47,
-          "RAT": "30.1",
+          "Game Control": 31,
+          "RAT": "28.1",
           "FPI": 2,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
           "SOR Score": 100,
-          "SOS Score": 94.1176470588,
-          "FPI Score": 96.9696969697,
-          "Game Control Score": 49.4505494505,
-          "championProbability": 0.2739543751,
+          "SOS Score": 85.1851851852,
+          "FPI Score": 96.875,
+          "Game Control Score": 62.5,
+          "championProbability": 0.2796603187,
           "predictedRank": 1
         },
         {
-          "Team": "Alabama",
-          "RECORD": "2-0",
-          "AP POLL": 10,
-          "SOS": 61,
-          "SOR": 6,
-          "Game Control": 14,
-          "RAT": "23.2",
-          "FPI": 7,
+          "Team": "Ole Miss",
+          "RECORD": "3-0",
+          "AP POLL": 4,
+          "SOS": 19,
+          "SOR": 2,
+          "Game Control": 12,
+          "RAT": "17.7",
+          "FPI": 13,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 93.2432432432,
-          "SOS Score": 55.8823529412,
-          "FPI Score": 81.8181818182,
-          "Game Control Score": 85.7142857143,
-          "championProbability": 0.1790585373,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 98.5507246377,
+          "SOS Score": 86.6666666667,
+          "FPI Score": 62.5,
+          "Game Control Score": 86.25,
+          "championProbability": 0.159524294,
           "predictedRank": 2
         },
         {
-          "Team": "Tennessee",
-          "RECORD": "2-0",
-          "AP POLL": 15,
-          "SOS": 73,
-          "SOR": 11,
-          "Game Control": 6,
-          "RAT": "17.9",
-          "FPI": 10,
+          "Team": "Alabama",
+          "RECORD": "3-0",
+          "AP POLL": 8,
+          "SOS": 51,
+          "SOR": 4,
+          "Game Control": 23,
+          "RAT": "22.3",
+          "FPI": 7,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 86.4864864865,
-          "SOS Score": 47.0588235294,
-          "FPI Score": 72.7272727273,
-          "Game Control Score": 94.5054945055,
-          "championProbability": 0.1054909672,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 95.652173913,
+          "SOS Score": 62.962962963,
+          "FPI Score": 81.25,
+          "Game Control Score": 72.5,
+          "championProbability": 0.1165506709,
           "predictedRank": 3
         },
         {
-          "Team": "LSU",
-          "RECORD": "2-0",
-          "AP POLL": 7,
-          "SOS": 75,
-          "SOR": 12,
-          "Game Control": 13,
-          "RAT": "22.6",
-          "FPI": 9,
+          "Team": "Miami",
+          "RECORD": "3-0",
+          "AP POLL": 6,
+          "SOS": 92,
+          "SOR": 11,
+          "Game Control": 2,
+          "RAT": "23.9",
+          "FPI": 6,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 85.1351351351,
-          "SOS Score": 45.5882352941,
-          "FPI Score": 75.7575757576,
-          "Game Control Score": 86.8131868132,
-          "championProbability": 0.0845117481,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 85.5072463768,
+          "SOS Score": 32.5925925926,
+          "FPI Score": 84.375,
+          "Game Control Score": 98.75,
+          "championProbability": 0.1086547937,
           "predictedRank": 4
         },
         {
-          "Team": "Notre Dame",
-          "RECORD": "2-0",
-          "AP POLL": 3,
-          "SOS": 93,
-          "SOR": 22,
-          "Game Control": 18,
-          "RAT": "27.9",
-          "FPI": 3,
+          "Team": "Florida",
+          "RECORD": "3-0",
+          "AP POLL": 21,
+          "SOS": 61,
+          "SOR": 5,
+          "Game Control": 6,
+          "RAT": "16.4",
+          "FPI": 16,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 71.6216216216,
-          "SOS Score": 32.3529411765,
-          "FPI Score": 93.9393939394,
-          "Game Control Score": 81.3186813187,
-          "championProbability": 0.0591562839,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 94.2028985507,
+          "SOS Score": 55.5555555556,
+          "FPI Score": 53.125,
+          "Game Control Score": 93.75,
+          "championProbability": 0.0656510788,
           "predictedRank": 5
         },
         {
-          "Team": "Miami",
-          "RECORD": "2-0",
-          "AP POLL": 5,
-          "SOS": 104,
-          "SOR": 28,
-          "Game Control": 3,
-          "RAT": "25.7",
-          "FPI": 5,
+          "Team": "Notre Dame",
+          "RECORD": "3-0",
+          "AP POLL": 3,
+          "SOS": 93,
+          "SOR": 13,
+          "Game Control": 17,
+          "RAT": "26.8",
+          "FPI": 4,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 63.5135135135,
-          "SOS Score": 24.2647058824,
-          "FPI Score": 87.8787878788,
-          "Game Control Score": 97.8021978022,
-          "championProbability": 0.0476005713,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 82.6086956522,
+          "SOS Score": 31.8518518519,
+          "FPI Score": 90.625,
+          "Game Control Score": 80,
+          "championProbability": 0.0651232113,
           "predictedRank": 6
         },
         {
-          "Team": "SMU",
-          "RECORD": "2-0",
-          "AP POLL": 16,
-          "SOS": 54,
-          "SOR": 4,
-          "Game Control": 9,
-          "RAT": "13.8",
-          "FPI": 24,
+          "Team": "Mississippi St",
+          "RECORD": "3-0",
+          "AP POLL": 24,
+          "SOS": 41,
+          "SOR": 3,
+          "Game Control": 5,
+          "RAT": "14.1",
+          "FPI": 22,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 95.9459459459,
-          "SOS Score": 61.0294117647,
-          "FPI Score": 30.303030303,
-          "Game Control Score": 91.2087912088,
-          "championProbability": 0.0388188356,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 97.1014492754,
+          "SOS Score": 70.3703703704,
+          "FPI Score": 34.375,
+          "Game Control Score": 95,
+          "championProbability": 0.0510241071,
           "predictedRank": 7
         },
         {
-          "Team": "Ole Miss",
-          "RECORD": "2-0",
-          "AP POLL": 8,
-          "SOS": 55,
-          "SOR": 5,
-          "Game Control": 32,
-          "RAT": "15.5",
-          "FPI": 17,
+          "Team": "Georgia",
+          "RECORD": "3-0",
+          "AP POLL": 2,
+          "SOS": 120,
+          "SOR": 25,
+          "Game Control": 3,
+          "RAT": "27.1",
+          "FPI": 3,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 94.5945945946,
-          "SOS Score": 60.2941176471,
-          "FPI Score": 51.5151515152,
-          "Game Control Score": 65.9340659341,
-          "championProbability": 0.0354118608,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 65.2173913043,
+          "SOS Score": 11.8518518519,
+          "FPI Score": 93.75,
+          "Game Control Score": 97.5,
+          "championProbability": 0.0400932732,
           "predictedRank": 8
         },
         {
-          "Team": "Ohio State",
-          "RECORD": "1-1",
-          "AP POLL": 6,
-          "SOS": 3,
-          "SOR": 66,
-          "Game Control": 1,
-          "RAT": "30.4",
-          "FPI": 1,
+          "Team": "Tennessee",
+          "RECORD": "3-0",
+          "AP POLL": 14,
+          "SOS": 104,
+          "SOR": 18,
+          "Game Control": 10,
+          "RAT": "18.5",
+          "FPI": 10,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 12.1621621622,
-          "SOS Score": 98.5294117647,
-          "FPI Score": 100,
-          "Game Control Score": 100,
-          "championProbability": 0.0313134046,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 75.3623188406,
+          "SOS Score": 23.7037037037,
+          "FPI Score": 71.875,
+          "Game Control Score": 88.75,
+          "championProbability": 0.0264612091,
           "predictedRank": 9
         },
         {
-          "Team": "USC",
-          "RECORD": "3-0",
-          "AP POLL": 12,
-          "SOS": 101,
-          "SOR": 19,
-          "Game Control": 11,
-          "RAT": "17.3",
-          "FPI": 12,
+          "Team": "LSU",
+          "RECORD": "2-1",
+          "AP POLL": 10,
+          "SOS": 27,
+          "SOR": 32,
+          "Game Control": 26,
+          "RAT": "20.3",
+          "FPI": 8,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 75.6756756757,
-          "SOS Score": 26.4705882353,
-          "FPI Score": 66.6666666667,
-          "Game Control Score": 89.010989011,
-          "championProbability": 0.0294335362,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 55.0724637681,
+          "SOS Score": 80.7407407407,
+          "FPI Score": 78.125,
+          "Game Control Score": 68.75,
+          "championProbability": 0.0203666301,
           "predictedRank": 10
         },
         {
-          "Team": "Indiana",
-          "RECORD": "2-0",
-          "AP POLL": 4,
-          "SOS": 107,
-          "SOR": 30,
-          "Game Control": 10,
-          "RAT": "25.3",
-          "FPI": 6,
+          "Team": "Ohio State",
+          "RECORD": "2-1",
+          "AP POLL": 7,
+          "SOS": 15,
+          "SOR": 69,
+          "Game Control": 1,
+          "RAT": "28.1",
+          "FPI": 1,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 60.8108108108,
-          "SOS Score": 22.0588235294,
-          "FPI Score": 84.8484848485,
-          "Game Control Score": 90.1098901099,
-          "championProbability": 0.0282151935,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 1.4492753623,
+          "SOS Score": 89.6296296296,
+          "FPI Score": 100,
+          "Game Control Score": 100,
+          "championProbability": 0.0130081034,
           "predictedRank": 11
         },
         {
-          "Team": "Texas A&M",
-          "RECORD": "2-0",
-          "AP POLL": 9,
-          "SOS": 87,
-          "SOR": 17,
-          "Game Control": 39,
-          "RAT": "23.1",
-          "FPI": 8,
+          "Team": "USC",
+          "RECORD": "4-0",
+          "AP POLL": 12,
+          "SOS": 108,
+          "SOR": 15,
+          "Game Control": 11,
+          "RAT": "15.5",
+          "FPI": 18,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 78.3783783784,
-          "SOS Score": 36.7647058824,
-          "FPI Score": 78.7878787879,
-          "Game Control Score": 58.2417582418,
-          "championProbability": 0.023682206,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 79.7101449275,
+          "SOS Score": 20.7407407407,
+          "FPI Score": 46.875,
+          "Game Control Score": 87.5,
+          "championProbability": 0.0115206298,
           "predictedRank": 12
         },
         {
-          "Team": "Michigan",
-          "RECORD": "2-0",
-          "AP POLL": 19,
-          "SOS": 34,
-          "SOR": 2,
-          "Game Control": 51,
-          "RAT": "14.4",
-          "FPI": 22,
+          "Team": "Texas Tech",
+          "RECORD": "3-0",
+          "AP POLL": 11,
+          "SOS": 76,
+          "SOR": 10,
+          "Game Control": 43,
+          "RAT": "15.8",
+          "FPI": 17,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 98.6486486486,
-          "SOS Score": 75.7352941176,
-          "FPI Score": 36.3636363636,
-          "Game Control Score": 45.0549450549,
-          "championProbability": 0.0165316621,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 86.9565217391,
+          "SOS Score": 44.4444444444,
+          "FPI Score": 50,
+          "Game Control Score": 47.5,
+          "championProbability": 0.0077817212,
           "predictedRank": 13
         },
         {
           "Team": "Penn State",
-          "RECORD": "2-0",
-          "AP POLL": 14,
-          "SOS": 105,
-          "SOR": 29,
-          "Game Control": 15,
-          "RAT": "16.4",
-          "FPI": 14,
+          "RECORD": "3-0",
+          "AP POLL": 13,
+          "SOS": 125,
+          "SOR": 28,
+          "Game Control": 14,
+          "RAT": "18.2",
+          "FPI": 12,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 62.1621621622,
-          "SOS Score": 23.5294117647,
-          "FPI Score": 60.6060606061,
-          "Game Control Score": 84.6153846154,
-          "championProbability": 0.0104614615,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 60.8695652174,
+          "SOS Score": 8.1481481481,
+          "FPI Score": 65.625,
+          "Game Control Score": 83.75,
+          "championProbability": 0.0069238455,
           "predictedRank": 14
         },
         {
-          "Team": "Missouri",
-          "RECORD": "2-0",
-          "AP POLL": 20,
-          "SOS": 79,
-          "SOR": 13,
-          "Game Control": 17,
-          "RAT": "12.3",
-          "FPI": 26,
+          "Team": "BYU",
+          "RECORD": "3-0",
+          "AP POLL": 9,
+          "SOS": 102,
+          "SOR": 17,
+          "Game Control": 22,
+          "RAT": "15.2",
+          "FPI": 19,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 83.7837837838,
-          "SOS Score": 42.6470588235,
-          "FPI Score": 24.2424242424,
-          "Game Control Score": 82.4175824176,
-          "championProbability": 0.009552813,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 76.8115942029,
+          "SOS Score": 25.1851851852,
+          "FPI Score": 43.75,
+          "Game Control Score": 73.75,
+          "championProbability": 0.0062904629,
           "predictedRank": 15
         },
         {
-          "Team": "Georgia",
-          "RECORD": "2-0",
-          "AP POLL": 2,
-          "SOS": 136,
-          "SOR": 58,
-          "Game Control": 4,
-          "RAT": "26.6",
-          "FPI": 4,
+          "Team": "Louisville",
+          "RECORD": "2-1",
+          "AP POLL": 16,
+          "SOS": 16,
+          "SOR": 23,
+          "Game Control": 34,
+          "RAT": "13.9",
+          "FPI": 23,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 22.972972973,
-          "SOS Score": 0.7352941176,
-          "FPI Score": 90.9090909091,
-          "Game Control Score": 96.7032967033,
-          "championProbability": 0.005279111,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 68.115942029,
+          "SOS Score": 88.8888888889,
+          "FPI Score": 31.25,
+          "Game Control Score": 58.75,
+          "championProbability": 0.0054048727,
           "predictedRank": 16
         },
         {
-          "Team": "Texas Tech",
-          "RECORD": "2-0",
-          "AP POLL": 13,
-          "SOS": 96,
-          "SOR": 23,
-          "Game Control": 42,
-          "RAT": "16.1",
-          "FPI": 16,
+          "Team": "SMU",
+          "RECORD": "2-1",
+          "AP POLL": 22,
+          "SOS": 26,
+          "SOR": 26,
+          "Game Control": 18,
+          "RAT": "12.2",
+          "FPI": 26,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 70.2702702703,
-          "SOS Score": 30.1470588235,
-          "FPI Score": 54.5454545455,
-          "Game Control Score": 54.9450549451,
-          "championProbability": 0.0052755449,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 63.768115942,
+          "SOS Score": 81.4814814815,
+          "FPI Score": 21.875,
+          "Game Control Score": 78.75,
+          "championProbability": 0.0051651174,
           "predictedRank": 17
         },
         {
-          "Team": "BYU",
-          "RECORD": "2-0",
-          "AP POLL": 11,
-          "SOS": 82,
-          "SOR": 15,
-          "Game Control": 55,
-          "RAT": "15.4",
-          "FPI": 18,
+          "Team": "Indiana",
+          "RECORD": "3-0",
+          "AP POLL": 5,
+          "SOS": 135,
+          "SOR": 43,
+          "Game Control": 25,
+          "RAT": "24.6",
+          "FPI": 5,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 81.0810810811,
-          "SOS Score": 40.4411764706,
-          "FPI Score": 48.4848484848,
-          "Game Control Score": 40.6593406593,
-          "championProbability": 0.0052694366,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 39.1304347826,
+          "SOS Score": 0.7407407407,
+          "FPI Score": 87.5,
+          "Game Control Score": 70,
+          "championProbability": 0.0032800515,
           "predictedRank": 18
         },
         {
-          "Team": "Virginia",
-          "RECORD": "2-0",
-          "AP POLL": 25,
-          "SOS": 98,
-          "SOR": 24,
-          "Game Control": 12,
-          "RAT": "12.6",
-          "FPI": 25,
+          "Team": "Michigan",
+          "RECORD": "3-0",
+          "AP POLL": 18,
+          "SOS": 62,
+          "SOR": 6,
+          "Game Control": 71,
+          "RAT": "14.9",
+          "FPI": 20,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 68.9189189189,
-          "SOS Score": 28.6764705882,
-          "FPI Score": 27.2727272727,
-          "Game Control Score": 87.9120879121,
-          "championProbability": 0.0050084825,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 92.7536231884,
+          "SOS Score": 54.8148148148,
+          "FPI Score": 40.625,
+          "Game Control Score": 12.5,
+          "championProbability": 0.0028240153,
           "predictedRank": 19
         },
         {
           "Team": "Utah",
-          "RECORD": "2-0",
-          "AP POLL": 17,
-          "SOS": 118,
+          "RECORD": "3-0",
+          "AP POLL": 15,
+          "SOS": 130,
           "SOR": 36,
-          "Game Control": 16,
-          "RAT": "15.1",
-          "FPI": 19,
+          "Game Control": 13,
+          "RAT": "16.5",
+          "FPI": 15,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 52.7027027027,
-          "SOS Score": 13.9705882353,
-          "FPI Score": 45.4545454545,
-          "Game Control Score": 83.5164835165,
-          "championProbability": 0.0031255697,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 49.2753623188,
+          "SOS Score": 4.4444444444,
+          "FPI Score": 56.25,
+          "Game Control Score": 85,
+          "championProbability": 0.0028017148,
           "predictedRank": 20
         },
         {
-          "Team": "Oklahoma",
-          "RECORD": "1-1",
-          "AP POLL": 24,
-          "SOS": 31,
-          "SOR": 70,
-          "Game Control": 37,
-          "RAT": "17.8",
-          "FPI": 11,
+          "Team": "Oregon",
+          "RECORD": "2-1",
+          "AP POLL": 20,
+          "SOS": 67,
+          "SOR": 51,
+          "Game Control": 65,
+          "RAT": "19.2",
+          "FPI": 9,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 6.7567567568,
-          "SOS Score": 77.9411764706,
-          "FPI Score": 69.696969697,
-          "Game Control Score": 60.4395604396,
-          "championProbability": 0.0015180708,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 27.5362318841,
+          "SOS Score": 51.1111111111,
+          "FPI Score": 75,
+          "Game Control Score": 20,
+          "championProbability": 0.0006286601,
           "predictedRank": 21
         },
         {
-          "Team": "Oregon",
-          "RECORD": "1-1",
-          "AP POLL": 21,
-          "SOS": 44,
-          "SOR": 43,
-          "Game Control": 91,
-          "RAT": "17.1",
-          "FPI": 13,
+          "Team": "Iowa",
+          "RECORD": "3-0",
+          "AP POLL": 17,
+          "SOS": 119,
+          "SOR": 24,
+          "Game Control": 46,
+          "RAT": "12.1",
+          "FPI": 28,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 43.2432432432,
-          "SOS Score": 68.3823529412,
-          "FPI Score": 63.6363636364,
-          "Game Control Score": 1.0989010989,
-          "championProbability": 0.0007928662,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 66.6666666667,
+          "SOS Score": 12.5925925926,
+          "FPI Score": 15.625,
+          "Game Control Score": 43.75,
+          "championProbability": 0.00042066,
           "predictedRank": 22
         },
         {
-          "Team": "Iowa",
-          "RECORD": "2-0",
-          "AP POLL": 18,
-          "SOS": 102,
-          "SOR": 26,
-          "Game Control": 75,
-          "RAT": "9.9",
+          "Team": "Missouri",
+          "RECORD": "3-0",
+          "AP POLL": 19,
+          "SOS": 112,
+          "SOR": 20,
+          "Game Control": 44,
+          "RAT": "10.5",
           "FPI": 32,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 66.2162162162,
-          "SOS Score": 25.7352941176,
-          "FPI Score": 6.0606060606,
-          "Game Control Score": 18.6813186813,
-          "championProbability": 0.0002072985,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 72.4637681159,
+          "SOS Score": 17.7777777778,
+          "FPI Score": 3.125,
+          "Game Control Score": 46.25,
+          "championProbability": 0.0004094236,
           "predictedRank": 23
         },
         {
-          "Team": "Louisville",
-          "RECORD": "1-1",
-          "AP POLL": 23,
-          "SOS": 30,
-          "SOR": 74,
-          "Game Control": 38,
-          "RAT": "11.9",
-          "FPI": 28,
+          "Team": "Houston",
+          "RECORD": "2-1",
+          "AP POLL": 25,
+          "SOS": 42,
+          "SOR": 56,
+          "Game Control": 20,
+          "RAT": "10.8",
+          "FPI": 31,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 1.3513513514,
-          "SOS Score": 78.6764705882,
-          "FPI Score": 18.1818181818,
-          "Game Control Score": 59.3406593407,
-          "championProbability": 0.0001699457,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 20.2898550725,
+          "SOS Score": 69.6296296296,
+          "FPI Score": 6.25,
+          "Game Control Score": 76.25,
+          "championProbability": 0.0002971095,
           "predictedRank": 24
         },
         {
-          "Team": "Houston",
-          "RECORD": "2-0",
-          "AP POLL": 22,
-          "SOS": 125,
-          "SOR": 41,
-          "Game Control": 44,
-          "RAT": "9.2",
-          "FPI": 33,
+          "Team": "Texas A&M",
+          "RECORD": "2-1",
+          "AP POLL": 23,
+          "SOS": 90,
+          "SOR": 57,
+          "Game Control": 80,
+          "RAT": "18.2",
+          "FPI": 11,
           "Year": 2026,
-          "Week": 3,
-          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/3/year/2026",
-          "SOR Score": 45.9459459459,
-          "SOS Score": 8.8235294118,
-          "FPI Score": 3.0303030303,
-          "Game Control Score": 52.7472527473,
-          "championProbability": 0.0001602177,
+          "Week": 4,
+          "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+          "SOR Score": 18.8405797101,
+          "SOS Score": 34.0740740741,
+          "FPI Score": 68.75,
+          "Game Control Score": 1.25,
+          "championProbability": 0.0001340255,
           "predictedRank": 25
         }
       ]
@@ -10059,7 +10059,7 @@
             "SOS Score": 5.6074766355,
             "FPI Score": 4.0540540541,
             "Game Control Score": 32.5581395349,
-            "championProbability": 6.1781e-06,
+            "championProbability": 0.0000061781,
             "predictedRank": 24
           },
           {
@@ -10079,7 +10079,7 @@
             "SOS Score": 0.9345794393,
             "FPI Score": 1.3513513514,
             "Game Control Score": 1.1627906977,
-            "championProbability": 6.034e-07,
+            "championProbability": 6.034e-7,
             "predictedRank": 25
           }
         ],
@@ -10535,7 +10535,7 @@
             "SOS Score": 80.1801801802,
             "FPI Score": 52.2727272727,
             "Game Control Score": 34.0909090909,
-            "championProbability": 8.23912e-05,
+            "championProbability": 0.0000823912,
             "predictedRank": 21
           },
           {
@@ -10555,7 +10555,7 @@
             "SOS Score": 2.7027027027,
             "FPI Score": 2.2727272727,
             "Game Control Score": 89.7727272727,
-            "championProbability": 6.82784e-05,
+            "championProbability": 0.0000682784,
             "predictedRank": 22
           },
           {
@@ -10575,7 +10575,7 @@
             "SOS Score": 1.8018018018,
             "FPI Score": 13.6363636364,
             "Game Control Score": 69.3181818182,
-            "championProbability": 5.0426e-05,
+            "championProbability": 0.000050426,
             "predictedRank": 23
           },
           {
@@ -10595,7 +10595,7 @@
             "SOS Score": 84.6846846847,
             "FPI Score": 59.0909090909,
             "Game Control Score": 1.1363636364,
-            "championProbability": 4.02682e-05,
+            "championProbability": 0.0000402682,
             "predictedRank": 24
           }
         ],
@@ -11111,7 +11111,7 @@
             "SOS Score": 66.1538461538,
             "FPI Score": 56,
             "Game Control Score": 1.1904761905,
-            "championProbability": 7.21924e-05,
+            "championProbability": 0.0000721924,
             "predictedRank": 24
           },
           {
@@ -11131,7 +11131,7 @@
             "SOS Score": 5.3846153846,
             "FPI Score": 22,
             "Game Control Score": 44.0476190476,
-            "championProbability": 4.02378e-05,
+            "championProbability": 0.0000402378,
             "predictedRank": 25
           }
         ],
@@ -11667,7 +11667,7 @@
             "SOS Score": 39.6396396396,
             "FPI Score": 68.75,
             "Game Control Score": 1.5151515152,
-            "championProbability": 6.01277e-05,
+            "championProbability": 0.0000601277,
             "predictedRank": 25
           }
         ],
@@ -12183,7 +12183,7 @@
             "SOS Score": 38.8888888889,
             "FPI Score": 64.1509433962,
             "Game Control Score": 1.3333333333,
-            "championProbability": 4.80185e-05,
+            "championProbability": 0.0000480185,
             "predictedRank": 24
           },
           {
@@ -12203,7 +12203,7 @@
             "SOS Score": 53.9682539683,
             "FPI Score": 66.0377358491,
             "Game Control Score": 18.6666666667,
-            "championProbability": 4.80148e-05,
+            "championProbability": 0.0000480148,
             "predictedRank": 25
           }
         ],
@@ -12739,7 +12739,7 @@
             "SOS Score": 3.125,
             "FPI Score": 1.5151515152,
             "Game Control Score": 47.619047619,
-            "championProbability": 3.02326e-05,
+            "championProbability": 0.0000302326,
             "predictedRank": 25
           }
         ],
@@ -13235,7 +13235,7 @@
             "SOS Score": 26.3565891473,
             "FPI Score": 24.1935483871,
             "Game Control Score": 61.1111111111,
-            "championProbability": 8.83586e-05,
+            "championProbability": 0.0000883586,
             "predictedRank": 23
           },
           {
@@ -13255,7 +13255,7 @@
             "SOS Score": 83.7209302326,
             "FPI Score": 70.9677419355,
             "Game Control Score": 1.8518518519,
-            "championProbability": 7.97174e-05,
+            "championProbability": 0.0000797174,
             "predictedRank": 24
           },
           {
@@ -13275,7 +13275,7 @@
             "SOS Score": 3.8759689922,
             "FPI Score": 1.6129032258,
             "Game Control Score": 46.2962962963,
-            "championProbability": 4.33079e-05,
+            "championProbability": 0.0000433079,
             "predictedRank": 25
           }
         ],
@@ -13771,7 +13771,7 @@
             "SOS Score": 62.3076923077,
             "FPI Score": 42.8571428571,
             "Game Control Score": 34.0425531915,
-            "championProbability": 5.14398e-05,
+            "championProbability": 0.0000514398,
             "predictedRank": 23
           },
           {
@@ -13791,7 +13791,7 @@
             "SOS Score": 6.9230769231,
             "FPI Score": 7.9365079365,
             "Game Control Score": 8.5106382979,
-            "championProbability": 2.60123e-05,
+            "championProbability": 0.0000260123,
             "predictedRank": 24
           },
           {
@@ -13811,7 +13811,7 @@
             "SOS Score": 3.8461538462,
             "FPI Score": 1.5873015873,
             "Game Control Score": 2.1276595745,
-            "championProbability": 1.37696e-05,
+            "championProbability": 0.0000137696,
             "predictedRank": 25
           }
         ],
@@ -14307,7 +14307,7 @@
             "SOS Score": 4.0322580645,
             "FPI Score": 24.5901639344,
             "Game Control Score": 18.1818181818,
-            "championProbability": 8.5275e-05,
+            "championProbability": 0.000085275,
             "predictedRank": 23
           },
           {
@@ -14327,7 +14327,7 @@
             "SOS Score": 1.6129032258,
             "FPI Score": 1.6393442623,
             "Game Control Score": 38.6363636364,
-            "championProbability": 5.87041e-05,
+            "championProbability": 0.0000587041,
             "predictedRank": 24
           },
           {
@@ -14347,7 +14347,7 @@
             "SOS Score": 47.5806451613,
             "FPI Score": 16.393442623,
             "Game Control Score": 27.2727272727,
-            "championProbability": 2.86397e-05,
+            "championProbability": 0.0000286397,
             "predictedRank": 25
           }
         ],
@@ -14863,7 +14863,7 @@
             "SOS Score": 35.593220339,
             "FPI Score": 20.8955223881,
             "Game Control Score": 50.8771929825,
-            "championProbability": 2.325e-05,
+            "championProbability": 0.00002325,
             "predictedRank": 24
           },
           {
@@ -14883,7 +14883,7 @@
             "SOS Score": 0.8474576271,
             "FPI Score": 1.4925373134,
             "Game Control Score": 1.7543859649,
-            "championProbability": 2.8617e-06,
+            "championProbability": 0.0000028617,
             "predictedRank": 25
           }
         ],
@@ -15419,7 +15419,7 @@
             "SOS Score": 4.8387096774,
             "FPI Score": 1.4925373134,
             "Game Control Score": 2.0408163265,
-            "championProbability": 8.1807e-06,
+            "championProbability": 0.0000081807,
             "predictedRank": 25
           }
         ],
@@ -15915,7 +15915,7 @@
             "SOS Score": 40.625,
             "FPI Score": 77.1428571429,
             "Game Control Score": 29.7872340426,
-            "championProbability": 8.78133e-05,
+            "championProbability": 0.0000878133,
             "predictedRank": 23
           },
           {
@@ -15935,7 +15935,7 @@
             "SOS Score": 3.125,
             "FPI Score": 42.8571428571,
             "Game Control Score": 36.170212766,
-            "championProbability": 7.36606e-05,
+            "championProbability": 0.0000736606,
             "predictedRank": 24
           },
           {
@@ -15955,7 +15955,7 @@
             "SOS Score": 8.59375,
             "FPI Score": 1.4285714286,
             "Game Control Score": 2.1276595745,
-            "championProbability": 9.9628e-06,
+            "championProbability": 0.0000099628,
             "predictedRank": 25
           }
         ],
@@ -16471,7 +16471,7 @@
             "SOS Score": 0.7751937984,
             "FPI Score": 44.9275362319,
             "Game Control Score": 46.2962962963,
-            "championProbability": 7.67443e-05,
+            "championProbability": 0.0000767443,
             "predictedRank": 24
           },
           {
@@ -16491,7 +16491,7 @@
             "SOS Score": 8.5271317829,
             "FPI Score": 1.4492753623,
             "Game Control Score": 1.8518518519,
-            "championProbability": 7.574e-06,
+            "championProbability": 0.000007574,
             "predictedRank": 25
           }
         ],
@@ -16987,7 +16987,7 @@
             "SOS Score": 0.7751937984,
             "FPI Score": 37.7049180328,
             "Game Control Score": 40.8163265306,
-            "championProbability": 3.81132e-05,
+            "championProbability": 0.0000381132,
             "predictedRank": 23
           },
           {
@@ -17007,7 +17007,7 @@
             "SOS Score": 12.4031007752,
             "FPI Score": 16.393442623,
             "Game Control Score": 18.3673469388,
-            "championProbability": 3.11207e-05,
+            "championProbability": 0.0000311207,
             "predictedRank": 24
           },
           {
@@ -17027,7 +17027,7 @@
             "SOS Score": 14.7286821705,
             "FPI Score": 1.6393442623,
             "Game Control Score": 2.0408163265,
-            "championProbability": 1.2992e-05,
+            "championProbability": 0.000012992,
             "predictedRank": 25
           }
         ],
@@ -17543,7 +17543,7 @@
             "SOS Score": 13.6363636364,
             "FPI Score": 43.661971831,
             "Game Control Score": 47.619047619,
-            "championProbability": 3.1803e-05,
+            "championProbability": 0.000031803,
             "predictedRank": 24
           },
           {
@@ -17563,7 +17563,7 @@
             "SOS Score": 0.9090909091,
             "FPI Score": 1.4084507042,
             "Game Control Score": 1.5873015873,
-            "championProbability": 1.0096e-06,
+            "championProbability": 0.0000010096,
             "predictedRank": 25
           }
         ],
@@ -18081,7 +18081,7 @@
             "SOS Score": 1.0869565217,
             "FPI Score": 1.5873015873,
             "Game Control Score": 1.6393442623,
-            "championProbability": 8.4963e-06,
+            "championProbability": 0.0000084963,
             "predictedRank": 24
           },
           {
@@ -18101,7 +18101,7 @@
             "SOS Score": 10.8695652174,
             "FPI Score": 11.1111111111,
             "Game Control Score": 16.393442623,
-            "championProbability": 1.6724e-06,
+            "championProbability": 0.0000016724,
             "predictedRank": 25
           }
         ],
@@ -18637,7 +18637,7 @@
             "SOS Score": 29.9212598425,
             "FPI Score": 26.3157894737,
             "Game Control Score": 3.125,
-            "championProbability": 1.1715e-05,
+            "championProbability": 0.000011715,
             "predictedRank": 25
           }
         ],
@@ -19173,7 +19173,7 @@
             "SOS Score": 71.7557251908,
             "FPI Score": 2.2727272727,
             "Game Control Score": 1.5151515152,
-            "championProbability": 7.15459e-05,
+            "championProbability": 0.0000715459,
             "predictedRank": 25
           }
         ],
@@ -19649,7 +19649,7 @@
             "SOS Score": 61.0687022901,
             "FPI Score": 2.1739130435,
             "Game Control Score": 51.1111111111,
-            "championProbability": 9.22164e-05,
+            "championProbability": 0.0000922164,
             "predictedRank": 22
           },
           {
@@ -19669,7 +19669,7 @@
             "SOS Score": 53.4351145038,
             "FPI Score": 28.2608695652,
             "Game Control Score": 2.2222222222,
-            "championProbability": 4.86941e-05,
+            "championProbability": 0.0000486941,
             "predictedRank": 23
           },
           {
@@ -19689,7 +19689,7 @@
             "SOS Score": 54.1984732824,
             "FPI Score": 10.8695652174,
             "Game Control Score": 6.6666666667,
-            "championProbability": 4.77021e-05,
+            "championProbability": 0.0000477021,
             "predictedRank": 24
           },
           {
@@ -19709,7 +19709,7 @@
             "SOS Score": 35.1145038168,
             "FPI Score": 30.4347826087,
             "Game Control Score": 4.4444444444,
-            "championProbability": 3.03413e-05,
+            "championProbability": 0.0000303413,
             "predictedRank": 25
           }
         ],
@@ -20225,7 +20225,7 @@
             "SOS Score": 15.1260504202,
             "FPI Score": 64.1509433962,
             "Game Control Score": 31.3725490196,
-            "championProbability": 6.13983e-05,
+            "championProbability": 0.0000613983,
             "predictedRank": 24
           },
           {
@@ -20245,7 +20245,7 @@
             "SOS Score": 52.1008403361,
             "FPI Score": 13.2075471698,
             "Game Control Score": 19.6078431373,
-            "championProbability": 4.0243e-05,
+            "championProbability": 0.000040243,
             "predictedRank": 25
           }
         ],
@@ -20741,7 +20741,7 @@
             "SOS Score": 0.7936507937,
             "FPI Score": 1.8181818182,
             "Game Control Score": 39.6226415094,
-            "championProbability": 8.1093e-05,
+            "championProbability": 0.000081093,
             "predictedRank": 23
           },
           {
@@ -20761,7 +20761,7 @@
             "SOS Score": 10.3174603175,
             "FPI Score": 49.0909090909,
             "Game Control Score": 1.8867924528,
-            "championProbability": 1.92681e-05,
+            "championProbability": 0.0000192681,
             "predictedRank": 24
           },
           {
@@ -20781,7 +20781,7 @@
             "SOS Score": 63.4920634921,
             "FPI Score": 36.3636363636,
             "Game Control Score": 9.4339622642,
-            "championProbability": 1.75913e-05,
+            "championProbability": 0.0000175913,
             "predictedRank": 25
           }
         ],
@@ -21277,7 +21277,7 @@
             "SOS Score": 65.811965812,
             "FPI Score": 37.5,
             "Game Control Score": 6.8181818182,
-            "championProbability": 3.8064e-05,
+            "championProbability": 0.000038064,
             "predictedRank": 23
           },
           {
@@ -21297,7 +21297,7 @@
             "SOS Score": 18.8034188034,
             "FPI Score": 2.0833333333,
             "Game Control Score": 25,
-            "championProbability": 1.67999e-05,
+            "championProbability": 0.0000167999,
             "predictedRank": 24
           },
           {
@@ -21317,7 +21317,7 @@
             "SOS Score": 0.8547008547,
             "FPI Score": 45.8333333333,
             "Game Control Score": 2.2727272727,
-            "championProbability": 6.8601e-06,
+            "championProbability": 0.0000068601,
             "predictedRank": 25
           }
         ],
@@ -21773,7 +21773,7 @@
             "SOS Score": 19.6428571429,
             "FPI Score": 10.4166666667,
             "Game Control Score": 48.8372093023,
-            "championProbability": 6.62894e-05,
+            "championProbability": 0.0000662894,
             "predictedRank": 21
           },
           {
@@ -21793,7 +21793,7 @@
             "SOS Score": 23.2142857143,
             "FPI Score": 18.75,
             "Game Control Score": 23.2558139535,
-            "championProbability": 5.77097e-05,
+            "championProbability": 0.0000577097,
             "predictedRank": 22
           },
           {
@@ -21813,7 +21813,7 @@
             "SOS Score": 75.8928571429,
             "FPI Score": 2.0833333333,
             "Game Control Score": 20.9302325581,
-            "championProbability": 2.66914e-05,
+            "championProbability": 0.0000266914,
             "predictedRank": 23
           },
           {
@@ -21833,7 +21833,7 @@
             "SOS Score": 0.8928571429,
             "FPI Score": 35.4166666667,
             "Game Control Score": 30.2325581395,
-            "championProbability": 2.64524e-05,
+            "championProbability": 0.0000264524,
             "predictedRank": 24
           },
           {
@@ -21853,7 +21853,7 @@
             "SOS Score": 49.1071428571,
             "FPI Score": 33.3333333333,
             "Game Control Score": 6.976744186,
-            "championProbability": 1.34345e-05,
+            "championProbability": 0.0000134345,
             "predictedRank": 25
           }
         ],
@@ -22369,7 +22369,7 @@
             "SOS Score": 49.5145631068,
             "FPI Score": 13.6363636364,
             "Game Control Score": 29.5454545455,
-            "championProbability": 8.78746e-05,
+            "championProbability": 0.0000878746,
             "predictedRank": 24
           },
           {
@@ -22389,7 +22389,7 @@
             "SOS Score": 0.9708737864,
             "FPI Score": 38.6363636364,
             "Game Control Score": 2.2727272727,
-            "championProbability": 4.9056e-06,
+            "championProbability": 0.0000049056,
             "predictedRank": 25
           }
         ],
@@ -22845,7 +22845,7 @@
             "SOS Score": 14.4329896907,
             "FPI Score": 37.2093023256,
             "Game Control Score": 2.3255813953,
-            "championProbability": 7.95449e-05,
+            "championProbability": 0.0000795449,
             "predictedRank": 21
           },
           {
@@ -22865,7 +22865,7 @@
             "SOS Score": 2.0618556701,
             "FPI Score": 2.3255813953,
             "Game Control Score": 51.1627906977,
-            "championProbability": 7.11075e-05,
+            "championProbability": 0.0000711075,
             "predictedRank": 22
           },
           {
@@ -22885,7 +22885,7 @@
             "SOS Score": 12.3711340206,
             "FPI Score": 32.5581395349,
             "Game Control Score": 41.8604651163,
-            "championProbability": 2.36329e-05,
+            "championProbability": 0.0000236329,
             "predictedRank": 23
           },
           {
@@ -22905,7 +22905,7 @@
             "SOS Score": 74.2268041237,
             "FPI Score": 9.3023255814,
             "Game Control Score": 4.6511627907,
-            "championProbability": 1.68615e-05,
+            "championProbability": 0.0000168615,
             "predictedRank": 24
           },
           {
@@ -22925,7 +22925,7 @@
             "SOS Score": 1.0309278351,
             "FPI Score": 46.511627907,
             "Game Control Score": 11.6279069767,
-            "championProbability": 9.2176e-06,
+            "championProbability": 0.0000092176,
             "predictedRank": 25
           }
         ],
@@ -23401,7 +23401,7 @@
             "SOS Score": 43.4782608696,
             "FPI Score": 38.6363636364,
             "Game Control Score": 41.0256410256,
-            "championProbability": 4.95369e-05,
+            "championProbability": 0.0000495369,
             "predictedRank": 22
           },
           {
@@ -23421,7 +23421,7 @@
             "SOS Score": 1.0869565217,
             "FPI Score": 25,
             "Game Control Score": 15.3846153846,
-            "championProbability": 1.42853e-05,
+            "championProbability": 0.0000142853,
             "predictedRank": 23
           },
           {
@@ -23441,7 +23441,7 @@
             "SOS Score": 8.6956521739,
             "FPI Score": 2.2727272727,
             "Game Control Score": 17.9487179487,
-            "championProbability": 8.8557e-06,
+            "championProbability": 0.0000088557,
             "predictedRank": 24
           },
           {
@@ -23461,7 +23461,7 @@
             "SOS Score": 39.1304347826,
             "FPI Score": 9.0909090909,
             "Game Control Score": 23.0769230769,
-            "championProbability": 7.3738e-06,
+            "championProbability": 0.0000073738,
             "predictedRank": 25
           }
         ],
@@ -23917,7 +23917,7 @@
             "SOS Score": 38.1443298969,
             "FPI Score": 24.3243243243,
             "Game Control Score": 35,
-            "championProbability": 3.97867e-05,
+            "championProbability": 0.0000397867,
             "predictedRank": 21
           },
           {
@@ -23937,7 +23937,7 @@
             "SOS Score": 17.5257731959,
             "FPI Score": 2.7027027027,
             "Game Control Score": 7.5,
-            "championProbability": 3.49634e-05,
+            "championProbability": 0.0000349634,
             "predictedRank": 22
           },
           {
@@ -23957,7 +23957,7 @@
             "SOS Score": 53.6082474227,
             "FPI Score": 48.6486486486,
             "Game Control Score": 2.5,
-            "championProbability": 2.77214e-05,
+            "championProbability": 0.0000277214,
             "predictedRank": 23
           },
           {
@@ -23977,7 +23977,7 @@
             "SOS Score": 1.0309278351,
             "FPI Score": 13.5135135135,
             "Game Control Score": 25,
-            "championProbability": 1.09865e-05,
+            "championProbability": 0.0000109865,
             "predictedRank": 24
           },
           {
@@ -23997,7 +23997,7 @@
             "SOS Score": 7.2164948454,
             "FPI Score": 29.7297297297,
             "Game Control Score": 10,
-            "championProbability": 5.6456e-06,
+            "championProbability": 0.0000056456,
             "predictedRank": 25
           }
         ],
@@ -24473,7 +24473,7 @@
             "SOS Score": 84.6153846154,
             "FPI Score": 1.9607843137,
             "Game Control Score": 15.9090909091,
-            "championProbability": 4.5587e-05,
+            "championProbability": 0.000045587,
             "predictedRank": 22
           },
           {
@@ -24493,7 +24493,7 @@
             "SOS Score": 1.0989010989,
             "FPI Score": 47.0588235294,
             "Game Control Score": 27.2727272727,
-            "championProbability": 1.487e-05,
+            "championProbability": 0.00001487,
             "predictedRank": 23
           },
           {
@@ -24513,7 +24513,7 @@
             "SOS Score": 43.956043956,
             "FPI Score": 15.6862745098,
             "Game Control Score": 29.5454545455,
-            "championProbability": 1.47804e-05,
+            "championProbability": 0.0000147804,
             "predictedRank": 24
           },
           {
@@ -24533,7 +24533,7 @@
             "SOS Score": 15.3846153846,
             "FPI Score": 21.568627451,
             "Game Control Score": 2.2727272727,
-            "championProbability": 6.0455e-06,
+            "championProbability": 0.0000060455,
             "predictedRank": 25
           }
         ],
@@ -25029,7 +25029,7 @@
             "SOS Score": 44.2105263158,
             "FPI Score": 33.3333333333,
             "Game Control Score": 50.8196721311,
-            "championProbability": 3.54139e-05,
+            "championProbability": 0.0000354139,
             "predictedRank": 23
           },
           {
@@ -25049,7 +25049,7 @@
             "SOS Score": 17.8947368421,
             "FPI Score": 15.873015873,
             "Game Control Score": 24.5901639344,
-            "championProbability": 1.51502e-05,
+            "championProbability": 0.0000151502,
             "predictedRank": 24
           },
           {
@@ -25069,7 +25069,7 @@
             "SOS Score": 1.0526315789,
             "FPI Score": 1.5873015873,
             "Game Control Score": 1.6393442623,
-            "championProbability": 2.6484e-06,
+            "championProbability": 0.0000026484,
             "predictedRank": 25
           }
         ],
@@ -25527,7 +25527,7 @@
             "SOS Score": 43.8775510204,
             "FPI Score": 33.3333333333,
             "Game Control Score": 58.8235294118,
-            "championProbability": 6.70629e-05,
+            "championProbability": 0.0000670629,
             "predictedRank": 21
           },
           {
@@ -25547,7 +25547,7 @@
             "SOS Score": 74.4897959184,
             "FPI Score": 29.6296296296,
             "Game Control Score": 1.9607843137,
-            "championProbability": 5.85426e-05,
+            "championProbability": 0.0000585426,
             "predictedRank": 22
           },
           {
@@ -25567,7 +25567,7 @@
             "SOS Score": 18.3673469388,
             "FPI Score": 61.1111111111,
             "Game Control Score": 54.9019607843,
-            "championProbability": 5.54621e-05,
+            "championProbability": 0.0000554621,
             "predictedRank": 23
           },
           {
@@ -25587,7 +25587,7 @@
             "SOS Score": 81.6326530612,
             "FPI Score": 16.6666666667,
             "Game Control Score": 23.5294117647,
-            "championProbability": 5.14376e-05,
+            "championProbability": 0.0000514376,
             "predictedRank": 24
           },
           {
@@ -25607,7 +25607,7 @@
             "SOS Score": 1.0204081633,
             "FPI Score": 1.8518518519,
             "Game Control Score": 50.9803921569,
-            "championProbability": 3.45553e-05,
+            "championProbability": 0.0000345553,
             "predictedRank": 25
           }
         ],
@@ -26679,7 +26679,7 @@
             "SOS Score": 57.9365079365,
             "FPI Score": 64.0625,
             "Game Control Score": 5.4545454545,
-            "championProbability": 5.98297e-05,
+            "championProbability": 0.0000598297,
             "predictedRank": 25
           }
         ],
@@ -27155,7 +27155,7 @@
             "SOS Score": 34.6153846154,
             "FPI Score": 66.6666666667,
             "Game Control Score": 20.8333333333,
-            "championProbability": 7.02585e-05,
+            "championProbability": 0.0000702585,
             "predictedRank": 22
           },
           {
@@ -27175,7 +27175,7 @@
             "SOS Score": 13.0769230769,
             "FPI Score": 15.6862745098,
             "Game Control Score": 2.0833333333,
-            "championProbability": 4.77214e-05,
+            "championProbability": 0.0000477214,
             "predictedRank": 23
           },
           {
@@ -27195,7 +27195,7 @@
             "SOS Score": 7.6923076923,
             "FPI Score": 1.9607843137,
             "Game Control Score": 18.75,
-            "championProbability": 2.89633e-05,
+            "championProbability": 0.0000289633,
             "predictedRank": 24
           },
           {
@@ -27215,7 +27215,7 @@
             "SOS Score": 23.0769230769,
             "FPI Score": 58.8235294118,
             "Game Control Score": 8.3333333333,
-            "championProbability": 2.02506e-05,
+            "championProbability": 0.0000202506,
             "predictedRank": 25
           }
         ],
@@ -27731,7 +27731,7 @@
             "SOS Score": 26.6129032258,
             "FPI Score": 64.5833333333,
             "Game Control Score": 39.5348837209,
-            "championProbability": 8.55469e-05,
+            "championProbability": 0.0000855469,
             "predictedRank": 24
           },
           {
@@ -27751,7 +27751,7 @@
             "SOS Score": 6.4516129032,
             "FPI Score": 2.0833333333,
             "Game Control Score": 30.2325581395,
-            "championProbability": 5.06152e-05,
+            "championProbability": 0.0000506152,
             "predictedRank": 25
           }
         ],
@@ -28247,7 +28247,7 @@
             "SOS Score": 9.4017094017,
             "FPI Score": 57.1428571429,
             "Game Control Score": 64.4444444444,
-            "championProbability": 9.12837e-05,
+            "championProbability": 0.0000912837,
             "predictedRank": 23
           },
           {
@@ -28267,7 +28267,7 @@
             "SOS Score": 67.5213675214,
             "FPI Score": 11.9047619048,
             "Game Control Score": 26.6666666667,
-            "championProbability": 7.82283e-05,
+            "championProbability": 0.0000782283,
             "predictedRank": 24
           },
           {
@@ -28287,7 +28287,7 @@
             "SOS Score": 17.094017094,
             "FPI Score": 30.9523809524,
             "Game Control Score": 2.2222222222,
-            "championProbability": 6.7518e-06,
+            "championProbability": 0.0000067518,
             "predictedRank": 25
           }
         ],
@@ -28783,7 +28783,7 @@
             "SOS Score": 25.9541984733,
             "FPI Score": 13.0434782609,
             "Game Control Score": 51.8518518519,
-            "championProbability": 5.77494e-05,
+            "championProbability": 0.0000577494,
             "predictedRank": 23
           },
           {
@@ -28803,7 +28803,7 @@
             "SOS Score": 0.7633587786,
             "FPI Score": 2.1739130435,
             "Game Control Score": 24.0740740741,
-            "championProbability": 1.88935e-05,
+            "championProbability": 0.0000188935,
             "predictedRank": 24
           },
           {
@@ -28823,7 +28823,7 @@
             "SOS Score": 51.9083969466,
             "FPI Score": 39.1304347826,
             "Game Control Score": 1.8518518519,
-            "championProbability": 1.10606e-05,
+            "championProbability": 0.0000110606,
             "predictedRank": 25
           }
         ],
@@ -29319,7 +29319,7 @@
             "SOS Score": 24.427480916,
             "FPI Score": 15.3846153846,
             "Game Control Score": 38.4615384615,
-            "championProbability": 5.01366e-05,
+            "championProbability": 0.0000501366,
             "predictedRank": 23
           },
           {
@@ -29339,7 +29339,7 @@
             "SOS Score": 43.5114503817,
             "FPI Score": 51.9230769231,
             "Game Control Score": 12.8205128205,
-            "championProbability": 2.15631e-05,
+            "championProbability": 0.0000215631,
             "predictedRank": 24
           },
           {
@@ -29359,7 +29359,7 @@
             "SOS Score": 0.7633587786,
             "FPI Score": 11.5384615385,
             "Game Control Score": 2.5641025641,
-            "championProbability": 1.77813e-05,
+            "championProbability": 0.0000177813,
             "predictedRank": 25
           }
         ],
@@ -29835,7 +29835,7 @@
             "SOS Score": 25.9541984733,
             "FPI Score": 2.1276595745,
             "Game Control Score": 55.7692307692,
-            "championProbability": 4.9083e-05,
+            "championProbability": 0.000049083,
             "predictedRank": 22
           },
           {
@@ -29855,7 +29855,7 @@
             "SOS Score": 36.641221374,
             "FPI Score": 48.9361702128,
             "Game Control Score": 36.5384615385,
-            "championProbability": 3.75299e-05,
+            "championProbability": 0.0000375299,
             "predictedRank": 23
           },
           {
@@ -29875,7 +29875,7 @@
             "SOS Score": 41.2213740458,
             "FPI Score": 38.2978723404,
             "Game Control Score": 1.9230769231,
-            "championProbability": 2.63757e-05,
+            "championProbability": 0.0000263757,
             "predictedRank": 24
           },
           {
@@ -29895,7 +29895,7 @@
             "SOS Score": 0.7633587786,
             "FPI Score": 4.2553191489,
             "Game Control Score": 23.0769230769,
-            "championProbability": 1.98836e-05,
+            "championProbability": 0.0000198836,
             "predictedRank": 25
           }
         ],
@@ -30371,7 +30371,7 @@
             "SOS Score": 62.1621621622,
             "FPI Score": 16.6666666667,
             "Game Control Score": 28.9473684211,
-            "championProbability": 7.14182e-05,
+            "championProbability": 0.0000714182,
             "predictedRank": 22
           },
           {
@@ -30391,7 +30391,7 @@
             "SOS Score": 11.7117117117,
             "FPI Score": 54.1666666667,
             "Game Control Score": 44.7368421053,
-            "championProbability": 4.31813e-05,
+            "championProbability": 0.0000431813,
             "predictedRank": 23
           },
           {
@@ -30411,7 +30411,7 @@
             "SOS Score": 43.2432432432,
             "FPI Score": 39.5833333333,
             "Game Control Score": 13.1578947368,
-            "championProbability": 1.87718e-05,
+            "championProbability": 0.0000187718,
             "predictedRank": 24
           },
           {
@@ -30431,7 +30431,7 @@
             "SOS Score": 10.8108108108,
             "FPI Score": 2.0833333333,
             "Game Control Score": 21.0526315789,
-            "championProbability": 1.61123e-05,
+            "championProbability": 0.0000161123,
             "predictedRank": 25
           }
         ],
@@ -30927,7 +30927,7 @@
             "SOS Score": 67.8899082569,
             "FPI Score": 35.1851851852,
             "Game Control Score": 2.2222222222,
-            "championProbability": 5.92401e-05,
+            "championProbability": 0.0000592401,
             "predictedRank": 23
           },
           {
@@ -30947,7 +30947,7 @@
             "SOS Score": 44.0366972477,
             "FPI Score": 46.2962962963,
             "Game Control Score": 11.1111111111,
-            "championProbability": 2.1868e-05,
+            "championProbability": 0.000021868,
             "predictedRank": 24
           },
           {
@@ -30967,7 +30967,7 @@
             "SOS Score": 0.9174311927,
             "FPI Score": 1.8518518519,
             "Game Control Score": 35.5555555556,
-            "championProbability": 1.66097e-05,
+            "championProbability": 0.0000166097,
             "predictedRank": 25
           }
         ],
@@ -31443,7 +31443,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 10,
             "Game Control Score": 52.1739130435,
-            "championProbability": 8.37926e-05,
+            "championProbability": 0.0000837926,
             "predictedRank": 22
           },
           {
@@ -31463,7 +31463,7 @@
             "SOS Score": 68.4210526316,
             "FPI Score": 32,
             "Game Control Score": 2.1739130435,
-            "championProbability": 6.5474e-05,
+            "championProbability": 0.000065474,
             "predictedRank": 23
           },
           {
@@ -31483,7 +31483,7 @@
             "SOS Score": 50.3759398496,
             "FPI Score": 18,
             "Game Control Score": 47.8260869565,
-            "championProbability": 4.96796e-05,
+            "championProbability": 0.0000496796,
             "predictedRank": 24
           },
           {
@@ -31503,7 +31503,7 @@
             "SOS Score": 17.2932330827,
             "FPI Score": 2,
             "Game Control Score": 43.4782608696,
-            "championProbability": 4.13255e-05,
+            "championProbability": 0.0000413255,
             "predictedRank": 25
           }
         ],
@@ -31999,7 +31999,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 6,
             "Game Control Score": 57.4074074074,
-            "championProbability": 7.25458e-05,
+            "championProbability": 0.0000725458,
             "predictedRank": 23
           },
           {
@@ -32019,7 +32019,7 @@
             "SOS Score": 18.045112782,
             "FPI Score": 2,
             "Game Control Score": 55.5555555556,
-            "championProbability": 6.07009e-05,
+            "championProbability": 0.0000607009,
             "predictedRank": 24
           },
           {
@@ -32039,7 +32039,7 @@
             "SOS Score": 62.4060150376,
             "FPI Score": 28,
             "Game Control Score": 1.8518518519,
-            "championProbability": 4.90924e-05,
+            "championProbability": 0.0000490924,
             "predictedRank": 25
           }
         ],
@@ -32555,7 +32555,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 2.0408163265,
             "Game Control Score": 58.1818181818,
-            "championProbability": 6.6935e-05,
+            "championProbability": 0.000066935,
             "predictedRank": 24
           },
           {
@@ -32575,7 +32575,7 @@
             "SOS Score": 81.2030075188,
             "FPI Score": 20.4081632653,
             "Game Control Score": 1.8181818182,
-            "championProbability": 4.08593e-05,
+            "championProbability": 0.0000408593,
             "predictedRank": 25
           }
         ],
@@ -33033,7 +33033,7 @@
             "SOS Score": 42.3423423423,
             "FPI Score": 61.4035087719,
             "Game Control Score": 12.2448979592,
-            "championProbability": 2.35757e-05,
+            "championProbability": 0.0000235757,
             "predictedRank": 21
           },
           {
@@ -33053,7 +33053,7 @@
             "SOS Score": 20.7207207207,
             "FPI Score": 14.0350877193,
             "Game Control Score": 51.0204081633,
-            "championProbability": 1.4407e-05,
+            "championProbability": 0.000014407,
             "predictedRank": 22
           },
           {
@@ -33073,7 +33073,7 @@
             "SOS Score": 22.5225225225,
             "FPI Score": 31.5789473684,
             "Game Control Score": 26.5306122449,
-            "championProbability": 7.2987e-06,
+            "championProbability": 0.0000072987,
             "predictedRank": 23
           },
           {
@@ -33093,7 +33093,7 @@
             "SOS Score": 33.3333333333,
             "FPI Score": 15.7894736842,
             "Game Control Score": 8.1632653061,
-            "championProbability": 5.7171e-06,
+            "championProbability": 0.0000057171,
             "predictedRank": 24
           },
           {
@@ -33113,7 +33113,7 @@
             "SOS Score": 0.9009009009,
             "FPI Score": 1.7543859649,
             "Game Control Score": 44.8979591837,
-            "championProbability": 3.8608e-06,
+            "championProbability": 0.0000038608,
             "predictedRank": 25
           }
         ],
@@ -33649,7 +33649,7 @@
             "SOS Score": 4.6875,
             "FPI Score": 48.6486486486,
             "Game Control Score": 1.0869565217,
-            "championProbability": 2.23849e-05,
+            "championProbability": 0.0000223849,
             "predictedRank": 25
           }
         ],
@@ -34701,7 +34701,7 @@
             "SOS Score": 59.5419847328,
             "FPI Score": 22.5,
             "Game Control Score": 17.3913043478,
-            "championProbability": 9.32565e-05,
+            "championProbability": 0.0000932565,
             "predictedRank": 24
           },
           {
@@ -34721,7 +34721,7 @@
             "SOS Score": 48.8549618321,
             "FPI Score": 50,
             "Game Control Score": 1.4492753623,
-            "championProbability": 6.22509e-05,
+            "championProbability": 0.0000622509,
             "predictedRank": 25
           }
         ],
@@ -35277,7 +35277,7 @@
             "SOS Score": 43.0894308943,
             "FPI Score": 18.6046511628,
             "Game Control Score": 24.4444444444,
-            "championProbability": 5.58662e-05,
+            "championProbability": 0.0000558662,
             "predictedRank": 26
           }
         ],
@@ -35813,7 +35813,7 @@
             "SOS Score": 3.6697247706,
             "FPI Score": 17.0212765957,
             "Game Control Score": 23.2142857143,
-            "championProbability": 9.1841e-06,
+            "championProbability": 0.0000091841,
             "predictedRank": 25
           }
         ],
@@ -36349,7 +36349,7 @@
             "SOS Score": 1.5037593985,
             "FPI Score": 1.4285714286,
             "Game Control Score": 71.1538461538,
-            "championProbability": 3.55992e-05,
+            "championProbability": 0.0000355992,
             "predictedRank": 25
           }
         ],
@@ -36885,7 +36885,7 @@
             "SOS Score": 1.5037593985,
             "FPI Score": 1.5384615385,
             "Game Control Score": 78.7234042553,
-            "championProbability": 6.32377e-05,
+            "championProbability": 0.0000632377,
             "predictedRank": 25
           }
         ],
@@ -37361,7 +37361,7 @@
             "SOS Score": 46.6165413534,
             "FPI Score": 61.8181818182,
             "Game Control Score": 12.7659574468,
-            "championProbability": 6.80367e-05,
+            "championProbability": 0.0000680367,
             "predictedRank": 22
           },
           {
@@ -37381,7 +37381,7 @@
             "SOS Score": 90.977443609,
             "FPI Score": 1.8181818182,
             "Game Control Score": 25.5319148936,
-            "championProbability": 6.17624e-05,
+            "championProbability": 0.0000617624,
             "predictedRank": 23
           },
           {
@@ -37401,7 +37401,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 16.3636363636,
             "Game Control Score": 82.9787234043,
-            "championProbability": 6.00441e-05,
+            "championProbability": 0.0000600441,
             "predictedRank": 24
           },
           {
@@ -37421,7 +37421,7 @@
             "SOS Score": 33.8345864662,
             "FPI Score": 7.2727272727,
             "Game Control Score": 2.1276595745,
-            "championProbability": 8.5734e-06,
+            "championProbability": 0.0000085734,
             "predictedRank": 25
           }
         ],
@@ -37917,7 +37917,7 @@
             "SOS Score": 40.6015037594,
             "FPI Score": 57.6923076923,
             "Game Control Score": 16.6666666667,
-            "championProbability": 5.63042e-05,
+            "championProbability": 0.0000563042,
             "predictedRank": 23
           },
           {
@@ -37937,7 +37937,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 1.9230769231,
             "Game Control Score": 76.1904761905,
-            "championProbability": 2.62048e-05,
+            "championProbability": 0.0000262048,
             "predictedRank": 24
           },
           {
@@ -37957,7 +37957,7 @@
             "SOS Score": 30.8270676692,
             "FPI Score": 11.5384615385,
             "Game Control Score": 2.380952381,
-            "championProbability": 1.35451e-05,
+            "championProbability": 0.0000135451,
             "predictedRank": 25
           }
         ],
@@ -38473,7 +38473,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 9.4339622642,
             "Game Control Score": 76.0869565217,
-            "championProbability": 9.16815e-05,
+            "championProbability": 0.0000916815,
             "predictedRank": 24
           },
           {
@@ -38493,7 +38493,7 @@
             "SOS Score": 24.0601503759,
             "FPI Score": 1.8867924528,
             "Game Control Score": 6.5217391304,
-            "championProbability": 1.00131e-05,
+            "championProbability": 0.0000100131,
             "predictedRank": 25
           }
         ],
@@ -38969,7 +38969,7 @@
             "SOS Score": 0.7518796992,
             "FPI Score": 9.6153846154,
             "Game Control Score": 79.2452830189,
-            "championProbability": 8.6106e-05,
+            "championProbability": 0.000086106,
             "predictedRank": 22
           },
           {
@@ -38989,7 +38989,7 @@
             "SOS Score": 46.6165413534,
             "FPI Score": 57.6923076923,
             "Game Control Score": 1.8867924528,
-            "championProbability": 6.52213e-05,
+            "championProbability": 0.0000652213,
             "predictedRank": 23
           },
           {
@@ -39009,7 +39009,7 @@
             "SOS Score": 83.4586466165,
             "FPI Score": 1.9230769231,
             "Game Control Score": 30.1886792453,
-            "championProbability": 2.54262e-05,
+            "championProbability": 0.0000254262,
             "predictedRank": 24
           },
           {
@@ -39029,7 +39029,7 @@
             "SOS Score": 25.5639097744,
             "FPI Score": 15.3846153846,
             "Game Control Score": 52.8301886792,
-            "championProbability": 1.38269e-05,
+            "championProbability": 0.0000138269,
             "predictedRank": 25
           }
         ],
@@ -39505,7 +39505,7 @@
             "SOS Score": 33.9805825243,
             "FPI Score": 46.8085106383,
             "Game Control Score": 2,
-            "championProbability": 8.98414e-05,
+            "championProbability": 0.0000898414,
             "predictedRank": 22
           },
           {
@@ -39525,7 +39525,7 @@
             "SOS Score": 41.7475728155,
             "FPI Score": 51.0638297872,
             "Game Control Score": 24,
-            "championProbability": 6.31741e-05,
+            "championProbability": 0.0000631741,
             "predictedRank": 23
           },
           {
@@ -39545,7 +39545,7 @@
             "SOS Score": 75.7281553398,
             "FPI Score": 2.1276595745,
             "Game Control Score": 14,
-            "championProbability": 2.54749e-05,
+            "championProbability": 0.0000254749,
             "predictedRank": 24
           },
           {
@@ -39565,7 +39565,7 @@
             "SOS Score": 0.9708737864,
             "FPI Score": 10.6382978723,
             "Game Control Score": 38,
-            "championProbability": 5.5793e-06,
+            "championProbability": 0.0000055793,
             "predictedRank": 25
           }
         ],
@@ -40021,7 +40021,7 @@
             "SOS Score": 74.1071428571,
             "FPI Score": 29.5081967213,
             "Game Control Score": 16,
-            "championProbability": 9.91492e-05,
+            "championProbability": 0.0000991492,
             "predictedRank": 21
           },
           {
@@ -40041,7 +40041,7 @@
             "SOS Score": 11.6071428571,
             "FPI Score": 11.4754098361,
             "Game Control Score": 58,
-            "championProbability": 5.2634e-05,
+            "championProbability": 0.000052634,
             "predictedRank": 22
           },
           {
@@ -40061,7 +40061,7 @@
             "SOS Score": 5.3571428571,
             "FPI Score": 36.0655737705,
             "Game Control Score": 44,
-            "championProbability": 2.86488e-05,
+            "championProbability": 0.0000286488,
             "predictedRank": 23
           },
           {
@@ -40081,7 +40081,7 @@
             "SOS Score": 37.5,
             "FPI Score": 14.7540983607,
             "Game Control Score": 2,
-            "championProbability": 8.0868e-06,
+            "championProbability": 0.0000080868,
             "predictedRank": 24
           },
           {
@@ -40101,7 +40101,7 @@
             "SOS Score": 0.8928571429,
             "FPI Score": 1.6393442623,
             "Game Control Score": 22,
-            "championProbability": 2.0814e-06,
+            "championProbability": 0.0000020814,
             "predictedRank": 25
           }
         ],
@@ -40577,7 +40577,7 @@
             "SOS Score": 50,
             "FPI Score": 56.4516129032,
             "Game Control Score": 1.8867924528,
-            "championProbability": 8.83655e-05,
+            "championProbability": 0.0000883655,
             "predictedRank": 22
           },
           {
@@ -40597,7 +40597,7 @@
             "SOS Score": 35.9649122807,
             "FPI Score": 16.1290322581,
             "Game Control Score": 9.4339622642,
-            "championProbability": 1.16106e-05,
+            "championProbability": 0.0000116106,
             "predictedRank": 23
           },
           {
@@ -40617,7 +40617,7 @@
             "SOS Score": 21.9298245614,
             "FPI Score": 33.8709677419,
             "Game Control Score": 22.641509434,
-            "championProbability": 8.5131e-06,
+            "championProbability": 0.0000085131,
             "predictedRank": 24
           },
           {
@@ -40637,7 +40637,7 @@
             "SOS Score": 0.8771929825,
             "FPI Score": 1.6129032258,
             "Game Control Score": 24.5283018868,
-            "championProbability": 2.0764e-06,
+            "championProbability": 0.0000020764,
             "predictedRank": 25
           }
         ],
@@ -41055,7 +41055,7 @@
             "SOS Score": 55.0458715596,
             "FPI Score": 54.4117647059,
             "Game Control Score": 61.6666666667,
-            "championProbability": 9.57662e-05,
+            "championProbability": 0.0000957662,
             "predictedRank": 19
           },
           {
@@ -41075,7 +41075,7 @@
             "SOS Score": 25.6880733945,
             "FPI Score": 61.7647058824,
             "Game Control Score": 28.3333333333,
-            "championProbability": 6.86587e-05,
+            "championProbability": 0.0000686587,
             "predictedRank": 20
           },
           {
@@ -41095,7 +41095,7 @@
             "SOS Score": 31.1926605505,
             "FPI Score": 48.5294117647,
             "Game Control Score": 48.3333333333,
-            "championProbability": 6.29273e-05,
+            "championProbability": 0.0000629273,
             "predictedRank": 21
           },
           {
@@ -41115,7 +41115,7 @@
             "SOS Score": 41.2844036697,
             "FPI Score": 22.0588235294,
             "Game Control Score": 50,
-            "championProbability": 3.52815e-05,
+            "championProbability": 0.0000352815,
             "predictedRank": 22
           },
           {
@@ -41135,7 +41135,7 @@
             "SOS Score": 0.9174311927,
             "FPI Score": 41.1764705882,
             "Game Control Score": 40,
-            "championProbability": 1.25782e-05,
+            "championProbability": 0.0000125782,
             "predictedRank": 23
           },
           {
@@ -41155,7 +41155,7 @@
             "SOS Score": 36.6972477064,
             "FPI Score": 27.9411764706,
             "Game Control Score": 8.3333333333,
-            "championProbability": 7.6004e-06,
+            "championProbability": 0.0000076004,
             "predictedRank": 24
           },
           {
@@ -41175,7 +41175,7 @@
             "SOS Score": 32.1100917431,
             "FPI Score": 1.4705882353,
             "Game Control Score": 1.6666666667,
-            "championProbability": 6.7959e-06,
+            "championProbability": 0.0000067959,
             "predictedRank": 25
           }
         ],
@@ -41711,7 +41711,7 @@
             "SOS Score": 70.3703703704,
             "FPI Score": 18.4210526316,
             "Game Control Score": 1.2195121951,
-            "championProbability": 8.12567e-05,
+            "championProbability": 0.0000812567,
             "predictedRank": 25
           }
         ],
@@ -43299,7 +43299,7 @@
             "SOS Score": 5.7142857143,
             "FPI Score": 23.2558139535,
             "Game Control Score": 61.4035087719,
-            "championProbability": 8.87855e-05,
+            "championProbability": 0.0000887855,
             "predictedRank": 24
           },
           {
@@ -43319,7 +43319,7 @@
             "SOS Score": 2.8571428571,
             "FPI Score": 2.3255813953,
             "Game Control Score": 1.7543859649,
-            "championProbability": 3.94472e-05,
+            "championProbability": 0.0000394472,
             "predictedRank": 25
           }
         ],
@@ -43835,7 +43835,7 @@
             "SOS Score": 20.4724409449,
             "FPI Score": 16.3265306122,
             "Game Control Score": 10.7142857143,
-            "championProbability": 8.6094e-05,
+            "championProbability": 0.000086094,
             "predictedRank": 24
           },
           {
@@ -43855,7 +43855,7 @@
             "SOS Score": 0.7874015748,
             "FPI Score": 36.7346938776,
             "Game Control Score": 1.7857142857,
-            "championProbability": 3.97534e-05,
+            "championProbability": 0.0000397534,
             "predictedRank": 25
           }
         ],
@@ -44351,7 +44351,7 @@
             "SOS Score": 42.0634920635,
             "FPI Score": 47.619047619,
             "Game Control Score": 33.3333333333,
-            "championProbability": 5.98586e-05,
+            "championProbability": 0.0000598586,
             "predictedRank": 23
           },
           {
@@ -44371,7 +44371,7 @@
             "SOS Score": 38.0952380952,
             "FPI Score": 11.9047619048,
             "Game Control Score": 66.6666666667,
-            "championProbability": 2.70561e-05,
+            "championProbability": 0.0000270561,
             "predictedRank": 24
           },
           {
@@ -44391,7 +44391,7 @@
             "SOS Score": 0.7936507937,
             "FPI Score": 26.1904761905,
             "Game Control Score": 1.9607843137,
-            "championProbability": 1.77732e-05,
+            "championProbability": 0.0000177732,
             "predictedRank": 25
           }
         ],
@@ -44887,7 +44887,7 @@
             "SOS Score": 14.606741573,
             "FPI Score": 26.6666666667,
             "Game Control Score": 69.0476190476,
-            "championProbability": 6.78955e-05,
+            "championProbability": 0.0000678955,
             "predictedRank": 23
           },
           {
@@ -44907,7 +44907,7 @@
             "SOS Score": 82.0224719101,
             "FPI Score": 8.8888888889,
             "Game Control Score": 2.380952381,
-            "championProbability": 1.22436e-05,
+            "championProbability": 0.0000122436,
             "predictedRank": 24
           },
           {
@@ -44927,7 +44927,7 @@
             "SOS Score": 1.1235955056,
             "FPI Score": 2.2222222222,
             "Game Control Score": 19.0476190476,
-            "championProbability": 2.5361e-06,
+            "championProbability": 0.0000025361,
             "predictedRank": 25
           }
         ],
@@ -45423,7 +45423,7 @@
             "SOS Score": 31.0344827586,
             "FPI Score": 1.9230769231,
             "Game Control Score": 29.7297297297,
-            "championProbability": 2.48318e-05,
+            "championProbability": 0.0000248318,
             "predictedRank": 23
           },
           {
@@ -45443,7 +45443,7 @@
             "SOS Score": 18.9655172414,
             "FPI Score": 13.4615384615,
             "Game Control Score": 41.8918918919,
-            "championProbability": 1.92362e-05,
+            "championProbability": 0.0000192362,
             "predictedRank": 24
           },
           {
@@ -45463,7 +45463,7 @@
             "SOS Score": 0.8620689655,
             "FPI Score": 19.2307692308,
             "Game Control Score": 1.3513513514,
-            "championProbability": 1.7251e-06,
+            "championProbability": 0.0000017251,
             "predictedRank": 25
           }
         ],
@@ -45959,7 +45959,7 @@
             "SOS Score": 3.488372093,
             "FPI Score": 28.2608695652,
             "Game Control Score": 2.5,
-            "championProbability": 4.22712e-05,
+            "championProbability": 0.0000422712,
             "predictedRank": 23
           },
           {
@@ -45979,7 +45979,7 @@
             "SOS Score": 1.1627906977,
             "FPI Score": 34.7826086957,
             "Game Control Score": 72.5,
-            "championProbability": 3.90817e-05,
+            "championProbability": 0.0000390817,
             "predictedRank": 24
           },
           {
@@ -45999,7 +45999,7 @@
             "SOS Score": 2.3255813953,
             "FPI Score": 2.1739130435,
             "Game Control Score": 12.5,
-            "championProbability": 1.89644e-05,
+            "championProbability": 0.0000189644,
             "predictedRank": 25
           }
         ],
@@ -46495,7 +46495,7 @@
             "SOS Score": 3.2258064516,
             "FPI Score": 36,
             "Game Control Score": 74.4680851064,
-            "championProbability": 3.78936e-05,
+            "championProbability": 0.0000378936,
             "predictedRank": 23
           },
           {
@@ -46515,7 +46515,7 @@
             "SOS Score": 33.3333333333,
             "FPI Score": 30,
             "Game Control Score": 21.2765957447,
-            "championProbability": 2.81438e-05,
+            "championProbability": 0.0000281438,
             "predictedRank": 24
           },
           {
@@ -46535,7 +46535,7 @@
             "SOS Score": 1.0752688172,
             "FPI Score": 2,
             "Game Control Score": 2.1276595745,
-            "championProbability": 1.1546e-06,
+            "championProbability": 0.0000011546,
             "predictedRank": 25
           }
         ],
@@ -46991,7 +46991,7 @@
             "SOS Score": 67.0454545455,
             "FPI Score": 22.8070175439,
             "Game Control Score": 20,
-            "championProbability": 4.63915e-05,
+            "championProbability": 0.0000463915,
             "predictedRank": 21
           },
           {
@@ -47011,7 +47011,7 @@
             "SOS Score": 1.1363636364,
             "FPI Score": 33.3333333333,
             "Game Control Score": 13.3333333333,
-            "championProbability": 3.17555e-05,
+            "championProbability": 0.0000317555,
             "predictedRank": 22
           },
           {
@@ -47031,7 +47031,7 @@
             "SOS Score": 9.0909090909,
             "FPI Score": 24.5614035088,
             "Game Control Score": 40,
-            "championProbability": 1.16277e-05,
+            "championProbability": 0.0000116277,
             "predictedRank": 23
           },
           {
@@ -47051,7 +47051,7 @@
             "SOS Score": 20.4545454545,
             "FPI Score": 1.7543859649,
             "Game Control Score": 33.3333333333,
-            "championProbability": 6.9345e-06,
+            "championProbability": 0.0000069345,
             "predictedRank": 24
           },
           {
@@ -47071,7 +47071,7 @@
             "SOS Score": 18.1818181818,
             "FPI Score": 5.2631578947,
             "Game Control Score": 1.6666666667,
-            "championProbability": 2.3253e-06,
+            "championProbability": 0.0000023253,
             "predictedRank": 25
           }
         ],
@@ -47547,7 +47547,7 @@
             "SOS Score": 26.1904761905,
             "FPI Score": 45.4545454545,
             "Game Control Score": 50.8196721311,
-            "championProbability": 6.65431e-05,
+            "championProbability": 0.0000665431,
             "predictedRank": 22
           },
           {
@@ -47567,7 +47567,7 @@
             "SOS Score": 14.2857142857,
             "FPI Score": 1.8181818182,
             "Game Control Score": 45.9016393443,
-            "championProbability": 2.9641e-05,
+            "championProbability": 0.000029641,
             "predictedRank": 23
           },
           {
@@ -47587,7 +47587,7 @@
             "SOS Score": 1.1904761905,
             "FPI Score": 20,
             "Game Control Score": 44.262295082,
-            "championProbability": 1.70766e-05,
+            "championProbability": 0.0000170766,
             "predictedRank": 24
           },
           {
@@ -47607,7 +47607,7 @@
             "SOS Score": 4.7619047619,
             "FPI Score": 16.3636363636,
             "Game Control Score": 1.6393442623,
-            "championProbability": 5.3194e-06,
+            "championProbability": 0.0000053194,
             "predictedRank": 25
           }
         ],
@@ -48083,7 +48083,7 @@
             "SOS Score": 0.8,
             "FPI Score": 36.8421052632,
             "Game Control Score": 45.9016393443,
-            "championProbability": 6.18477e-05,
+            "championProbability": 0.0000618477,
             "predictedRank": 22
           },
           {
@@ -48103,7 +48103,7 @@
             "SOS Score": 38.4,
             "FPI Score": 1.7543859649,
             "Game Control Score": 47.5409836066,
-            "championProbability": 3.09287e-05,
+            "championProbability": 0.0000309287,
             "predictedRank": 23
           },
           {
@@ -48123,7 +48123,7 @@
             "SOS Score": 46.4,
             "FPI Score": 28.0701754386,
             "Game Control Score": 1.6393442623,
-            "championProbability": 9.6831e-06,
+            "championProbability": 0.0000096831,
             "predictedRank": 24
           },
           {
@@ -48143,7 +48143,7 @@
             "SOS Score": 42.4,
             "FPI Score": 7.0175438596,
             "Game Control Score": 6.5573770492,
-            "championProbability": 2.7666e-06,
+            "championProbability": 0.0000027666,
             "predictedRank": 25
           }
         ],
@@ -48599,7 +48599,7 @@
             "SOS Score": 38.2113821138,
             "FPI Score": 3.6363636364,
             "Game Control Score": 58.3333333333,
-            "championProbability": 7.59392e-05,
+            "championProbability": 0.0000759392,
             "predictedRank": 21
           },
           {
@@ -48619,7 +48619,7 @@
             "SOS Score": 36.5853658537,
             "FPI Score": 29.0909090909,
             "Game Control Score": 40,
-            "championProbability": 1.54868e-05,
+            "championProbability": 0.0000154868,
             "predictedRank": 22
           },
           {
@@ -48639,7 +48639,7 @@
             "SOS Score": 45.5284552846,
             "FPI Score": 25.4545454545,
             "Game Control Score": 1.6666666667,
-            "championProbability": 1.06839e-05,
+            "championProbability": 0.0000106839,
             "predictedRank": 23
           },
           {
@@ -48659,7 +48659,7 @@
             "SOS Score": 6.5040650407,
             "FPI Score": 30.9090909091,
             "Game Control Score": 28.3333333333,
-            "championProbability": 7.4662e-06,
+            "championProbability": 0.0000074662,
             "predictedRank": 24
           },
           {
@@ -48679,7 +48679,7 @@
             "SOS Score": 43.0894308943,
             "FPI Score": 1.8181818182,
             "Game Control Score": 3.3333333333,
-            "championProbability": 2.9506e-06,
+            "championProbability": 0.0000029506,
             "predictedRank": 25
           }
         ],
@@ -48713,7 +48713,7 @@
         "year": 2026,
         "week": 1,
         "predictedChampion": "Texas",
-        "predictedProbability": 0.23265685655598248,
+        "predictedProbability": 0.25962238993308745,
         "actualChampion": "TBD",
         "actualChampionPresent": false,
         "actualChampionPredictedRank": null,
@@ -48724,475 +48724,475 @@
             "Team": "Texas",
             "RECORD": "0-0",
             "AP POLL": 5,
-            "SOS": 9,
+            "SOS": 21,
             "SOR": 1,
-            "Game Control": 47,
-            "RAT": "30.1",
+            "Game Control": 31,
+            "RAT": "28.1",
             "FPI": 2,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
             "SOR Score": 100,
-            "SOS Score": 94.1176470588,
-            "FPI Score": 97.7272727273,
-            "Game Control Score": 49.4505494505,
-            "championProbability": 0.2326568566,
+            "SOS Score": 85.2941176471,
+            "FPI Score": 97.8723404255,
+            "Game Control Score": 62.5,
+            "championProbability": 0.2596223899,
             "predictedRank": 1
+          },
+          {
+            "Team": "Ole Miss",
+            "RECORD": "0-0",
+            "AP POLL": 9,
+            "SOS": 19,
+            "SOR": 2,
+            "Game Control": 12,
+            "RAT": "17.7",
+            "FPI": 13,
+            "Year": 2026,
+            "Week": 1,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
+            "SOR Score": 98.5507246377,
+            "SOS Score": 86.7647058824,
+            "FPI Score": 74.4680851064,
+            "Game Control Score": 86.25,
+            "championProbability": 0.2230107242,
+            "predictedRank": 2
           },
           {
             "Team": "Alabama",
             "RECORD": "0-0",
             "AP POLL": 13,
-            "SOS": 61,
-            "SOR": 6,
-            "Game Control": 14,
-            "RAT": "23.2",
+            "SOS": 51,
+            "SOR": 4,
+            "Game Control": 23,
+            "RAT": "22.3",
             "FPI": 7,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 93.2432432432,
-            "SOS Score": 55.8823529412,
-            "FPI Score": 86.3636363636,
-            "Game Control Score": 85.7142857143,
-            "championProbability": 0.1751652807,
-            "predictedRank": 2
-          },
-          {
-            "Team": "Tennessee",
-            "RECORD": "0-0",
-            "AP POLL": 20,
-            "SOS": 73,
-            "SOR": 11,
-            "Game Control": 6,
-            "RAT": "17.9",
-            "FPI": 10,
-            "Year": 2026,
-            "Week": 1,
-            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 86.4864864865,
-            "SOS Score": 47.0588235294,
-            "FPI Score": 79.5454545455,
-            "Game Control Score": 94.5054945055,
-            "championProbability": 0.1123356233,
+            "SOR Score": 95.652173913,
+            "SOS Score": 63.2352941176,
+            "FPI Score": 87.2340425532,
+            "Game Control Score": 72.5,
+            "championProbability": 0.1307384749,
             "predictedRank": 3
           },
           {
-            "Team": "LSU",
+            "Team": "Miami",
             "RECORD": "0-0",
-            "AP POLL": 11,
-            "SOS": 75,
-            "SOR": 12,
-            "Game Control": 13,
-            "RAT": "22.6",
-            "FPI": 9,
+            "AP POLL": 7,
+            "SOS": 92,
+            "SOR": 11,
+            "Game Control": 2,
+            "RAT": "23.9",
+            "FPI": 6,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 85.1351351351,
-            "SOS Score": 45.5882352941,
-            "FPI Score": 81.8181818182,
-            "Game Control Score": 86.8131868132,
-            "championProbability": 0.0874855314,
+            "SOR Score": 85.5072463768,
+            "SOS Score": 33.0882352941,
+            "FPI Score": 89.3617021277,
+            "Game Control Score": 98.75,
+            "championProbability": 0.1179172489,
             "predictedRank": 4
-          },
-          {
-            "Team": "SMU",
-            "RECORD": "0-0",
-            "AP POLL": 19,
-            "SOS": 54,
-            "SOR": 4,
-            "Game Control": 9,
-            "RAT": "13.8",
-            "FPI": 24,
-            "Year": 2026,
-            "Week": 1,
-            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 95.9459459459,
-            "SOS Score": 61.0294117647,
-            "FPI Score": 47.7272727273,
-            "Game Control Score": 91.2087912088,
-            "championProbability": 0.0614197151,
-            "predictedRank": 5
           },
           {
             "Team": "Notre Dame",
             "RECORD": "0-0",
             "AP POLL": 4,
             "SOS": 93,
-            "SOR": 22,
-            "Game Control": 18,
-            "RAT": "27.9",
+            "SOR": 13,
+            "Game Control": 17,
+            "RAT": "26.8",
+            "FPI": 4,
+            "Year": 2026,
+            "Week": 1,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
+            "SOR Score": 82.6086956522,
+            "SOS Score": 32.3529411765,
+            "FPI Score": 93.6170212766,
+            "Game Control Score": 80,
+            "championProbability": 0.065609591,
+            "predictedRank": 5
+          },
+          {
+            "Team": "Georgia",
+            "RECORD": "0-0",
+            "AP POLL": 3,
+            "SOS": 120,
+            "SOR": 25,
+            "Game Control": 3,
+            "RAT": "27.1",
             "FPI": 3,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 71.6216216216,
-            "SOS Score": 32.3529411765,
-            "FPI Score": 95.4545454545,
-            "Game Control Score": 81.3186813187,
-            "championProbability": 0.0516798895,
+            "SOR Score": 65.2173913043,
+            "SOS Score": 12.5,
+            "FPI Score": 95.7446808511,
+            "Game Control Score": 97.5,
+            "championProbability": 0.0390233616,
             "predictedRank": 6
           },
           {
-            "Team": "Ole Miss",
+            "Team": "Tennessee",
             "RECORD": "0-0",
-            "AP POLL": 9,
-            "SOS": 55,
-            "SOR": 5,
-            "Game Control": 32,
-            "RAT": "15.5",
-            "FPI": 17,
+            "AP POLL": 20,
+            "SOS": 104,
+            "SOR": 18,
+            "Game Control": 10,
+            "RAT": "18.5",
+            "FPI": 10,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 94.5945945946,
-            "SOS Score": 60.2941176471,
-            "FPI Score": 63.6363636364,
-            "Game Control Score": 65.9340659341,
-            "championProbability": 0.0459655549,
+            "SOR Score": 75.3623188406,
+            "SOS Score": 24.2647058824,
+            "FPI Score": 80.8510638298,
+            "Game Control Score": 88.75,
+            "championProbability": 0.0333695343,
             "predictedRank": 7
           },
           {
-            "Team": "Miami",
+            "Team": "LSU",
             "RECORD": "0-0",
-            "AP POLL": 7,
-            "SOS": 104,
-            "SOR": 28,
-            "Game Control": 3,
-            "RAT": "25.7",
-            "FPI": 5,
+            "AP POLL": 11,
+            "SOS": 27,
+            "SOR": 32,
+            "Game Control": 26,
+            "RAT": "20.3",
+            "FPI": 8,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 63.5135135135,
-            "SOS Score": 24.2647058824,
-            "FPI Score": 90.9090909091,
-            "Game Control Score": 97.8021978022,
-            "championProbability": 0.0440046944,
+            "SOR Score": 55.0724637681,
+            "SOS Score": 80.8823529412,
+            "FPI Score": 85.1063829787,
+            "Game Control Score": 68.75,
+            "championProbability": 0.0236547648,
             "predictedRank": 8
           },
           {
             "Team": "USC",
             "RECORD": "0-0",
             "AP POLL": 14,
-            "SOS": 101,
-            "SOR": 19,
+            "SOS": 108,
+            "SOR": 15,
             "Game Control": 11,
-            "RAT": "17.3",
-            "FPI": 12,
+            "RAT": "15.5",
+            "FPI": 18,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 75.6756756757,
-            "SOS Score": 26.4705882353,
-            "FPI Score": 75,
-            "Game Control Score": 89.010989011,
-            "championProbability": 0.0331673536,
+            "SOR Score": 79.7101449275,
+            "SOS Score": 21.3235294118,
+            "FPI Score": 63.829787234,
+            "Game Control Score": 87.5,
+            "championProbability": 0.0195775173,
             "predictedRank": 9
           },
           {
-            "Team": "Indiana",
+            "Team": "Texas Tech",
             "RECORD": "0-0",
-            "AP POLL": 6,
-            "SOS": 107,
-            "SOR": 30,
-            "Game Control": 10,
-            "RAT": "25.3",
-            "FPI": 6,
+            "AP POLL": 12,
+            "SOS": 76,
+            "SOR": 10,
+            "Game Control": 43,
+            "RAT": "15.8",
+            "FPI": 17,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 60.8108108108,
-            "SOS Score": 22.0588235294,
-            "FPI Score": 88.6363636364,
-            "Game Control Score": 90.1098901099,
-            "championProbability": 0.0268319944,
+            "SOR Score": 86.9565217391,
+            "SOS Score": 44.8529411765,
+            "FPI Score": 65.9574468085,
+            "Game Control Score": 47.5,
+            "championProbability": 0.0126991182,
             "predictedRank": 10
+          },
+          {
+            "Team": "SMU",
+            "RECORD": "0-0",
+            "AP POLL": 19,
+            "SOS": 26,
+            "SOR": 26,
+            "Game Control": 18,
+            "RAT": "12.2",
+            "FPI": 26,
+            "Year": 2026,
+            "Week": 1,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
+            "SOR Score": 63.768115942,
+            "SOS Score": 81.6176470588,
+            "FPI Score": 46.8085106383,
+            "Game Control Score": 78.75,
+            "championProbability": 0.0117247937,
+            "predictedRank": 11
           },
           {
             "Team": "Ohio State",
             "RECORD": "0-0",
             "AP POLL": 1,
-            "SOS": 3,
-            "SOR": 66,
+            "SOS": 15,
+            "SOR": 69,
             "Game Control": 1,
-            "RAT": "30.4",
+            "RAT": "28.1",
             "FPI": 1,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 12.1621621622,
-            "SOS Score": 98.5294117647,
+            "SOR Score": 1.4492753623,
+            "SOS Score": 89.7058823529,
             "FPI Score": 100,
             "Game Control Score": 100,
-            "championProbability": 0.0258514453,
-            "predictedRank": 11
-          },
-          {
-            "Team": "Michigan",
-            "RECORD": "0-0",
-            "AP POLL": 16,
-            "SOS": 34,
-            "SOR": 2,
-            "Game Control": 51,
-            "RAT": "14.4",
-            "FPI": 22,
-            "Year": 2026,
-            "Week": 1,
-            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 98.6486486486,
-            "SOS Score": 75.7352941176,
-            "FPI Score": 52.2727272727,
-            "Game Control Score": 45.0549450549,
-            "championProbability": 0.0247181328,
+            "championProbability": 0.0116275926,
             "predictedRank": 12
           },
           {
-            "Team": "Texas A&M",
+            "Team": "BYU",
             "RECORD": "0-0",
-            "AP POLL": 8,
-            "SOS": 87,
+            "AP POLL": 14,
+            "SOS": 102,
             "SOR": 17,
-            "Game Control": 39,
-            "RAT": "23.1",
-            "FPI": 8,
+            "Game Control": 22,
+            "RAT": "15.2",
+            "FPI": 19,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 78.3783783784,
-            "SOS Score": 36.7647058824,
-            "FPI Score": 84.0909090909,
-            "Game Control Score": 58.2417582418,
-            "championProbability": 0.0238318759,
+            "SOR Score": 76.8115942029,
+            "SOS Score": 25.7352941176,
+            "FPI Score": 61.7021276596,
+            "Game Control Score": 73.75,
+            "championProbability": 0.0110884185,
             "predictedRank": 13
           },
           {
-            "Team": "Missouri",
+            "Team": "Louisville",
             "RECORD": "0-0",
-            "AP POLL": 25,
-            "SOS": 79,
-            "SOR": 13,
-            "Game Control": 17,
-            "RAT": "12.3",
-            "FPI": 26,
+            "AP POLL": 24,
+            "SOS": 16,
+            "SOR": 23,
+            "Game Control": 34,
+            "RAT": "13.9",
+            "FPI": 23,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 83.7837837838,
-            "SOS Score": 42.6470588235,
-            "FPI Score": 43.1818181818,
-            "Game Control Score": 82.4175824176,
-            "championProbability": 0.0159942074,
+            "SOR Score": 68.115942029,
+            "SOS Score": 88.9705882353,
+            "FPI Score": 53.1914893617,
+            "Game Control Score": 58.75,
+            "championProbability": 0.0109611801,
             "predictedRank": 14
           },
           {
             "Team": "Penn State",
             "RECORD": "0-0",
             "AP POLL": 18,
-            "SOS": 105,
-            "SOR": 29,
-            "Game Control": 15,
-            "RAT": "16.4",
-            "FPI": 14,
+            "SOS": 125,
+            "SOR": 28,
+            "Game Control": 14,
+            "RAT": "18.2",
+            "FPI": 12,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 62.1621621622,
-            "SOS Score": 23.5294117647,
-            "FPI Score": 70.4545454545,
-            "Game Control Score": 84.6153846154,
-            "championProbability": 0.0124746076,
+            "SOR Score": 60.8695652174,
+            "SOS Score": 8.8235294118,
+            "FPI Score": 76.5957446809,
+            "Game Control Score": 83.75,
+            "championProbability": 0.0094266234,
             "predictedRank": 15
           },
           {
-            "Team": "BYU",
+            "Team": "Michigan",
             "RECORD": "0-0",
-            "AP POLL": 14,
-            "SOS": 82,
-            "SOR": 15,
-            "Game Control": 55,
-            "RAT": "15.4",
-            "FPI": 18,
+            "AP POLL": 16,
+            "SOS": 62,
+            "SOR": 6,
+            "Game Control": 71,
+            "RAT": "14.9",
+            "FPI": 20,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 81.0810810811,
-            "SOS Score": 40.4411764706,
-            "FPI Score": 61.3636363636,
-            "Game Control Score": 40.6593406593,
-            "championProbability": 0.007036084,
+            "SOR Score": 92.7536231884,
+            "SOS Score": 55.1470588235,
+            "FPI Score": 59.5744680851,
+            "Game Control Score": 12.5,
+            "championProbability": 0.005145865,
             "predictedRank": 16
-          },
-          {
-            "Team": "Texas Tech",
-            "RECORD": "0-0",
-            "AP POLL": 12,
-            "SOS": 96,
-            "SOR": 23,
-            "Game Control": 42,
-            "RAT": "16.1",
-            "FPI": 16,
-            "Year": 2026,
-            "Week": 1,
-            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 70.2702702703,
-            "SOS Score": 30.1470588235,
-            "FPI Score": 65.9090909091,
-            "Game Control Score": 54.9450549451,
-            "championProbability": 0.0066568383,
-            "predictedRank": 17
-          },
-          {
-            "Team": "Georgia",
-            "RECORD": "0-0",
-            "AP POLL": 3,
-            "SOS": 136,
-            "SOR": 58,
-            "Game Control": 4,
-            "RAT": "26.6",
-            "FPI": 4,
-            "Year": 2026,
-            "Week": 1,
-            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 22.972972973,
-            "SOS Score": 0.7352941176,
-            "FPI Score": 93.1818181818,
-            "Game Control Score": 96.7032967033,
-            "championProbability": 0.0047442172,
-            "predictedRank": 18
           },
           {
             "Team": "Utah",
             "RECORD": "0-0",
             "AP POLL": 21,
-            "SOS": 118,
+            "SOS": 130,
             "SOR": 36,
-            "Game Control": 16,
-            "RAT": "15.1",
-            "FPI": 19,
+            "Game Control": 13,
+            "RAT": "16.5",
+            "FPI": 15,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 52.7027027027,
-            "SOS Score": 13.9705882353,
-            "FPI Score": 59.0909090909,
-            "Game Control Score": 83.5164835165,
-            "championProbability": 0.00429318,
-            "predictedRank": 19
+            "SOR Score": 49.2753623188,
+            "SOS Score": 5.1470588235,
+            "FPI Score": 70.2127659574,
+            "Game Control Score": 85,
+            "championProbability": 0.0042674172,
+            "predictedRank": 17
+          },
+          {
+            "Team": "Indiana",
+            "RECORD": "0-0",
+            "AP POLL": 6,
+            "SOS": 135,
+            "SOR": 43,
+            "Game Control": 25,
+            "RAT": "24.6",
+            "FPI": 5,
+            "Year": 2026,
+            "Week": 1,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
+            "SOR Score": 39.1304347826,
+            "SOS Score": 1.4705882353,
+            "FPI Score": 91.4893617021,
+            "Game Control Score": 70,
+            "championProbability": 0.0034445876,
+            "predictedRank": 18
           },
           {
             "Team": "Oklahoma",
             "RECORD": "0-0",
             "AP POLL": 10,
-            "SOS": 31,
-            "SOR": 70,
-            "Game Control": 37,
-            "RAT": "17.8",
-            "FPI": 11,
+            "SOS": 38,
+            "SOR": 46,
+            "Game Control": 38,
+            "RAT": "16.7",
+            "FPI": 14,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 6.7567567568,
-            "SOS Score": 77.9411764706,
-            "FPI Score": 77.2727272727,
-            "Game Control Score": 60.4395604396,
-            "championProbability": 0.0016629428,
-            "predictedRank": 20
+            "SOR Score": 34.7826086957,
+            "SOS Score": 72.7941176471,
+            "FPI Score": 72.3404255319,
+            "Game Control Score": 53.75,
+            "championProbability": 0.0031148521,
+            "predictedRank": 19
           },
           {
-            "Team": "Oregon",
+            "Team": "Missouri",
             "RECORD": "0-0",
-            "AP POLL": 2,
-            "SOS": 44,
-            "SOR": 43,
-            "Game Control": 91,
-            "RAT": "17.1",
-            "FPI": 13,
+            "AP POLL": 25,
+            "SOS": 112,
+            "SOR": 20,
+            "Game Control": 44,
+            "RAT": "10.5",
+            "FPI": 32,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 43.2432432432,
-            "SOS Score": 68.3823529412,
-            "FPI Score": 72.7272727273,
-            "Game Control Score": 1.0989010989,
-            "championProbability": 0.0009190759,
-            "predictedRank": 21
+            "SOR Score": 72.4637681159,
+            "SOS Score": 18.3823529412,
+            "FPI Score": 34.0425531915,
+            "Game Control Score": 46.25,
+            "championProbability": 0.001172245,
+            "predictedRank": 20
           },
           {
             "Team": "Iowa",
             "RECORD": "0-0",
             "AP POLL": 22,
-            "SOS": 102,
-            "SOR": 26,
-            "Game Control": 75,
-            "RAT": "9.9",
-            "FPI": 32,
+            "SOS": 119,
+            "SOR": 24,
+            "Game Control": 46,
+            "RAT": "12.1",
+            "FPI": 28,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 66.2162162162,
-            "SOS Score": 25.7352941176,
-            "FPI Score": 29.5454545455,
-            "Game Control Score": 18.6813186813,
-            "championProbability": 0.0004112692,
-            "predictedRank": 22
+            "SOR Score": 66.6666666667,
+            "SOS Score": 13.2352941176,
+            "FPI Score": 42.5531914894,
+            "Game Control Score": 43.75,
+            "championProbability": 0.0010384932,
+            "predictedRank": 21
           },
           {
             "Team": "Houston",
             "RECORD": "0-0",
             "AP POLL": 23,
-            "SOS": 125,
-            "SOR": 41,
-            "Game Control": 44,
-            "RAT": "9.2",
-            "FPI": 33,
+            "SOS": 42,
+            "SOR": 56,
+            "Game Control": 20,
+            "RAT": "10.8",
+            "FPI": 31,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 45.9459459459,
-            "SOS Score": 8.8235294118,
-            "FPI Score": 27.2727272727,
-            "Game Control Score": 52.7472527473,
-            "championProbability": 0.0003269817,
+            "SOR Score": 20.2898550725,
+            "SOS Score": 69.8529411765,
+            "FPI Score": 36.170212766,
+            "Game Control Score": 76.25,
+            "championProbability": 0.0008137682,
+            "predictedRank": 22
+          },
+          {
+            "Team": "Oregon",
+            "RECORD": "0-0",
+            "AP POLL": 2,
+            "SOS": 67,
+            "SOR": 51,
+            "Game Control": 65,
+            "RAT": "19.2",
+            "FPI": 9,
+            "Year": 2026,
+            "Week": 1,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
+            "SOR Score": 27.5362318841,
+            "SOS Score": 51.4705882353,
+            "FPI Score": 82.9787234043,
+            "Game Control Score": 20,
+            "championProbability": 0.000760943,
             "predictedRank": 23
           },
           {
-            "Team": "Louisville",
+            "Team": "Texas A&M",
             "RECORD": "0-0",
-            "AP POLL": 24,
-            "SOS": 30,
-            "SOR": 74,
-            "Game Control": 38,
-            "RAT": "11.9",
-            "FPI": 28,
+            "AP POLL": 8,
+            "SOS": 90,
+            "SOR": 57,
+            "Game Control": 80,
+            "RAT": "18.2",
+            "FPI": 11,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 1.3513513514,
-            "SOS Score": 78.6764705882,
-            "FPI Score": 38.6363636364,
-            "Game Control Score": 59.3406593407,
-            "championProbability": 0.0003010979,
+            "SOR Score": 18.8405797101,
+            "SOS Score": 34.5588235294,
+            "FPI Score": 78.7234042553,
+            "Game Control Score": 1.25,
+            "championProbability": 0.0001751782,
             "predictedRank": 24
           },
           {
             "Team": "Washington",
             "RECORD": "0-0",
             "AP POLL": 17,
-            "SOS": 115,
-            "SOR": 33,
-            "Game Control": 81,
-            "RAT": "5.9",
-            "FPI": 44,
+            "SOS": 136,
+            "SOR": 44,
+            "Game Control": 75,
+            "RAT": "5.8",
+            "FPI": 47,
             "Year": 2026,
             "Week": 1,
             "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/1/year/2026",
-            "SOR Score": 56.7567567568,
-            "SOS Score": 16.1764705882,
-            "FPI Score": 2.2727272727,
-            "Game Control Score": 12.0879120879,
-            "championProbability": 6.55502e-05,
+            "SOR Score": 37.6811594203,
+            "SOS Score": 0.7352941176,
+            "FPI Score": 2.1276595745,
+            "Game Control Score": 7.5,
+            "championProbability": 0.000015317,
             "predictedRank": 25
           }
         ],
@@ -49200,21 +49200,21 @@
           {
             "model": "Balanced ML Blend",
             "predictedChampion": "Texas",
-            "predictedProbability": 0.23265685655598248,
+            "predictedProbability": 0.25962238993308745,
             "actualChampionPredictedRank": null,
             "actualChampionProbability": null
           },
           {
             "model": "Resume Heavy",
-            "predictedChampion": "Texas",
-            "predictedProbability": 0.28736916069244994,
+            "predictedChampion": "Ole Miss",
+            "predictedProbability": 0.34534874487033906,
             "actualChampionPredictedRank": null,
             "actualChampionProbability": null
           },
           {
             "model": "Power Rating Blend",
             "predictedChampion": "Texas",
-            "predictedProbability": 0.14906846012608027,
+            "predictedProbability": 0.19602211478003687,
             "actualChampionPredictedRank": null,
             "actualChampionProbability": null
           }
@@ -49684,7 +49684,7 @@
             "SOS Score": 19.7183098592,
             "FPI Score": 34.1463414634,
             "Game Control Score": 56.976744186,
-            "championProbability": 5.30128e-05,
+            "championProbability": 0.0000530128,
             "predictedRank": 24
           }
         ],
@@ -50222,6 +50222,517 @@
             "actualChampionProbability": null
           }
         ]
+      },
+      {
+        "year": 2026,
+        "week": 4,
+        "predictedChampion": "Texas",
+        "predictedProbability": 0.27966031874923386,
+        "actualChampion": "TBD",
+        "actualChampionPresent": false,
+        "actualChampionPredictedRank": null,
+        "actualChampionProbability": null,
+        "sourceUrl": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+        "records": [
+          {
+            "Team": "Texas",
+            "RECORD": "3-0",
+            "AP POLL": 1,
+            "SOS": 21,
+            "SOR": 1,
+            "Game Control": 31,
+            "RAT": "28.1",
+            "FPI": 2,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 100,
+            "SOS Score": 85.1851851852,
+            "FPI Score": 96.875,
+            "Game Control Score": 62.5,
+            "championProbability": 0.2796603187,
+            "predictedRank": 1
+          },
+          {
+            "Team": "Ole Miss",
+            "RECORD": "3-0",
+            "AP POLL": 4,
+            "SOS": 19,
+            "SOR": 2,
+            "Game Control": 12,
+            "RAT": "17.7",
+            "FPI": 13,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 98.5507246377,
+            "SOS Score": 86.6666666667,
+            "FPI Score": 62.5,
+            "Game Control Score": 86.25,
+            "championProbability": 0.159524294,
+            "predictedRank": 2
+          },
+          {
+            "Team": "Alabama",
+            "RECORD": "3-0",
+            "AP POLL": 8,
+            "SOS": 51,
+            "SOR": 4,
+            "Game Control": 23,
+            "RAT": "22.3",
+            "FPI": 7,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 95.652173913,
+            "SOS Score": 62.962962963,
+            "FPI Score": 81.25,
+            "Game Control Score": 72.5,
+            "championProbability": 0.1165506709,
+            "predictedRank": 3
+          },
+          {
+            "Team": "Miami",
+            "RECORD": "3-0",
+            "AP POLL": 6,
+            "SOS": 92,
+            "SOR": 11,
+            "Game Control": 2,
+            "RAT": "23.9",
+            "FPI": 6,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 85.5072463768,
+            "SOS Score": 32.5925925926,
+            "FPI Score": 84.375,
+            "Game Control Score": 98.75,
+            "championProbability": 0.1086547937,
+            "predictedRank": 4
+          },
+          {
+            "Team": "Florida",
+            "RECORD": "3-0",
+            "AP POLL": 21,
+            "SOS": 61,
+            "SOR": 5,
+            "Game Control": 6,
+            "RAT": "16.4",
+            "FPI": 16,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 94.2028985507,
+            "SOS Score": 55.5555555556,
+            "FPI Score": 53.125,
+            "Game Control Score": 93.75,
+            "championProbability": 0.0656510788,
+            "predictedRank": 5
+          },
+          {
+            "Team": "Notre Dame",
+            "RECORD": "3-0",
+            "AP POLL": 3,
+            "SOS": 93,
+            "SOR": 13,
+            "Game Control": 17,
+            "RAT": "26.8",
+            "FPI": 4,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 82.6086956522,
+            "SOS Score": 31.8518518519,
+            "FPI Score": 90.625,
+            "Game Control Score": 80,
+            "championProbability": 0.0651232113,
+            "predictedRank": 6
+          },
+          {
+            "Team": "Mississippi St",
+            "RECORD": "3-0",
+            "AP POLL": 24,
+            "SOS": 41,
+            "SOR": 3,
+            "Game Control": 5,
+            "RAT": "14.1",
+            "FPI": 22,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 97.1014492754,
+            "SOS Score": 70.3703703704,
+            "FPI Score": 34.375,
+            "Game Control Score": 95,
+            "championProbability": 0.0510241071,
+            "predictedRank": 7
+          },
+          {
+            "Team": "Georgia",
+            "RECORD": "3-0",
+            "AP POLL": 2,
+            "SOS": 120,
+            "SOR": 25,
+            "Game Control": 3,
+            "RAT": "27.1",
+            "FPI": 3,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 65.2173913043,
+            "SOS Score": 11.8518518519,
+            "FPI Score": 93.75,
+            "Game Control Score": 97.5,
+            "championProbability": 0.0400932732,
+            "predictedRank": 8
+          },
+          {
+            "Team": "Tennessee",
+            "RECORD": "3-0",
+            "AP POLL": 14,
+            "SOS": 104,
+            "SOR": 18,
+            "Game Control": 10,
+            "RAT": "18.5",
+            "FPI": 10,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 75.3623188406,
+            "SOS Score": 23.7037037037,
+            "FPI Score": 71.875,
+            "Game Control Score": 88.75,
+            "championProbability": 0.0264612091,
+            "predictedRank": 9
+          },
+          {
+            "Team": "LSU",
+            "RECORD": "2-1",
+            "AP POLL": 10,
+            "SOS": 27,
+            "SOR": 32,
+            "Game Control": 26,
+            "RAT": "20.3",
+            "FPI": 8,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 55.0724637681,
+            "SOS Score": 80.7407407407,
+            "FPI Score": 78.125,
+            "Game Control Score": 68.75,
+            "championProbability": 0.0203666301,
+            "predictedRank": 10
+          },
+          {
+            "Team": "Ohio State",
+            "RECORD": "2-1",
+            "AP POLL": 7,
+            "SOS": 15,
+            "SOR": 69,
+            "Game Control": 1,
+            "RAT": "28.1",
+            "FPI": 1,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 1.4492753623,
+            "SOS Score": 89.6296296296,
+            "FPI Score": 100,
+            "Game Control Score": 100,
+            "championProbability": 0.0130081034,
+            "predictedRank": 11
+          },
+          {
+            "Team": "USC",
+            "RECORD": "4-0",
+            "AP POLL": 12,
+            "SOS": 108,
+            "SOR": 15,
+            "Game Control": 11,
+            "RAT": "15.5",
+            "FPI": 18,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 79.7101449275,
+            "SOS Score": 20.7407407407,
+            "FPI Score": 46.875,
+            "Game Control Score": 87.5,
+            "championProbability": 0.0115206298,
+            "predictedRank": 12
+          },
+          {
+            "Team": "Texas Tech",
+            "RECORD": "3-0",
+            "AP POLL": 11,
+            "SOS": 76,
+            "SOR": 10,
+            "Game Control": 43,
+            "RAT": "15.8",
+            "FPI": 17,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 86.9565217391,
+            "SOS Score": 44.4444444444,
+            "FPI Score": 50,
+            "Game Control Score": 47.5,
+            "championProbability": 0.0077817212,
+            "predictedRank": 13
+          },
+          {
+            "Team": "Penn State",
+            "RECORD": "3-0",
+            "AP POLL": 13,
+            "SOS": 125,
+            "SOR": 28,
+            "Game Control": 14,
+            "RAT": "18.2",
+            "FPI": 12,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 60.8695652174,
+            "SOS Score": 8.1481481481,
+            "FPI Score": 65.625,
+            "Game Control Score": 83.75,
+            "championProbability": 0.0069238455,
+            "predictedRank": 14
+          },
+          {
+            "Team": "BYU",
+            "RECORD": "3-0",
+            "AP POLL": 9,
+            "SOS": 102,
+            "SOR": 17,
+            "Game Control": 22,
+            "RAT": "15.2",
+            "FPI": 19,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 76.8115942029,
+            "SOS Score": 25.1851851852,
+            "FPI Score": 43.75,
+            "Game Control Score": 73.75,
+            "championProbability": 0.0062904629,
+            "predictedRank": 15
+          },
+          {
+            "Team": "Louisville",
+            "RECORD": "2-1",
+            "AP POLL": 16,
+            "SOS": 16,
+            "SOR": 23,
+            "Game Control": 34,
+            "RAT": "13.9",
+            "FPI": 23,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 68.115942029,
+            "SOS Score": 88.8888888889,
+            "FPI Score": 31.25,
+            "Game Control Score": 58.75,
+            "championProbability": 0.0054048727,
+            "predictedRank": 16
+          },
+          {
+            "Team": "SMU",
+            "RECORD": "2-1",
+            "AP POLL": 22,
+            "SOS": 26,
+            "SOR": 26,
+            "Game Control": 18,
+            "RAT": "12.2",
+            "FPI": 26,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 63.768115942,
+            "SOS Score": 81.4814814815,
+            "FPI Score": 21.875,
+            "Game Control Score": 78.75,
+            "championProbability": 0.0051651174,
+            "predictedRank": 17
+          },
+          {
+            "Team": "Indiana",
+            "RECORD": "3-0",
+            "AP POLL": 5,
+            "SOS": 135,
+            "SOR": 43,
+            "Game Control": 25,
+            "RAT": "24.6",
+            "FPI": 5,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 39.1304347826,
+            "SOS Score": 0.7407407407,
+            "FPI Score": 87.5,
+            "Game Control Score": 70,
+            "championProbability": 0.0032800515,
+            "predictedRank": 18
+          },
+          {
+            "Team": "Michigan",
+            "RECORD": "3-0",
+            "AP POLL": 18,
+            "SOS": 62,
+            "SOR": 6,
+            "Game Control": 71,
+            "RAT": "14.9",
+            "FPI": 20,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 92.7536231884,
+            "SOS Score": 54.8148148148,
+            "FPI Score": 40.625,
+            "Game Control Score": 12.5,
+            "championProbability": 0.0028240153,
+            "predictedRank": 19
+          },
+          {
+            "Team": "Utah",
+            "RECORD": "3-0",
+            "AP POLL": 15,
+            "SOS": 130,
+            "SOR": 36,
+            "Game Control": 13,
+            "RAT": "16.5",
+            "FPI": 15,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 49.2753623188,
+            "SOS Score": 4.4444444444,
+            "FPI Score": 56.25,
+            "Game Control Score": 85,
+            "championProbability": 0.0028017148,
+            "predictedRank": 20
+          },
+          {
+            "Team": "Oregon",
+            "RECORD": "2-1",
+            "AP POLL": 20,
+            "SOS": 67,
+            "SOR": 51,
+            "Game Control": 65,
+            "RAT": "19.2",
+            "FPI": 9,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 27.5362318841,
+            "SOS Score": 51.1111111111,
+            "FPI Score": 75,
+            "Game Control Score": 20,
+            "championProbability": 0.0006286601,
+            "predictedRank": 21
+          },
+          {
+            "Team": "Iowa",
+            "RECORD": "3-0",
+            "AP POLL": 17,
+            "SOS": 119,
+            "SOR": 24,
+            "Game Control": 46,
+            "RAT": "12.1",
+            "FPI": 28,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 66.6666666667,
+            "SOS Score": 12.5925925926,
+            "FPI Score": 15.625,
+            "Game Control Score": 43.75,
+            "championProbability": 0.00042066,
+            "predictedRank": 22
+          },
+          {
+            "Team": "Missouri",
+            "RECORD": "3-0",
+            "AP POLL": 19,
+            "SOS": 112,
+            "SOR": 20,
+            "Game Control": 44,
+            "RAT": "10.5",
+            "FPI": 32,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 72.4637681159,
+            "SOS Score": 17.7777777778,
+            "FPI Score": 3.125,
+            "Game Control Score": 46.25,
+            "championProbability": 0.0004094236,
+            "predictedRank": 23
+          },
+          {
+            "Team": "Houston",
+            "RECORD": "2-1",
+            "AP POLL": 25,
+            "SOS": 42,
+            "SOR": 56,
+            "Game Control": 20,
+            "RAT": "10.8",
+            "FPI": 31,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 20.2898550725,
+            "SOS Score": 69.6296296296,
+            "FPI Score": 6.25,
+            "Game Control Score": 76.25,
+            "championProbability": 0.0002971095,
+            "predictedRank": 24
+          },
+          {
+            "Team": "Texas A&M",
+            "RECORD": "2-1",
+            "AP POLL": 23,
+            "SOS": 90,
+            "SOR": 57,
+            "Game Control": 80,
+            "RAT": "18.2",
+            "FPI": 11,
+            "Year": 2026,
+            "Week": 4,
+            "Source URL": "https://www.espn.com/college-football/playoffPicture/_/week/4/year/2026",
+            "SOR Score": 18.8405797101,
+            "SOS Score": 34.0740740741,
+            "FPI Score": 68.75,
+            "Game Control Score": 1.25,
+            "championProbability": 0.0001340255,
+            "predictedRank": 25
+          }
+        ],
+        "modelPredictions": [
+          {
+            "model": "Balanced ML Blend",
+            "predictedChampion": "Texas",
+            "predictedProbability": 0.27966031874923386,
+            "actualChampionPredictedRank": null,
+            "actualChampionProbability": null
+          },
+          {
+            "model": "Resume Heavy",
+            "predictedChampion": "Ole Miss",
+            "predictedProbability": 0.2537224284876027,
+            "actualChampionPredictedRank": null,
+            "actualChampionProbability": null
+          },
+          {
+            "model": "Power Rating Blend",
+            "predictedChampion": "Texas",
+            "predictedProbability": 0.2369304798659143,
+            "actualChampionPredictedRank": null,
+            "actualChampionProbability": null
+          }
+        ]
       }
     ]
   },
@@ -50238,7 +50749,7 @@
         "games": [
           {
             "id": "401864494",
-            "name": "San Jos\u00e9 State Spartans at USC Trojans",
+            "name": "San José State Spartans at USC Trojans",
             "shortName": "SJSU @ USC",
             "date": "2026-08-29T19:00Z",
             "statusType": "STATUS_FINAL",
@@ -50252,8 +50763,8 @@
               {
                 "homeAway": "away",
                 "teamId": "23",
-                "team": "San Jos\u00e9 State Spartans",
-                "shortName": "San Jos\u00e9 St",
+                "team": "San José State Spartans",
+                "shortName": "San José St",
                 "abbreviation": "SJSU",
                 "rank": null,
                 "score": "26",
@@ -51243,7 +51754,7 @@
                 "abbreviation": "FAMU",
                 "rank": null,
                 "score": "7",
-                "scoreValue": 7.0,
+                "scoreValue": 7,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/50.png"
               },
@@ -51255,7 +51766,7 @@
                 "abbreviation": "MIA",
                 "rank": 7,
                 "score": "77",
-                "scoreValue": 77.0,
+                "scoreValue": 77,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png"
               }
@@ -51282,7 +51793,7 @@
                 "abbreviation": "MIZ",
                 "rank": 23,
                 "score": "38",
-                "scoreValue": 38.0,
+                "scoreValue": 38,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png"
               },
@@ -51294,7 +51805,7 @@
                 "abbreviation": "KU",
                 "rank": null,
                 "score": "21",
-                "scoreValue": 21.0,
+                "scoreValue": 21,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2305.png"
               }
@@ -51321,7 +51832,7 @@
                 "abbreviation": "VILL",
                 "rank": null,
                 "score": "13",
-                "scoreValue": 13.0,
+                "scoreValue": 13,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/222.png"
               },
@@ -51333,7 +51844,7 @@
                 "abbreviation": "LOU",
                 "rank": 24,
                 "score": "59",
-                "scoreValue": 59.0,
+                "scoreValue": 59,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/97.png"
               }
@@ -51360,7 +51871,7 @@
                 "abbreviation": "NORF",
                 "rank": null,
                 "score": "3",
-                "scoreValue": 3.0,
+                "scoreValue": 3,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2450.png"
               },
@@ -51372,7 +51883,7 @@
                 "abbreviation": "UVA",
                 "rank": 25,
                 "score": "59",
-                "scoreValue": 59.0,
+                "scoreValue": 59,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/258.png"
               }
@@ -51399,7 +51910,7 @@
                 "abbreviation": "OSU",
                 "rank": 1,
                 "score": "23",
-                "scoreValue": 23.0,
+                "scoreValue": 23,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png"
               },
@@ -51411,7 +51922,7 @@
                 "abbreviation": "TEX",
                 "rank": 4,
                 "score": "24",
-                "scoreValue": 24.0,
+                "scoreValue": 24,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png"
               }
@@ -51438,7 +51949,7 @@
                 "abbreviation": "WKU",
                 "rank": null,
                 "score": "20",
-                "scoreValue": 20.0,
+                "scoreValue": 20,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png"
               },
@@ -51450,7 +51961,7 @@
                 "abbreviation": "UGA",
                 "rank": 2,
                 "score": "70",
-                "scoreValue": 70.0,
+                "scoreValue": 70,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png"
               }
@@ -51477,7 +51988,7 @@
                 "abbreviation": "RICE",
                 "rank": null,
                 "score": "0",
-                "scoreValue": 0.0,
+                "scoreValue": 0,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/242.png"
               },
@@ -51489,7 +52000,7 @@
                 "abbreviation": "ND",
                 "rank": 3,
                 "score": "52",
-                "scoreValue": 52.0,
+                "scoreValue": 52,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png"
               }
@@ -51516,7 +52027,7 @@
                 "abbreviation": "HOW",
                 "rank": null,
                 "score": "0",
-                "scoreValue": 0.0,
+                "scoreValue": 0,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/47.png"
               },
@@ -51528,7 +52039,7 @@
                 "abbreviation": "IU",
                 "rank": 5,
                 "score": "55",
-                "scoreValue": 55.0,
+                "scoreValue": 55,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/84.png"
               }
@@ -51555,7 +52066,7 @@
                 "abbreviation": "ORE",
                 "rank": 6,
                 "score": "31",
-                "scoreValue": 31.0,
+                "scoreValue": 31,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png"
               },
@@ -51567,7 +52078,7 @@
                 "abbreviation": "OKST",
                 "rank": null,
                 "score": "39",
-                "scoreValue": 39.0,
+                "scoreValue": 39,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/197.png"
               }
@@ -51594,7 +52105,7 @@
                 "abbreviation": "LT",
                 "rank": null,
                 "score": "14",
-                "scoreValue": 14.0,
+                "scoreValue": 14,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2348.png"
               },
@@ -51606,7 +52117,7 @@
                 "abbreviation": "LSU",
                 "rank": 8,
                 "score": "45",
-                "scoreValue": 45.0,
+                "scoreValue": 45,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png"
               }
@@ -51633,7 +52144,7 @@
                 "abbreviation": "CLT",
                 "rank": null,
                 "score": "9",
-                "scoreValue": 9.0,
+                "scoreValue": 9,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2429.png"
               },
@@ -51645,7 +52156,7 @@
                 "abbreviation": "MISS",
                 "rank": 9,
                 "score": "41",
-                "scoreValue": 41.0,
+                "scoreValue": 41,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png"
               }
@@ -51672,7 +52183,7 @@
                 "abbreviation": "ASU",
                 "rank": null,
                 "score": "20",
-                "scoreValue": 20.0,
+                "scoreValue": 20,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/9.png"
               },
@@ -51684,7 +52195,7 @@
                 "abbreviation": "TA&M",
                 "rank": 10,
                 "score": "48",
-                "scoreValue": 48.0,
+                "scoreValue": 48,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png"
               }
@@ -51711,7 +52222,7 @@
                 "abbreviation": "OU",
                 "rank": 11,
                 "score": "10",
-                "scoreValue": 10.0,
+                "scoreValue": 10,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/201.png"
               },
@@ -51723,7 +52234,7 @@
                 "abbreviation": "MICH",
                 "rank": null,
                 "score": "17",
-                "scoreValue": 17.0,
+                "scoreValue": 17,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/130.png"
               }
@@ -51750,7 +52261,7 @@
                 "abbreviation": "ALA",
                 "rank": 12,
                 "score": "45",
-                "scoreValue": 45.0,
+                "scoreValue": 45,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png"
               },
@@ -51762,7 +52273,7 @@
                 "abbreviation": "UK",
                 "rank": null,
                 "score": "17",
-                "scoreValue": 17.0,
+                "scoreValue": 17,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png"
               }
@@ -51789,7 +52300,7 @@
                 "abbreviation": "TTU",
                 "rank": 13,
                 "score": "35",
-                "scoreValue": 35.0,
+                "scoreValue": 35,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png"
               },
@@ -51801,7 +52312,7 @@
                 "abbreviation": "ORST",
                 "rank": null,
                 "score": "24",
-                "scoreValue": 24.0,
+                "scoreValue": 24,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/204.png"
               }
@@ -51828,7 +52339,7 @@
                 "abbreviation": "UL",
                 "rank": null,
                 "score": "30",
-                "scoreValue": 30.0,
+                "scoreValue": 30,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/309.png"
               },
@@ -51840,7 +52351,7 @@
                 "abbreviation": "USC",
                 "rank": 14,
                 "score": "49",
-                "scoreValue": 49.0,
+                "scoreValue": 49,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png"
               }
@@ -51867,7 +52378,7 @@
                 "abbreviation": "ARIZ",
                 "rank": null,
                 "score": "17",
-                "scoreValue": 17.0,
+                "scoreValue": 17,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/12.png"
               },
@@ -51879,7 +52390,7 @@
                 "abbreviation": "BYU",
                 "rank": 15,
                 "score": "28",
-                "scoreValue": 28.0,
+                "scoreValue": 28,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png"
               }
@@ -51906,7 +52417,7 @@
                 "abbreviation": "PSU",
                 "rank": 16,
                 "score": "27",
-                "scoreValue": 27.0,
+                "scoreValue": 27,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/213.png"
               },
@@ -51918,7 +52429,7 @@
                 "abbreviation": "TEM",
                 "rank": null,
                 "score": "9",
-                "scoreValue": 9.0,
+                "scoreValue": 9,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/218.png"
               }
@@ -51945,7 +52456,7 @@
                 "abbreviation": "UCD",
                 "rank": null,
                 "score": "10",
-                "scoreValue": 10.0,
+                "scoreValue": 10,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/302.png"
               },
@@ -51957,7 +52468,7 @@
                 "abbreviation": "SMU",
                 "rank": 17,
                 "score": "56",
-                "scoreValue": 56.0,
+                "scoreValue": 56,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png"
               }
@@ -51984,7 +52495,7 @@
                 "abbreviation": "TENN",
                 "rank": 18,
                 "score": "45",
-                "scoreValue": 45.0,
+                "scoreValue": 45,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png"
               },
@@ -51996,7 +52507,7 @@
                 "abbreviation": "GT",
                 "rank": null,
                 "score": "24",
-                "scoreValue": 24.0,
+                "scoreValue": 24,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/59.png"
               }
@@ -52023,7 +52534,7 @@
                 "abbreviation": "USU",
                 "rank": null,
                 "score": "14",
-                "scoreValue": 14.0,
+                "scoreValue": 14,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/328.png"
               },
@@ -52035,7 +52546,7 @@
                 "abbreviation": "WASH",
                 "rank": 19,
                 "score": "16",
-                "scoreValue": 16.0,
+                "scoreValue": 16,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/264.png"
               }
@@ -52062,7 +52573,7 @@
                 "abbreviation": "ARK",
                 "rank": null,
                 "score": "10",
-                "scoreValue": 10.0,
+                "scoreValue": 10,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/8.png"
               },
@@ -52074,7 +52585,7 @@
                 "abbreviation": "UTAH",
                 "rank": 20,
                 "score": "43",
-                "scoreValue": 43.0,
+                "scoreValue": 43,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png"
               }
@@ -52101,7 +52612,7 @@
                 "abbreviation": "ISU",
                 "rank": null,
                 "score": "13",
-                "scoreValue": 13.0,
+                "scoreValue": 13,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/66.png"
               },
@@ -52113,7 +52624,7 @@
                 "abbreviation": "IOWA",
                 "rank": 21,
                 "score": "16",
-                "scoreValue": 16.0,
+                "scoreValue": 16,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png"
               }
@@ -52140,7 +52651,7 @@
                 "abbreviation": "SOU",
                 "rank": null,
                 "score": "6",
-                "scoreValue": 6.0,
+                "scoreValue": 6,
                 "winner": false,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2582.png"
               },
@@ -52152,9 +52663,878 @@
                 "abbreviation": "HOU",
                 "rank": 22,
                 "score": "77",
-                "scoreValue": 77.0,
+                "scoreValue": 77,
                 "winner": true,
                 "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/248.png"
+              }
+            ]
+          }
+        ]
+      },
+      "3": {
+        "year": 2026,
+        "seasonType": 2,
+        "week": 3,
+        "source": "https://sports.core.api.espn.com/v2/sports/football/leagues/college-football/seasons/2026/types/2/weeks/3/events?limit=300",
+        "updatedAt": "2026-09-21T12:39:23.551511+00:00",
+        "gameCount": 22,
+        "completedGameCount": 22,
+        "games": [
+          {
+            "id": "401858226",
+            "name": "Miami Hurricanes at Wake Forest Demon Deacons",
+            "shortName": "MIA @ WAKE",
+            "date": "2026-09-18T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Allegacy Federal Credit Union Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2390",
+                "team": "Miami Hurricanes",
+                "shortName": "Miami",
+                "abbreviation": "MIA",
+                "rank": 5,
+                "score": "33",
+                "scoreValue": 33,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2390.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "154",
+                "team": "Wake Forest Demon Deacons",
+                "shortName": "Wake Forest",
+                "abbreviation": "WAKE",
+                "rank": null,
+                "score": "20",
+                "scoreValue": 20,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/154.png"
+              }
+            ]
+          },
+          {
+            "id": "401856811",
+            "name": "Houston Cougars at Texas Tech Red Raiders",
+            "shortName": "HOU @ TTU",
+            "date": "2026-09-19T00:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Galaxy Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "248",
+                "team": "Houston Cougars",
+                "shortName": "Houston",
+                "abbreviation": "HOU",
+                "rank": 22,
+                "score": "26",
+                "scoreValue": 26,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/248.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2641",
+                "team": "Texas Tech Red Raiders",
+                "shortName": "Texas Tech",
+                "abbreviation": "TTU",
+                "rank": 13,
+                "score": "28",
+                "scoreValue": 28,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png"
+              }
+            ]
+          },
+          {
+            "id": "401858455",
+            "name": "Portland State Vikings at Oregon Ducks",
+            "shortName": "PRST @ ORE",
+            "date": "2026-09-19T02:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Autzen Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2502",
+                "team": "Portland State Vikings",
+                "shortName": "Portland St",
+                "abbreviation": "PRST",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2502.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2483",
+                "team": "Oregon Ducks",
+                "shortName": "Oregon",
+                "abbreviation": "ORE",
+                "rank": 21,
+                "score": "84",
+                "scoreValue": 84,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2483.png"
+              }
+            ]
+          },
+          {
+            "id": "401856693",
+            "name": "UTSA Roadrunners at Texas Longhorns",
+            "shortName": "UTSA @ TEX",
+            "date": "2026-09-20T00:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "DKR-Texas Memorial Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2636",
+                "team": "UTSA Roadrunners",
+                "shortName": "UTSA",
+                "abbreviation": "UTSA",
+                "rank": null,
+                "score": "6",
+                "scoreValue": 6,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2636.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "251",
+                "team": "Texas Longhorns",
+                "shortName": "Texas",
+                "abbreviation": "TEX",
+                "rank": 1,
+                "score": "30",
+                "scoreValue": 30,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/251.png"
+              }
+            ]
+          },
+          {
+            "id": "401856686",
+            "name": "Georgia Bulldogs at Arkansas Razorbacks",
+            "shortName": "UGA @ ARK",
+            "date": "2026-09-19T16:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Donald W. Reynolds Razorback Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "61",
+                "team": "Georgia Bulldogs",
+                "shortName": "Georgia",
+                "abbreviation": "UGA",
+                "rank": 2,
+                "score": "45",
+                "scoreValue": 45,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/61.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "8",
+                "team": "Arkansas Razorbacks",
+                "shortName": "Arkansas",
+                "abbreviation": "ARK",
+                "rank": null,
+                "score": "17",
+                "scoreValue": 17,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/8.png"
+              }
+            ]
+          },
+          {
+            "id": "401858453",
+            "name": "Michigan State Spartans at Notre Dame Fighting Irish",
+            "shortName": "MSU @ ND",
+            "date": "2026-09-19T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Notre Dame Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "127",
+                "team": "Michigan State Spartans",
+                "shortName": "Michigan St",
+                "abbreviation": "MSU",
+                "rank": null,
+                "score": "10",
+                "scoreValue": 10,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/127.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "87",
+                "team": "Notre Dame Fighting Irish",
+                "shortName": "Notre Dame",
+                "abbreviation": "ND",
+                "rank": 3,
+                "score": "27",
+                "scoreValue": 27,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/87.png"
+              }
+            ]
+          },
+          {
+            "id": "401858449",
+            "name": "Western Kentucky Hilltoppers at Indiana Hoosiers",
+            "shortName": "WKU @ IU",
+            "date": "2026-09-19T20:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Memorial Stadium (Bloomington, IN)",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "98",
+                "team": "Western Kentucky Hilltoppers",
+                "shortName": "Western KY",
+                "abbreviation": "WKU",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/98.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "84",
+                "team": "Indiana Hoosiers",
+                "shortName": "Indiana",
+                "abbreviation": "IU",
+                "rank": 4,
+                "score": "38",
+                "scoreValue": 38,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/84.png"
+              }
+            ]
+          },
+          {
+            "id": "401858454",
+            "name": "Kent State Golden Flashes at Ohio State Buckeyes",
+            "shortName": "KENT @ OSU",
+            "date": "2026-09-19T16:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Ohio Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2309",
+                "team": "Kent State Golden Flashes",
+                "shortName": "Kent State",
+                "abbreviation": "KENT",
+                "rank": null,
+                "score": "3",
+                "scoreValue": 3,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2309.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "194",
+                "team": "Ohio State Buckeyes",
+                "shortName": "Ohio State",
+                "abbreviation": "OSU",
+                "rank": 6,
+                "score": "59",
+                "scoreValue": 59,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/194.png"
+              }
+            ]
+          },
+          {
+            "id": "401856688",
+            "name": "LSU Tigers at Ole Miss Rebels",
+            "shortName": "LSU @ MISS",
+            "date": "2026-09-19T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Vaught-Hemingway Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "99",
+                "team": "LSU Tigers",
+                "shortName": "LSU",
+                "abbreviation": "LSU",
+                "rank": 7,
+                "score": "24",
+                "scoreValue": 24,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/99.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "145",
+                "team": "Ole Miss Rebels",
+                "shortName": "Ole Miss",
+                "abbreviation": "MISS",
+                "rank": 8,
+                "score": "32",
+                "scoreValue": 32,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/145.png"
+              }
+            ]
+          },
+          {
+            "id": "401856694",
+            "name": "Kentucky Wildcats at Texas A&M Aggies",
+            "shortName": "UK @ TA&M",
+            "date": "2026-09-19T19:40Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Kyle Field",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "96",
+                "team": "Kentucky Wildcats",
+                "shortName": "Kentucky",
+                "abbreviation": "UK",
+                "rank": null,
+                "score": "31",
+                "scoreValue": 31,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/96.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "245",
+                "team": "Texas A&M Aggies",
+                "shortName": "Texas A&M",
+                "abbreviation": "TA&M",
+                "rank": 9,
+                "score": "21",
+                "scoreValue": 21,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/245.png"
+              }
+            ]
+          },
+          {
+            "id": "401856685",
+            "name": "Florida State Seminoles at Alabama Crimson Tide",
+            "shortName": "FSU @ ALA",
+            "date": "2026-09-19T21:15Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Bryant-Denny Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "52",
+                "team": "Florida State Seminoles",
+                "shortName": "Florida St",
+                "abbreviation": "FSU",
+                "rank": null,
+                "score": "36",
+                "scoreValue": 36,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/52.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "333",
+                "team": "Alabama Crimson Tide",
+                "shortName": "Alabama",
+                "abbreviation": "ALA",
+                "rank": 10,
+                "score": "50",
+                "scoreValue": 50,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/333.png"
+              }
+            ]
+          },
+          {
+            "id": "401856795",
+            "name": "BYU Cougars at Colorado State Rams",
+            "shortName": "BYU @ CSU",
+            "date": "2026-09-20T00:15Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Canvas Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "252",
+                "team": "BYU Cougars",
+                "shortName": "BYU",
+                "abbreviation": "BYU",
+                "rank": 11,
+                "score": "41",
+                "scoreValue": 41,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/252.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "36",
+                "team": "Colorado State Rams",
+                "shortName": "Colorado St",
+                "abbreviation": "CSU",
+                "rank": null,
+                "score": "23",
+                "scoreValue": 23,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/36.png"
+              }
+            ]
+          },
+          {
+            "id": "401858457",
+            "name": "USC Trojans at Rutgers Scarlet Knights",
+            "shortName": "USC @ RUTG",
+            "date": "2026-09-19T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "SHI Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "30",
+                "team": "USC Trojans",
+                "shortName": "USC",
+                "abbreviation": "USC",
+                "rank": 12,
+                "score": "42",
+                "scoreValue": 42,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/30.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "164",
+                "team": "Rutgers Scarlet Knights",
+                "shortName": "Rutgers",
+                "abbreviation": "RUTG",
+                "rank": null,
+                "score": "35",
+                "scoreValue": 35,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/164.png"
+              }
+            ]
+          },
+          {
+            "id": "401858456",
+            "name": "Buffalo Bulls at Penn State Nittany Lions",
+            "shortName": "BUFF @ PSU",
+            "date": "2026-09-19T16:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Beaver Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2084",
+                "team": "Buffalo Bulls",
+                "shortName": "Buffalo",
+                "abbreviation": "BUFF",
+                "rank": null,
+                "score": "13",
+                "scoreValue": 13,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2084.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "213",
+                "team": "Penn State Nittany Lions",
+                "shortName": "Penn State",
+                "abbreviation": "PSU",
+                "rank": 14,
+                "score": "55",
+                "scoreValue": 55,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/213.png"
+              }
+            ]
+          },
+          {
+            "id": "401856692",
+            "name": "Kennesaw State Owls at Tennessee Volunteers",
+            "shortName": "KENN @ TENN",
+            "date": "2026-09-19T23:45Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Neyland Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "338",
+                "team": "Kennesaw State Owls",
+                "shortName": "Kennesaw St",
+                "abbreviation": "KENN",
+                "rank": null,
+                "score": "9",
+                "scoreValue": 9,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/338.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2633",
+                "team": "Tennessee Volunteers",
+                "shortName": "Tennessee",
+                "abbreviation": "TENN",
+                "rank": 15,
+                "score": "42",
+                "scoreValue": 42,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2633.png"
+              }
+            ]
+          },
+          {
+            "id": "401858230",
+            "name": "SMU Mustangs at Louisville Cardinals",
+            "shortName": "SMU @ LOU",
+            "date": "2026-09-19T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "L&N Federal Credit Union Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2567",
+                "team": "SMU Mustangs",
+                "shortName": "SMU",
+                "abbreviation": "SMU",
+                "rank": 16,
+                "score": "31",
+                "scoreValue": 31,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2567.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "97",
+                "team": "Louisville Cardinals",
+                "shortName": "Louisville",
+                "abbreviation": "LOU",
+                "rank": 23,
+                "score": "41",
+                "scoreValue": 41,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/97.png"
+              }
+            ]
+          },
+          {
+            "id": "401856801",
+            "name": "Utah State Aggies at Utah Utes",
+            "shortName": "USU @ UTAH",
+            "date": "2026-09-19T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Rice-Eccles Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "328",
+                "team": "Utah State Aggies",
+                "shortName": "Utah State",
+                "abbreviation": "USU",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/328.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "254",
+                "team": "Utah Utes",
+                "shortName": "Utah",
+                "abbreviation": "UTAH",
+                "rank": 17,
+                "score": "33",
+                "scoreValue": 33,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/254.png"
+              }
+            ]
+          },
+          {
+            "id": "401858471",
+            "name": "Northern Iowa Panthers at Iowa Hawkeyes",
+            "shortName": "UNI @ IOWA",
+            "date": "2026-09-19T20:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Kinnick Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2460",
+                "team": "Northern Iowa Panthers",
+                "shortName": "Northern Iowa",
+                "abbreviation": "UNI",
+                "rank": null,
+                "score": "0",
+                "scoreValue": 0,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2460.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "2294",
+                "team": "Iowa Hawkeyes",
+                "shortName": "Iowa",
+                "abbreviation": "IOWA",
+                "rank": 18,
+                "score": "55",
+                "scoreValue": 55,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png"
+              }
+            ]
+          },
+          {
+            "id": "401858450",
+            "name": "UTEP Miners at Michigan Wolverines",
+            "shortName": "UTEP @ MICH",
+            "date": "2026-09-19T19:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Michigan Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2638",
+                "team": "UTEP Miners",
+                "shortName": "UTEP",
+                "abbreviation": "UTEP",
+                "rank": null,
+                "score": "17",
+                "scoreValue": 17,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2638.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "130",
+                "team": "Michigan Wolverines",
+                "shortName": "Michigan",
+                "abbreviation": "MICH",
+                "rank": 19,
+                "score": "52",
+                "scoreValue": 52,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/130.png"
+              }
+            ]
+          },
+          {
+            "id": "401856689",
+            "name": "Troy Trojans at Missouri Tigers",
+            "shortName": "TROY @ MIZ",
+            "date": "2026-09-19T23:00Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Memorial Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "2653",
+                "team": "Troy Trojans",
+                "shortName": "Troy",
+                "abbreviation": "TROY",
+                "rank": null,
+                "score": "17",
+                "scoreValue": 17,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/2653.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "142",
+                "team": "Missouri Tigers",
+                "shortName": "Missouri",
+                "abbreviation": "MIZ",
+                "rank": 20,
+                "score": "27",
+                "scoreValue": 27,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/142.png"
+              }
+            ]
+          },
+          {
+            "id": "401856690",
+            "name": "New Mexico Lobos at Oklahoma Sooners",
+            "shortName": "UNM @ OU",
+            "date": "2026-09-19T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Memorial Stadium (Norman, OK)",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "167",
+                "team": "New Mexico Lobos",
+                "shortName": "New Mexico",
+                "abbreviation": "UNM",
+                "rank": null,
+                "score": "6",
+                "scoreValue": 6,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/167.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "201",
+                "team": "Oklahoma Sooners",
+                "shortName": "Oklahoma",
+                "abbreviation": "OU",
+                "rank": 24,
+                "score": "14",
+                "scoreValue": 14,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/201.png"
+              }
+            ]
+          },
+          {
+            "id": "401856802",
+            "name": "West Virginia Mountaineers at Virginia Cavaliers",
+            "shortName": "WVU VS UVA",
+            "date": "2026-09-19T23:30Z",
+            "statusType": "STATUS_FINAL",
+            "statusDetail": "Final",
+            "statusShort": "Final",
+            "completed": true,
+            "period": 4,
+            "clock": "0:00",
+            "venue": "Bank of America Stadium",
+            "competitors": [
+              {
+                "homeAway": "away",
+                "teamId": "277",
+                "team": "West Virginia Mountaineers",
+                "shortName": "West Virginia",
+                "abbreviation": "WVU",
+                "rank": null,
+                "score": "38",
+                "scoreValue": 38,
+                "winner": true,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/277.png"
+              },
+              {
+                "homeAway": "home",
+                "teamId": "258",
+                "team": "Virginia Cavaliers",
+                "shortName": "Virginia",
+                "abbreviation": "UVA",
+                "rank": 25,
+                "score": "27",
+                "scoreValue": 27,
+                "winner": false,
+                "logo": "https://a.espncdn.com/i/teamlogos/ncaa/500/258.png"
               }
             ]
           }

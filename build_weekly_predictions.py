@@ -275,6 +275,7 @@ def update_current_season_page(payload: dict, current_year: int, rows: list[dict
 
 def main() -> None:
     payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+    existing_weekly = payload.get("weeklyPredictions", {})
     current_year = current_college_football_season()
     years = COMPLETED_YEARS + ([] if current_year in COMPLETED_YEARS else [current_year])
     weekly = {}
@@ -283,11 +284,20 @@ def main() -> None:
         actual = season.get("actualChampion", "TBD")
         if year == current_year and year not in COMPLETED_YEARS:
             actual = "TBD"
-        season_rows = []
+        fetched_by_week = {}
         for week in WEEKS:
             prediction = predict_week(year, week, actual)
             if prediction is not None:
-                season_rows.append(prediction)
+                fetched_by_week[week] = prediction
+        existing_by_week = {
+            int(row["week"]): row
+            for row in existing_weekly.get(str(year), [])
+            if row.get("week") is not None
+        }
+        # ESPN occasionally stops returning an older weekly page. Preserve a
+        # previously captured snapshot unless a fresh response replaces it.
+        existing_by_week.update(fetched_by_week)
+        season_rows = [existing_by_week[week] for week in sorted(existing_by_week)]
         weekly[str(year)] = season_rows
         print(year, len(season_rows), [row["predictedChampion"] for row in season_rows])
     payload["weeklyPredictions"] = weekly
