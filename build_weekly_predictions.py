@@ -282,6 +282,11 @@ def main() -> None:
     for year in years:
         season = payload["seasonPredictions"].get(str(year), {})
         actual = season.get("actualChampion", "TBD")
+        if year in COMPLETED_YEARS and existing_weekly.get(str(year)):
+            season_rows = existing_weekly[str(year)]
+            weekly[str(year)] = season_rows
+            print(year, len(season_rows), [row["predictedChampion"] for row in season_rows])
+            continue
         if year == current_year and year not in COMPLETED_YEARS:
             actual = "TBD"
         fetched_by_week = {}
