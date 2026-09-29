@@ -294,11 +294,33 @@ def model_comparison(payload: dict) -> pd.DataFrame:
     frame = pd.DataFrame(payload["models"])
     frame["Top Probability"] = frame["championProbability"].map(pct)
     frame["Picked Champion"] = frame["pickedChampion"].map(lambda value: "Yes" if value else "No")
-    return frame[["model", "holdoutPick", "Top Probability", "holdoutLogLoss", "Picked Champion"]].rename(
+    frame["CV Hit"] = frame["top1Rate"].map(pct)
+    frame["CV Top 3"] = frame["top3Rate"].map(pct)
+    return frame[
+        [
+            "model",
+            "holdoutPick",
+            "holdoutChampionRank",
+            "Top Probability",
+            "CV Hit",
+            "CV Top 3",
+            "meanChampionRank",
+            "meanChampionNll",
+            "meanBrierScore",
+            "rocAuc",
+            "averagePrecision",
+            "Picked Champion",
+        ]
+    ].rename(
         columns={
             "model": "Model",
             "holdoutPick": "2025 Pick",
-            "holdoutLogLoss": "Holdout Log Loss",
+            "holdoutChampionRank": "2025 Champ Rank",
+            "meanChampionRank": "Mean Champ Rank",
+            "meanChampionNll": "Champion NLL",
+            "meanBrierScore": "Brier",
+            "rocAuc": "ROC AUC",
+            "averagePrecision": "Avg Precision",
         }
     )
 
@@ -368,12 +390,14 @@ def main() -> None:
     st.title("NCAAF Champion ML Predictor")
     st.caption("Machine-learning champion predictions for historical champions plus the current season's weekly snapshots.")
 
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
     c1.metric("Predicted Champion", season["predictedChampion"], pct(season["topProbability"]))
     actual_delta = f"Through week {season.get('latestWeek')}" if is_current_season else f"Projected rank {season['actualChampionPredictedRank']}"
     c2.metric("Actual Champion", season["actualChampion"], actual_delta)
     c3.metric("Backtest Hit Rate", pct(payload["summary"]["backtestHitRate"]))
     c4.metric("Top-3 Champ Coverage", pct(payload["summary"]["backtestTop3Rate"]))
+    c5.metric("Mean Champion Rank", f"{payload['summary']['meanChampionRank']:.2f}")
+    c6.metric("Champion NLL", f"{payload['summary']['meanChampionNll']:.2f}")
 
     chart_col, feature_col = st.columns([1.6, 1])
     with chart_col:
@@ -426,6 +450,8 @@ def main() -> None:
         "Defense",
         "FPI",
         "Game Control",
+        "Consensus Score",
+        "Balance Score",
     ]
     st.dataframe(
         display.reindex(columns=columns).rename(
@@ -445,6 +471,21 @@ def main() -> None:
     with model_col:
         st.subheader("Model Comparison")
         st.dataframe(model_comparison(payload), use_container_width=True, hide_index=True)
+
+    st.subheader("Dataset Coverage")
+    metrics = payload["meta"].get("datasetMetrics", {})
+    metric_cols = st.columns(6)
+    metric_labels = [
+        ("Team-seasons", "teamSeasons"),
+        ("Seasons", "seasons"),
+        ("Programs", "teams"),
+        ("Source metrics", "sourceMetrics"),
+        ("Engineered metrics", "engineeredMetrics"),
+        ("Models", "modelsEvaluated"),
+    ]
+    for column, (label, key) in zip(metric_cols, metric_labels):
+        column.metric(label, metrics.get(key, "-"))
+    st.caption(payload["meta"].get("modelEvaluation", ""))
 
     st.subheader("Sources")
     for source in payload["meta"]["sources"]:

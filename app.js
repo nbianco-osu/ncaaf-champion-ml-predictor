@@ -10,6 +10,7 @@ const state = {
 const fmtPct = (value) => (Number.isFinite(Number(value)) ? `${(Number(value) * 100).toFixed(1)}%` : "-");
 const fmtRank = (value) => (Number.isFinite(Number(value)) ? Number(value).toLocaleString() : "-");
 const fmtScore = (value) => (Number.isFinite(Number(value)) ? String(value) : "-");
+const fmtDecimal = (value, digits = 2) => (Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : "-");
 const max = (items, key) => Math.max(...items.map((item) => Number(item[key])));
 const teamLogoIds = {
   Alabama: 333,
@@ -85,7 +86,9 @@ function renderSummary() {
   document.getElementById("weeklySeasonLabel").textContent = `${season.year} week by week`;
   document.getElementById("hitRate").textContent = fmtPct(summary.backtestHitRate);
   document.getElementById("top3Rate").textContent = fmtPct(summary.backtestTop3Rate);
-  document.getElementById("modelChip").textContent = meta.selectedModel;
+  document.getElementById("meanChampionRank").textContent = fmtDecimal(summary.meanChampionRank);
+  document.getElementById("championNll").textContent = fmtDecimal(summary.meanChampionNll);
+  document.getElementById("modelChip").textContent = isCurrentSeason ? "Balanced weekly blend" : meta.selectedModel;
   const weeklySelect = document.getElementById("weeklyModel");
   const weeklyModels = meta.weeklyModels || ["Balanced ML Blend"];
   if (!weeklySelect.options.length) {
@@ -205,11 +208,23 @@ function renderModelCards() {
     .map(
       (model) => `
       <div class="model-row">
-        <div>
-          <strong>${model.model}</strong>
-          <p>2025 holdout pick: ${model.holdoutPick} - ${fmtPct(model.championProbability)} top probability - log loss ${model.holdoutLogLoss.toFixed(3)}</p>
+        <div class="model-row-main">
+          <div class="model-title">
+            <strong>${model.model}</strong>
+            ${model.selected ? `<span class="selected-model">Selected</span>` : ""}
+          </div>
+          <p>2025 pick: ${model.holdoutPick} at ${fmtPct(model.championProbability)}; champion ranked ${model.holdoutChampionRank}.</p>
+          <div class="model-metrics">
+            <span><b>${fmtPct(model.top1Rate)}</b> CV hit</span>
+            <span><b>${fmtPct(model.top3Rate)}</b> top 3</span>
+            <span><b>${fmtDecimal(model.meanChampionRank)}</b> mean rank</span>
+            <span><b>${fmtDecimal(model.meanChampionNll)}</b> NLL</span>
+            <span><b>${fmtDecimal(model.meanBrierScore, 3)}</b> Brier</span>
+            <span><b>${fmtDecimal(model.rocAuc, 3)}</b> ROC AUC</span>
+            <span><b>${fmtDecimal(model.averagePrecision, 3)}</b> avg precision</span>
+          </div>
         </div>
-        <span class="status">${model.pickedChampion ? "Hit" : "Miss"}</span>
+        <span class="status ${model.pickedChampion ? "" : "is-miss"}">${model.pickedChampion ? "2025 hit" : "2025 miss"}</span>
       </div>
     `,
     )
@@ -223,7 +238,8 @@ function renderBacktestChart() {
   const height = 260;
   const pad = { top: 18, right: 18, bottom: 36, left: 42 };
   const x = (index) => pad.left + (index / (rows.length - 1)) * (width - pad.left - pad.right);
-  const y = (rank) => pad.top + ((rank - 1) / 4) * (height - pad.top - pad.bottom);
+  const maxRank = Math.max(5, ...rows.map((row) => Number(row.actualChampionPredictedRank) || 1));
+  const y = (rank) => pad.top + ((rank - 1) / (maxRank - 1)) * (height - pad.top - pad.bottom);
   const points = rows.map((row, index) => `${x(index)},${y(row.actualChampionPredictedRank)}`).join(" ");
   const hitDots = rows
     .map((row, index) => {
@@ -237,7 +253,9 @@ function renderBacktestChart() {
     .filter((_, index) => index % 2 === 0 || index === rows.length - 1)
     .map((row, index) => `<text x="${x(index * 2 >= rows.length ? rows.length - 1 : index * 2)}" y="${height - 10}" text-anchor="middle">${row.year}</text>`)
     .join("");
-  const rankLabels = [1, 2, 3, 4, 5]
+  const rankStep = maxRank <= 6 ? 1 : 2;
+  const rankLabels = Array.from({ length: Math.ceil((maxRank - 1) / rankStep) + 1 }, (_, index) => 1 + index * rankStep)
+    .filter((rank) => rank <= maxRank)
     .map((rank) => `<text x="28" y="${y(rank) + 4}" text-anchor="end">${rank}</text><line x1="${pad.left}" x2="${width - pad.right}" y1="${y(rank)}" y2="${y(rank)}" stroke="#e5ecef"/>`)
     .join("");
 
@@ -249,6 +267,22 @@ function renderBacktestChart() {
       <text x="8" y="18" transform="rotate(-90 8 18)" class="axis-title">Projected rank</text>
     </svg>
   `;
+}
+
+function renderDatasetMetrics() {
+  const metrics = state.data.meta.datasetMetrics || {};
+  const rows = [
+    ["Team-seasons", metrics.teamSeasons],
+    ["Seasons", metrics.seasons],
+    ["Programs", metrics.teams],
+    ["Source metrics", metrics.sourceMetrics],
+    ["Engineered metrics", metrics.engineeredMetrics],
+    ["Models", metrics.modelsEvaluated],
+  ];
+  document.getElementById("datasetMetrics").innerHTML = rows
+    .map(([label, value]) => `<div><strong>${fmtRank(value)}</strong><span>${label}</span></div>`)
+    .join("");
+  document.getElementById("evaluationNote").textContent = state.data.meta.modelEvaluation || "";
 }
 
 function renderTable() {
@@ -269,6 +303,8 @@ function renderTable() {
         <td>${fmtRank(row.Defense)}</td>
         <td>${fmtRank(row.FPI)}</td>
         <td>${fmtRank(row["Game Control"])}</td>
+        <td>${fmtDecimal(row["Consensus Score"], 1)}</td>
+        <td>${fmtDecimal(row["Balance Score"], 1)}</td>
       </tr>
     `,
     )
@@ -406,6 +442,7 @@ function renderAll() {
   renderProbabilityChart();
   renderFeatureImportance();
   renderModelCards();
+  renderDatasetMetrics();
   renderBacktestChart();
   renderWeeklyTimeline();
   renderTable();

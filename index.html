@@ -21,6 +21,7 @@
           <a href="#scores">Scores</a>
           <a href="#model">Model</a>
           <a href="#backtest">Backtest</a>
+          <a href="#metrics">Metrics</a>
           <a href="#data">Data</a>
         </nav>
         <div class="source-box">
@@ -76,6 +77,16 @@
             <strong id="top3Rate">-</strong>
             <p>Actual champ landed in the model top 3 for completed seasons.</p>
           </article>
+          <article class="metric-card">
+            <span>Mean champion rank</span>
+            <strong id="meanChampionRank">-</strong>
+            <p>Average projected finish of the eventual champion.</p>
+          </article>
+          <article class="metric-card">
+            <span>Champion NLL</span>
+            <strong id="championNll">-</strong>
+            <p>Lower is better for probability assigned to the champion.</p>
+          </article>
         </section>
 
         <section class="panel scores-panel" id="scores">
@@ -123,6 +134,18 @@
             </div>
             <div id="importanceChart" class="mini-bars"></div>
           </article>
+        </section>
+
+        <section class="panel" id="metrics">
+          <div class="panel-head">
+            <div>
+              <p class="small-label">Dataset coverage</p>
+              <h3>Training data and evaluation metrics</h3>
+            </div>
+            <span class="model-chip">Forward-season validation</span>
+          </div>
+          <div id="datasetMetrics" class="dataset-metrics"></div>
+          <p id="evaluationNote" class="muted evaluation-note"></p>
         </section>
 
         <section class="panel-grid">
@@ -184,6 +207,8 @@
                   <th>Def</th>
                   <th>FPI</th>
                   <th>GC</th>
+                  <th>Consensus</th>
+                  <th>Balance</th>
                 </tr>
               </thead>
               <tbody id="resultsBody"></tbody>

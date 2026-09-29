@@ -39,6 +39,24 @@ MODEL_WEIGHTS = {
         "SOR Score": 0.20,
         "SOS Score": 0.08,
     },
+    "Consensus Equal Weight": {
+        "SOR Score": 0.25,
+        "SOS Score": 0.25,
+        "FPI Score": 0.25,
+        "Game Control Score": 0.25,
+    },
+    "FPI Resume Ensemble": {
+        "SOR Score": 0.35,
+        "FPI Score": 0.35,
+        "Game Control Score": 0.20,
+        "SOS Score": 0.10,
+    },
+    "Game Control Focus": {
+        "Game Control Score": 0.40,
+        "SOR Score": 0.30,
+        "FPI Score": 0.20,
+        "SOS Score": 0.10,
+    },
 }
 
 
@@ -310,7 +328,8 @@ def main() -> None:
     payload["meta"]["weeklyModels"] = list(MODEL_WEIGHTS.keys())
     payload["meta"]["weeklySourceNote"] = (
         "Weekly predictions use ESPN College Football Playoff Picture snapshots by week/year. "
-        "The current season updates as new weekly snapshots become available."
+        "The chart compares six resume, power, consensus, and game-control blends; "
+        "the current season updates as new weekly snapshots become available."
     )
     rendered = json.dumps(payload, indent=2)
     DATA_PATH.write_text(rendered, encoding="utf-8")

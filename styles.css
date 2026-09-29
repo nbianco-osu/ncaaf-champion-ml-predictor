@@ -224,6 +224,10 @@ select {
   margin-bottom: 14px;
 }
 
+.summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .metric-card,
 .panel {
   background: var(--panel);
@@ -375,6 +379,41 @@ h3 {
   font-size: 12px;
 }
 
+.model-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.selected-model {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #dce8f5;
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.model-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.model-metrics span {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.model-metrics b {
+  display: block;
+  color: var(--ink);
+  font-size: 13px;
+}
+
 .status {
   padding: 6px 9px;
   border-radius: 999px;
@@ -382,6 +421,46 @@ h3 {
   color: var(--green);
   font-size: 12px;
   font-weight: 850;
+}
+
+.status.is-miss {
+  background: #f3e1e0;
+  color: var(--red);
+}
+
+.dataset-metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-block: 1px solid var(--line);
+}
+
+.dataset-metrics > div {
+  padding: 16px 14px;
+  border-right: 1px solid var(--line);
+}
+
+.dataset-metrics > div:last-child {
+  border-right: 0;
+}
+
+.dataset-metrics strong,
+.dataset-metrics span {
+  display: block;
+}
+
+.dataset-metrics strong {
+  font-size: 24px;
+}
+
+.dataset-metrics span {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.evaluation-note {
+  margin-top: 14px;
+  line-height: 1.5;
 }
 
 .scores-panel {
@@ -698,6 +777,14 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .dataset-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dataset-metrics > div:nth-child(3) {
+    border-right: 0;
+  }
+
   main {
     padding: 22px;
   }
@@ -724,5 +811,21 @@ footer {
 
   .scores-actions {
     margin-top: 10px;
+  }
+
+  .model-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dataset-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dataset-metrics > div:nth-child(odd) {
+    border-right: 1px solid var(--line);
+  }
+
+  .dataset-metrics > div:nth-child(even) {
+    border-right: 0;
   }
 }

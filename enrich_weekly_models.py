@@ -7,6 +7,7 @@ from pathlib import Path
 
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
+PUBLIC_DATA_PATH = APP_DIR / "public" / "data" / "app-data.json"
 
 MODEL_WEIGHTS = {
     "Balanced ML Blend": {
@@ -26,6 +27,24 @@ MODEL_WEIGHTS = {
         "Game Control Score": 0.26,
         "SOR Score": 0.20,
         "SOS Score": 0.08,
+    },
+    "Consensus Equal Weight": {
+        "SOR Score": 0.25,
+        "SOS Score": 0.25,
+        "FPI Score": 0.25,
+        "Game Control Score": 0.25,
+    },
+    "FPI Resume Ensemble": {
+        "SOR Score": 0.35,
+        "FPI Score": 0.35,
+        "Game Control Score": 0.20,
+        "SOS Score": 0.10,
+    },
+    "Game Control Focus": {
+        "Game Control Score": 0.40,
+        "SOR Score": 0.30,
+        "FPI Score": 0.20,
+        "SOS Score": 0.10,
     },
 }
 
@@ -93,9 +112,11 @@ def main() -> None:
     payload["meta"]["weeklyModels"] = list(MODEL_WEIGHTS.keys())
     payload["meta"]["weeklySourceNote"] = (
         "Weekly predictions use ESPN College Football Playoff Picture snapshots by week/year. "
-        "The weekly chart can switch between a balanced model, a resume-heavy model, and a power-rating blend using SOS, SOR, Game Control, and FPI rank."
+        "The weekly chart can switch among six resume, power, consensus, and game-control blends using SOS, SOR, Game Control, and FPI rank."
     )
-    DATA_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    rendered = json.dumps(payload, indent=2)
+    DATA_PATH.write_text(rendered, encoding="utf-8")
+    PUBLIC_DATA_PATH.write_text(rendered, encoding="utf-8")
 
 
 if __name__ == "__main__":

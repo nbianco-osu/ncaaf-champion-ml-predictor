@@ -38,9 +38,17 @@ streamlit run streamlit_app.py
 - `streamlit_app.py` - Streamlit Cloud entrypoint
 - `requirements.txt` - Streamlit dependencies
 - `build_weekly_predictions.py` - utility script that refreshes weekly prediction snapshots
+- `train_models.py` - reproducible seven-model training, forward-season backtesting, and dashboard data refresh
 - `data/app-data.json` - trained model outputs and season prediction records
 - `data/cfb_top25_2005_2025.csv` - augmented top-25 dataset
 
 ## Model
 
-The app uses offline-trained model outputs from the source CFB dataset plus 2025 final-season metrics. The selected model is Gradient Boosting, trained on prior seasons and displayed with holdout/backtest context in the dashboard.
+The app compares logistic regression, random forest, extra trees, gradient boosting, histogram gradient boosting, an RBF support vector machine, and a soft-voting ensemble. Models use six source rankings plus engineered resume, efficiency, power, balance, consensus, consistency, and elite-signal metrics. Selection is based on forward-season backtesting, and the dashboard reports top-1/top-3 coverage, champion rank, reciprocal rank, negative log likelihood, Brier score, ROC AUC, and average precision.
+
+Regenerate the model outputs with:
+
+```bash
+python train_models.py
+python enrich_weekly_models.py
+```
