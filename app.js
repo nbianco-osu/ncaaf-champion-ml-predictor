@@ -4,8 +4,11 @@ const state = {
   query: "",
   sortMode: "predictedRank",
   selectedYear: null,
+  weeklyYear: null,
   weeklyModel: "Weekly ML Ensemble",
   movementCount: 8,
+  currentView: "overview",
+  watchlist: JSON.parse(localStorage.getItem("ncaaf-watchlist") || "[]"),
 };
 
 const fmtPct = (value) => (Number.isFinite(Number(value)) ? `${(Number(value) * 100).toFixed(1)}%` : "-");
@@ -60,7 +63,16 @@ function currentSeason() {
 }
 
 function currentWeeklyRows() {
-  return state.data.weeklyPredictions?.[state.selectedYear] || [];
+  return state.data.weeklyPredictions?.[state.weeklyYear] || [];
+}
+
+async function loadWeeklyYear(year) {
+  const key = String(year);
+  if (state.data.weeklyPredictions?.[key]) return;
+  const response = await fetch(`./data/weekly-${key}.json?v=${state.data.meta.dataVersion || state.data.meta.dataHealth?.lastUpdatedAt || "1"}`);
+  if (!response.ok) throw new Error(`Weekly ${key} data returned ${response.status}`);
+  const shard = await response.json();
+  state.data.weeklyPredictions[key] = shard.snapshots || [];
 }
 
 function seasonYears() {
@@ -94,7 +106,7 @@ function renderSummary() {
     : `Actual champion projected rank: ${season.actualChampionPredictedRank}.`;
   document.getElementById("chartSeasonLabel").textContent = `${season.year} top 10`;
   document.getElementById("tableSeasonLabel").textContent = isCurrentSeason ? `Current ${season.year} snapshot` : `Final ${season.year} top 25`;
-  document.getElementById("weeklySeasonLabel").textContent = `${season.year} week by week`;
+  document.getElementById("weeklySeasonLabel").textContent = `${state.weeklyYear} week by week`;
   document.getElementById("hitRate").textContent = fmtPct(summary.backtestHitRate);
   document.getElementById("top3Rate").textContent = fmtPct(summary.backtestTop3Rate);
   document.getElementById("meanChampionRank").textContent = fmtDecimal(summary.meanChampionRank);
@@ -153,9 +165,85 @@ function renderPredictionExplanation() {
   `;
 }
 
+function renderUncertainty() {
+  const rows = currentSeason().records.slice(0, 6);
+  const container = document.getElementById("uncertaintyPanel");
+  container.innerHTML = rows.map((row) => {
+    const low = Number(row.modelProbabilityMin ?? row.championProbability);
+    const high = Number(row.modelProbabilityMax ?? row.championProbability);
+    const mean = Number(row.modelProbabilityMean ?? row.championProbability);
+    const spread = Number(row.modelProbabilityStdDev || 0);
+    return `<div class="uncertainty-row">
+      <div><strong>${row.Team}</strong><span>${fmtPct(mean)} mean · σ ${fmtPct(spread)}</span></div>
+      <div class="uncertainty-track"><i style="left:${Math.min(100, low * 100)}%;width:${Math.max(2, (high - low) * 100)}%"></i><b style="left:${Math.min(100, mean * 100)}%"></b></div>
+      <small>${fmtPct(low)}–${fmtPct(high)}</small>
+    </div>`;
+  }).join("");
+}
+
+function saveWatchlist() {
+  localStorage.setItem("ncaaf-watchlist", JSON.stringify(state.watchlist));
+}
+
+function renderWatchlist() {
+  const rows = currentSeason().records;
+  const weekly = state.data.weeklyPredictions?.[String(state.data.meta.currentSeason)] || [];
+  const latest = weekly.at(-1);
+  const prior = weekly.at(-2);
+  const container = document.getElementById("watchlistGrid");
+  if (!state.watchlist.length) {
+    container.innerHTML = `<p class="muted">Add contenders to track probability thresholds and weekly moves.</p>`;
+    return;
+  }
+  container.innerHTML = state.watchlist.map((watch) => {
+    const row = rows.find((item) => item.Team === watch.team);
+    if (!row) return "";
+    const now = latest?.records.find((item) => item.Team === watch.team)?.mlChampionProbability ?? row.championProbability;
+    const before = prior?.records.find((item) => item.Team === watch.team)?.mlChampionProbability ?? now;
+    const delta = Number(now) - Number(before);
+    const hit = Number(now) >= Number(watch.threshold);
+    const moved = Math.abs(delta) >= .02;
+    return `<article class="watch-card ${hit || moved ? "has-alert" : ""}">
+      <button class="watch-remove" data-remove-watch="${watch.team}" type="button" aria-label="Remove ${watch.team}">×</button>
+      <div><strong>${watch.team}</strong><span>#${row.predictedRank} · ${fmtPct(now)}</span></div>
+      <p>${hit ? `Threshold reached: ${fmtPct(watch.threshold)}` : moved ? `Moved ${fmtSigned(delta * 100)} pts this week` : `Weekly move ${fmtSigned(delta * 100)} pts`}</p>
+      <label>Alert at <input data-watch-threshold="${watch.team}" type="number" min="1" max="90" step="1" value="${Math.round(Number(watch.threshold) * 100)}" />%</label>
+    </article>`;
+  }).join("");
+  container.querySelectorAll("[data-remove-watch]").forEach((button) => button.addEventListener("click", () => {
+    state.watchlist = state.watchlist.filter((item) => item.team !== button.dataset.removeWatch);
+    saveWatchlist();
+    renderWatchlist();
+  }));
+  container.querySelectorAll("[data-watch-threshold]").forEach((input) => input.addEventListener("change", () => {
+    const watch = state.watchlist.find((item) => item.team === input.dataset.watchThreshold);
+    if (watch) watch.threshold = Math.max(.01, Math.min(.9, Number(input.value) / 100));
+    saveWatchlist();
+    renderWatchlist();
+  }));
+}
+
+function renderAdvancedMetrics() {
+  const rows = currentSeason().records;
+  const select = document.getElementById("metricsTeam");
+  const team = rows.find((row) => row.Team === select.value) || rows[0];
+  const metrics = [
+    ["Points/game", team["Points For"], (v) => fmtDecimal(v, 1)],
+    ["Points allowed", team["Points Against"], (v) => fmtDecimal(v, 1)],
+    ["Scoring margin", team["Scoring Margin"], (v) => fmtSigned(v, 1)],
+    ["Last 3 margin", team["Recent Form"], (v) => fmtSigned(v, 1)],
+    ["Ranked wins", team["Ranked Wins"], fmtRank],
+    ["Close-game win", team["Close Game Win Pct"], fmtPct],
+    ["Offense index", team["Offensive Index"], (v) => fmtDecimal(v, 0)],
+    ["Defense index", team["Defensive Index"], (v) => fmtDecimal(v, 0)],
+  ];
+  document.getElementById("advancedMetrics").innerHTML = metrics.map(([label, value, formatter]) => `<div><span>${label}</span><strong>${formatter(value)}</strong></div>`).join("");
+  document.getElementById("metricAvailability").innerHTML = (state.data.meta.advancedMetrics || []).map((item) => `<div class="availability-item ${item.status}"><span>${item.name}</span><strong>${item.status}</strong><small>${item.source}</small></div>`).join("");
+}
+
 function renderWeeklyTimeline() {
   const container = document.getElementById("weeklyTimeline");
-  const rows = state.data.weeklyPredictions?.[state.selectedYear] || [];
+  const rows = currentWeeklyRows();
   if (!rows.length) {
     container.innerHTML = `<p class="muted">No weekly snapshots available for this season.</p>`;
     return;
@@ -353,39 +441,13 @@ function teamOptions() {
 }
 
 function populateTeamControls() {
-  const ids = ["compareTeamA", "compareTeamB", "scenarioTeam", "researchTeam"];
+  const ids = ["scenarioTeam", "researchTeam", "metricsTeam", "watchTeam"];
   ids.forEach((id) => {
     const select = document.getElementById(id);
     const prior = select.value;
     select.innerHTML = teamOptions();
     if (prior && currentSeason().records.some((row) => row.Team === prior)) select.value = prior;
   });
-  if (document.getElementById("compareTeamB").options.length > 1 && document.getElementById("compareTeamA").value === document.getElementById("compareTeamB").value) {
-    document.getElementById("compareTeamB").selectedIndex = 1;
-  }
-}
-
-function renderComparison() {
-  const rows = currentSeason().records;
-  const teamA = rows.find((row) => row.Team === document.getElementById("compareTeamA").value) || rows[0];
-  const teamB = rows.find((row) => row.Team === document.getElementById("compareTeamB").value) || rows[1];
-  const metrics = [
-    ["Title probability", "championProbability", (value) => fmtPct(value), (value) => value * 100],
-    ["Resume", "Resume Composite", (value) => fmtDecimal(value, 0), Number],
-    ["Power", "Power Composite", (value) => fmtDecimal(value, 0), Number],
-    ["Consensus", "Consensus Score", (value) => fmtDecimal(value, 0), Number],
-    ["Win rate", "Win Pct", (value) => fmtPct(value), (value) => value * 100],
-    ["Scoring margin", "Scoring Margin", (value) => fmtSigned(value), (value) => Math.max(0, Math.min(100, 50 + Number(value)))],
-  ];
-  document.getElementById("comparisonGrid").innerHTML = `
-    <div class="comparison-team"><strong>${teamA.Team}</strong><span>#${teamA.predictedRank}</span></div>
-    <div class="comparison-team align-right"><strong>${teamB.Team}</strong><span>#${teamB.predictedRank}</span></div>
-    ${metrics.map(([label, key, formatter, scale]) => {
-      const a = teamA[key];
-      const b = teamB[key];
-      return `<div class="comparison-metric"><span>${formatter(a)}</span><div><b>${label}</b><div class="compare-bars"><i style="width:${scale(a) || 0}%"></i><i style="width:${scale(b) || 0}%"></i></div></div><span>${formatter(b)}</span></div>`;
-    }).join("")}
-  `;
 }
 
 function renderScenario() {
@@ -404,6 +466,118 @@ function renderScenario() {
   const sorted = rows.map((row) => ({ team: row.Team, probability: row.Team === team.Team ? adjusted : row.championProbability * ((1 - adjusted) / (1 - base)) })).sort((a, b) => b.probability - a.probability);
   const rank = sorted.findIndex((row) => row.team === team.Team) + 1;
   document.getElementById("scenarioResultPanel").innerHTML = `<span>${team.Team} after a ${margin}-point ${result}</span><strong>${fmtPct(adjusted)}</strong><p>${fmtSigned((adjusted - base) * 100)} percentage points · projected rank #${rank}</p>`;
+}
+
+function seededRandom(seed = 20261016) {
+  let value = seed >>> 0;
+  return () => {
+    value ^= value << 13;
+    value ^= value >>> 17;
+    value ^= value << 5;
+    return (value >>> 0) / 4294967296;
+  };
+}
+
+function playGame(teamA, teamB, ratings, random, homeTeam = null) {
+  const home = teamA === homeTeam ? .16 : teamB === homeTeam ? -.16 : 0;
+  const probability = 1 / (1 + Math.exp(-((ratings[teamA] ?? -1.2) - (ratings[teamB] ?? -1.2) + home)));
+  return random() < probability ? teamA : teamB;
+}
+
+function runSeasonSimulation() {
+  const runs = Number(document.getElementById("simulationRuns").value);
+  const records = currentSeason().records;
+  const schedule = state.data.seasonSchedule?.games || [];
+  const teams = records.map((row) => row.Team);
+  const teamSet = new Set(teams);
+  const ratings = Object.fromEntries(records.map((row) => {
+    const probability = Math.max(.002, Math.min(.8, Number(row.championProbability || .002)));
+    return [row.Team, Math.log(probability / (1 - probability)) + Number(row["Consensus Score"] || 0) / 35];
+  }));
+  const baseWins = Object.fromEntries(records.map((row) => [row.Team, Number(String(row.RECORD || "0-0").split("-")[0]) || 0]));
+  const conferences = {};
+  for (const game of schedule) for (const competitor of game.competitors || []) {
+    if (teamSet.has(competitor.team) && competitor.conferenceId) conferences[competitor.team] = competitor.conferenceId;
+  }
+  const remaining = schedule.filter((game) => !game.completed && (game.competitors || []).some((team) => teamSet.has(team.team)));
+  const playoffCounts = Object.fromEntries(teams.map((team) => [team, 0]));
+  const titleCounts = Object.fromEntries(teams.map((team) => [team, 0]));
+  const conferenceCounts = Object.fromEntries(teams.map((team) => [team, 0]));
+  const random = seededRandom(Number(state.data.meta.currentSeason) * 100 + (currentWeeklyRows().at(-1)?.week || 0));
+
+  for (let run = 0; run < runs; run += 1) {
+    const wins = { ...baseWins };
+    for (const game of remaining) {
+      const competitors = game.competitors || [];
+      if (competitors.length !== 2) continue;
+      const a = competitors[0].team;
+      const b = competitors[1].team;
+      const home = competitors.find((item) => item.homeAway === "home")?.team;
+      const winner = playGame(a, b, ratings, random, game.neutralSite ? null : home);
+      if (teamSet.has(winner)) wins[winner] = (wins[winner] || 0) + 1;
+    }
+    const conferenceBonus = {};
+    const conferenceTeams = Object.groupBy ? Object.groupBy(teams.filter((team) => conferences[team]), (team) => conferences[team]) : teams.filter((team) => conferences[team]).reduce((out, team) => ((out[conferences[team]] ||= []).push(team), out), {});
+    for (const group of Object.values(conferenceTeams)) {
+      if (group.length < 2) continue;
+      const finalists = [...group].sort((a, b) => (wins[b] - wins[a]) || (ratings[b] - ratings[a])).slice(0, 2);
+      const champion = playGame(finalists[0], finalists[1], ratings, random);
+      conferenceBonus[champion] = 1;
+      conferenceCounts[champion] += 1;
+    }
+    const field = teams.map((team) => ({ team, score: wins[team] * 1.45 + ratings[team] + (conferenceBonus[team] || 0) * .8 + random() * .35 }))
+      .sort((a, b) => b.score - a.score).slice(0, 12).map((item) => item.team);
+    field.forEach((team) => { playoffCounts[team] += 1; });
+    const opening = [[field[4], field[11]], [field[5], field[10]], [field[6], field[9]], [field[7], field[8]]]
+      .map(([a, b]) => playGame(a, b, ratings, random));
+    let round = [field[0], field[1], field[2], field[3], ...opening];
+    while (round.length > 1) {
+      const next = [];
+      for (let index = 0; index < round.length; index += 2) next.push(playGame(round[index], round[index + 1], ratings, random));
+      round = next;
+    }
+    titleCounts[round[0]] += 1;
+  }
+
+  const results = teams.map((team) => ({ team, playoff: playoffCounts[team] / runs, title: titleCounts[team] / runs, conference: conferenceCounts[team] / runs }))
+    .sort((a, b) => b.title - a.title).slice(0, 12);
+  document.getElementById("simulationSummary").innerHTML = `<div><strong>${runs.toLocaleString()}</strong><span>simulations</span></div><div><strong>${remaining.length}</strong><span>remaining games modeled</span></div><div><strong>${new Set(Object.values(conferences)).size}</strong><span>conference races</span></div>`;
+  document.getElementById("simulationResults").innerHTML = results.map((row, index) => `<div class="simulation-row"><span>${index + 1}</span><strong>${row.team}</strong><div><i style="width:${Math.max(1, row.title * 100)}%"></i></div><b>${fmtPct(row.title)}</b><small>${fmtPct(row.playoff)} playoff · ${fmtPct(row.conference)} conf.</small></div>`).join("");
+}
+
+function renderWeeklyEvaluation() {
+  const container = document.getElementById("weeklyEvaluationChart");
+  const metric = document.getElementById("evaluationMetric").value;
+  const preferred = ["Weekly ML Ensemble", "Weekly Logistic Regression", "Balanced ML Blend", "AP Poll Baseline", "FPI Baseline"];
+  const rows = (state.data.weeklyEvaluationByWeek || []).filter((row) => preferred.includes(row.model));
+  if (!rows.length) {
+    container.innerHTML = `<p class="muted">No week-level evaluation data available.</p>`;
+    return;
+  }
+  const weeks = [...new Set(rows.map((row) => row.week))].sort((a, b) => a - b);
+  const values = rows.map((row) => Number(row[metric]));
+  const higherIsBetter = metric.includes("Rate");
+  const minValue = higherIsBetter ? 0 : Math.min(...values) * .9;
+  const maxValue = higherIsBetter ? 1 : Math.max(...values) * 1.05;
+  const width = 980, height = 340, pad = { top: 25, right: 170, bottom: 42, left: 54 };
+  const x = (week) => pad.left + ((week - weeks[0]) / Math.max(1, weeks.at(-1) - weeks[0])) * (width - pad.left - pad.right);
+  const y = (value) => pad.top + (1 - (value - minValue) / Math.max(.0001, maxValue - minValue)) * (height - pad.top - pad.bottom);
+  const series = preferred.map((model, index) => {
+    const modelRows = rows.filter((row) => row.model === model).sort((a, b) => a.week - b.week);
+    if (!modelRows.length) return "";
+    const points = modelRows.map((row) => `${x(row.week)},${y(Number(row[metric]))}`).join(" ");
+    const last = modelRows.at(-1);
+    return `<g class="movement-series"><polyline points="${points}" style="stroke:${chartColors[index]}"/><text x="${x(last.week) + 8}" y="${y(Number(last[metric])) + 4}" style="fill:${chartColors[index]}">${model.replace("Weekly ", "")}</text></g>`;
+  }).join("");
+  container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Model evaluation by week">${series}${weeks.map((week) => `<text x="${x(week)}" y="${height - 14}" text-anchor="middle">W${week}</text>`).join("")}</svg>`;
+}
+
+function setView(view) {
+  const allowed = ["overview", "weekly", "models", "simulator", "scores", "data"];
+  state.currentView = allowed.includes(view) ? view : "overview";
+  document.querySelector("main").dataset.activeView = state.currentView;
+  document.querySelectorAll("[data-route]").forEach((item) => item.classList.toggle("is-active", item.dataset.route === state.currentView));
+  if (location.hash !== `#${state.currentView}`) history.replaceState(null, "", `#${state.currentView}`);
 }
 
 function renderResearch() {
@@ -539,8 +713,13 @@ function renderSeasonTabs() {
     .map((year) => `<button class="season-tab" data-year="${year}" type="button">${year}</button>`)
     .join("");
   container.querySelectorAll(".season-tab").forEach((button) => {
-    button.addEventListener("click", () => {
+    button.addEventListener("click", async () => {
       state.selectedYear = button.dataset.year;
+      if ((state.data.meta.weeklyYears || []).includes(Number(state.selectedYear))) {
+        state.weeklyYear = state.selectedYear;
+        await loadWeeklyYear(state.weeklyYear);
+        document.getElementById("historyYear").value = state.weeklyYear;
+      }
       state.query = "";
       document.getElementById("teamSearch").value = "";
       renderAll();
@@ -656,6 +835,7 @@ function renderAll() {
   renderSummary();
   renderProbabilityChart();
   renderPredictionExplanation();
+  renderUncertainty();
   renderFeatureImportance();
   renderModelCards();
   renderWeeklyDiagnostics();
@@ -665,8 +845,10 @@ function renderAll() {
   renderWeeklyTimeline();
   renderMovement();
   populateTeamControls();
-  renderComparison();
+  renderWatchlist();
+  renderAdvancedMetrics();
   renderScenario();
+  renderWeeklyEvaluation();
   renderResearch();
   renderHealth();
   renderTable();
@@ -675,11 +857,17 @@ function renderAll() {
 }
 
 async function init() {
-  const response = await fetch(`./data/app-data.json?v=${Date.now()}`, { cache: "no-store" });
+  const response = await fetch(`./data/app-core.json?v=${Date.now()}`, { cache: "no-store" });
   state.data = await response.json();
   state.selectedYear = String(state.data.meta.currentSeason || seasonYears()[0]);
+  state.weeklyYear = state.selectedYear;
+  await loadWeeklyYear(state.weeklyYear);
+  const history = document.getElementById("historyYear");
+  history.innerHTML = (state.data.meta.weeklyYears || []).map((year) => `<option value="${year}">${year}</option>`).join("");
+  history.value = state.weeklyYear;
   renderSeasonTabs();
   renderAll();
+  setView(location.hash.slice(1) || "overview");
 
   document.getElementById("teamSearch").addEventListener("input", (event) => {
     state.query = event.target.value;
@@ -697,18 +885,51 @@ async function init() {
     renderWeeklyTimeline();
   });
 
+  document.getElementById("historyYear").addEventListener("change", async (event) => {
+    state.weeklyYear = event.target.value;
+    event.target.disabled = true;
+    try {
+      await loadWeeklyYear(state.weeklyYear);
+      renderSummary();
+      renderWeeklyTimeline();
+      renderMovement();
+      renderResearch();
+      renderHealth();
+    } finally {
+      event.target.disabled = false;
+    }
+  });
+
   document.getElementById("movementCount").addEventListener("change", (event) => {
     state.movementCount = Number(event.target.value);
     renderMovement();
   });
 
-  ["compareTeamA", "compareTeamB"].forEach((id) => document.getElementById(id).addEventListener("change", renderComparison));
   ["scenarioTeam", "scenarioResult", "scenarioOpponent", "scenarioMargin"].forEach((id) => document.getElementById(id).addEventListener("input", renderScenario));
   document.getElementById("researchTeam").addEventListener("change", renderResearch);
+  document.getElementById("metricsTeam").addEventListener("change", renderAdvancedMetrics);
+  document.getElementById("evaluationMetric").addEventListener("change", renderWeeklyEvaluation);
+  document.getElementById("runSimulation").addEventListener("click", runSeasonSimulation);
+  document.getElementById("addWatchTeam").addEventListener("click", () => {
+    const team = document.getElementById("watchTeam").value;
+    if (!state.watchlist.some((item) => item.team === team)) {
+      const row = currentSeason().records.find((item) => item.Team === team);
+      state.watchlist.push({ team, threshold: Math.min(.9, Math.max(.05, Number(row?.championProbability || .05) + .03)) });
+      saveWatchlist();
+      renderWatchlist();
+    }
+  });
+  document.querySelectorAll("[data-route]").forEach((item) => item.addEventListener("click", (event) => {
+    event.preventDefault();
+    setView(item.dataset.route);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }));
+  window.addEventListener("hashchange", () => setView(location.hash.slice(1)));
 
   document.getElementById("refreshScores").addEventListener("click", loadScores);
   loadScores();
   window.setInterval(loadScores, 60_000);
+  runSeasonSimulation();
 }
 
 init().catch((error) => {

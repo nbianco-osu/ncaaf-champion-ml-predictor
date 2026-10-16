@@ -4,6 +4,7 @@ import json
 import hashlib
 import math
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timezone
 from io import StringIO
 from pathlib import Path
@@ -31,7 +32,21 @@ WEEKLY_MODEL_FEATURES = [
     "Balance Score",
     "Consistency Score",
 ]
-COMPLETED_YEARS = [2021, 2022, 2023, 2024, 2025]
+CHAMPIONS = {
+    2014: "Ohio State",
+    2015: "Alabama",
+    2016: "Clemson",
+    2017: "Alabama",
+    2018: "Clemson",
+    2019: "LSU",
+    2020: "Alabama",
+    2021: "Georgia",
+    2022: "Georgia",
+    2023: "Michigan",
+    2024: "Ohio State",
+    2025: "Indiana",
+}
+COMPLETED_YEARS = sorted(CHAMPIONS)
 WEEKS = range(1, 17)
 
 MODEL_WEIGHTS = {
@@ -71,6 +86,8 @@ MODEL_WEIGHTS = {
         "FPI Score": 0.20,
         "SOS Score": 0.10,
     },
+    "AP Poll Baseline": {"AP Poll Score": 1.0},
+    "FPI Baseline": {"FPI Score": 1.0},
 }
 
 TRAINED_MODEL_NAMES = [
@@ -276,6 +293,7 @@ def predictions_for_week(records: list[dict], actual_champion: str | None) -> li
                 "predictedProbability": ranked[0]["probability"],
                 "actualChampionPredictedRank": actual_rank,
                 "actualChampionProbability": actual_prob,
+                "probabilities": {item["team"]: item["probability"] for item in ranked},
             }
         )
     return predictions
@@ -409,6 +427,7 @@ def prediction_summary(name: str, records: list[dict], probabilities: np.ndarray
         "actualChampionPredictedRank": actual_rank,
         "actualChampionProbability": actual_prob,
         "trainedSeasons": trained_seasons,
+        "probabilities": {item["team"]: item["probability"] for item in ranked},
     }
 
 
@@ -488,9 +507,20 @@ def enrich_predictions(weekly: dict[str, list[dict]]) -> None:
             records = json.loads(frame.replace({np.nan: None}).to_json(orient="records"))
             blend_predictions = predictions_for_week(records, snapshot.get("actualChampion"))
             trained_predictions, ensemble_map = trained_predictions_for_snapshot(weekly, {**snapshot, "records": records})
+            all_predictions = blend_predictions + trained_predictions
             for record in records:
                 record["blendChampionProbability"] = record.get("championProbability")
                 record["mlChampionProbability"] = ensemble_map.get(record["Team"])
+                model_values = [
+                    prediction.get("probabilities", {}).get(record["Team"])
+                    for prediction in all_predictions
+                    if prediction.get("probabilities", {}).get(record["Team"]) is not None
+                ]
+                if model_values:
+                    record["modelProbabilityMean"] = float(np.mean(model_values))
+                    record["modelProbabilityStdDev"] = float(np.std(model_values))
+                    record["modelProbabilityMin"] = float(np.min(model_values))
+                    record["modelProbabilityMax"] = float(np.max(model_values))
             records.sort(key=lambda item: item.get("mlChampionProbability") or 0, reverse=True)
             for index, record in enumerate(records, 1):
                 record["mlPredictedRank"] = index
@@ -498,7 +528,7 @@ def enrich_predictions(weekly: dict[str, list[dict]]) -> None:
                 record["predictedRank"] = index
                 record["predictionReasons"] = prediction_reasons(record)
             snapshot["records"] = records
-            snapshot["modelPredictions"] = blend_predictions + trained_predictions
+            snapshot["modelPredictions"] = all_predictions
             selected = next((item for item in trained_predictions if item["model"] == TRAINED_ENSEMBLE), None)
             if selected:
                 snapshot["predictedChampion"] = selected["predictedChampion"]
@@ -524,23 +554,92 @@ def prediction_reasons(record: dict) -> dict:
     }
 
 
-def add_score_metrics(payload: dict, year: int, records: list[dict]) -> None:
-    aggregates: dict[str, dict[str, float]] = {}
-    snapshots = payload.get("scoreSnapshots", {}).get(str(year), {})
-    for snapshot in snapshots.values():
-        for game in snapshot.get("games", []):
-            competitors = game.get("competitors", [])
-            if len(competitors) != 2 or not game.get("completed"):
+def fetch_season_schedule(year: int) -> dict:
+    games: dict[str, dict] = {}
+    for week in WEEKS:
+        url = (
+            "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
+            f"?groups=80&seasontype=2&week={week}&dates={year}&limit=1000"
+        )
+        text = fetch_text(url)
+        if not text:
+            continue
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            continue
+        for event in payload.get("events", []):
+            competition = (event.get("competitions") or [{}])[0]
+            competitors = []
+            for competitor in competition.get("competitors", []):
+                team = competitor.get("team", {})
+                overall = next(
+                    (item.get("summary") for item in competitor.get("records", []) if item.get("type") == "total"),
+                    None,
+                )
+                rank = (competitor.get("curatedRank") or {}).get("current")
+                competitors.append(
+                    {
+                        "team": norm_name(team.get("displayName") or team.get("shortDisplayName") or ""),
+                        "teamId": team.get("id"),
+                        "conferenceId": team.get("conferenceId"),
+                        "homeAway": competitor.get("homeAway"),
+                        "record": overall,
+                        "rank": rank if rank and rank < 99 else None,
+                        "score": float(competitor.get("score") or 0),
+                        "winner": bool(competitor.get("winner")),
+                        "logo": team.get("logo"),
+                    }
+                )
+            if len(competitors) != 2:
                 continue
-            for index, team in enumerate(competitors):
-                opponent = competitors[1 - index]
-                name = norm_name(team.get("shortName") or team.get("team") or "")
-                points = float(team.get("scoreValue") or team.get("score") or 0)
-                allowed = float(opponent.get("scoreValue") or opponent.get("score") or 0)
-                row = aggregates.setdefault(name, {"games": 0, "pointsFor": 0, "pointsAgainst": 0})
-                row["games"] += 1
-                row["pointsFor"] += points
-                row["pointsAgainst"] += allowed
+            group = competition.get("groups") or {}
+            games[str(event.get("id"))] = {
+                "id": str(event.get("id")),
+                "week": week,
+                "date": event.get("date"),
+                "name": event.get("name"),
+                "completed": bool((event.get("status") or {}).get("type", {}).get("completed")),
+                "status": (event.get("status") or {}).get("type", {}).get("shortDetail"),
+                "conferenceGame": bool(competition.get("conferenceCompetition")),
+                "conference": group.get("shortName"),
+                "neutralSite": bool(competition.get("neutralSite")),
+                "competitors": competitors,
+            }
+    ordered = sorted(games.values(), key=lambda item: (item["week"], item.get("date") or "", item["id"]))
+    return {
+        "year": year,
+        "source": "ESPN FBS scoreboard",
+        "games": ordered,
+    }
+
+
+def add_score_metrics(payload: dict, year: int, records: list[dict]) -> None:
+    aggregates: dict[str, dict] = {}
+    schedule = payload.get("seasonSchedule", {})
+    games = schedule.get("games", []) if int(schedule.get("year", 0) or 0) == year else []
+    for game in games:
+        competitors = game.get("competitors", [])
+        if len(competitors) != 2 or not game.get("completed"):
+            continue
+        for index, team in enumerate(competitors):
+            opponent = competitors[1 - index]
+            name = norm_name(team.get("team") or "")
+            points = float(team.get("score") or 0)
+            allowed = float(opponent.get("score") or 0)
+            row = aggregates.setdefault(
+                name,
+                {"games": 0, "pointsFor": 0, "pointsAgainst": 0, "wins": 0, "rankedWins": 0, "closeWins": 0, "closeGames": 0, "margins": []},
+            )
+            margin = points - allowed
+            row["games"] += 1
+            row["pointsFor"] += points
+            row["pointsAgainst"] += allowed
+            row["wins"] += int(margin > 0)
+            row["rankedWins"] += int(margin > 0 and opponent.get("rank") is not None)
+            row["closeGames"] += int(abs(margin) <= 8)
+            row["closeWins"] += int(0 < margin <= 8)
+            row["margins"].append(margin)
     for record in records:
         metric = aggregates.get(record["Team"])
         if not metric or not metric["games"]:
@@ -550,6 +649,12 @@ def add_score_metrics(payload: dict, year: int, records: list[dict]) -> None:
         record["Points For"] = metric["pointsFor"] / games
         record["Points Against"] = metric["pointsAgainst"] / games
         record["Scoring Margin"] = (metric["pointsFor"] - metric["pointsAgainst"]) / games
+        record["Recent Form"] = float(np.mean(metric["margins"][-3:]))
+        record["Ranked Wins"] = int(metric["rankedWins"])
+        record["Close Game Win Pct"] = metric["closeWins"] / metric["closeGames"] if metric["closeGames"] else None
+        record["Offensive Index"] = min(100.0, metric["pointsFor"] / games / 0.45)
+        record["Defensive Index"] = min(100.0, max(0.0, (45 - metric["pointsAgainst"] / games) / 0.45))
+        record["Form Index"] = min(100.0, max(0.0, 50 + record["Recent Form"] * 2))
 
 
 def build_weekly_diagnostics(weekly: dict[str, list[dict]]) -> dict:
@@ -567,7 +672,14 @@ def build_weekly_diagnostics(weekly: dict[str, list[dict]]) -> dict:
                 probability = prediction.get("actualChampionProbability")
                 if not rank or probability is None:
                     continue
-                results.setdefault(prediction["model"], []).append({"rank": rank, "probability": probability})
+                probabilities = prediction.get("probabilities", {})
+                multiclass_brier = sum(
+                    (float(value) - (1 if team == actual else 0)) ** 2
+                    for team, value in probabilities.items()
+                )
+                results.setdefault(prediction["model"], []).append(
+                    {"rank": rank, "probability": probability, "week": int(snapshot.get("week", 0)), "brier": multiclass_brier}
+                )
             for record in snapshot.get("records", []):
                 probability = record.get("mlChampionProbability")
                 if probability is not None:
@@ -582,6 +694,7 @@ def build_weekly_diagnostics(weekly: dict[str, list[dict]]) -> dict:
                 "top3Rate": sum(row["rank"] <= 3 for row in rows) / len(rows),
                 "meanChampionRank": sum(row["rank"] for row in rows) / len(rows),
                 "meanChampionNll": sum(-math.log(max(row["probability"], 1e-9)) for row in rows) / len(rows),
+                "meanBrierScore": sum(row["brier"] for row in rows) / len(rows),
             }
         )
     bins = []
@@ -597,7 +710,25 @@ def build_weekly_diagnostics(weekly: dict[str, list[dict]]) -> dict:
                     "count": len(rows),
                 }
             )
-    return {"models": diagnostics, "calibration": bins}
+    by_week = []
+    for name, rows in results.items():
+        for week in sorted({row["week"] for row in rows}):
+            week_rows = [row for row in rows if row["week"] == week]
+            by_week.append(
+                {
+                    "model": name,
+                    "week": week,
+                    "samples": len(week_rows),
+                    "top1Rate": sum(row["rank"] == 1 for row in week_rows) / len(week_rows),
+                    "top3Rate": sum(row["rank"] <= 3 for row in week_rows) / len(week_rows),
+                    "meanChampionRank": sum(row["rank"] for row in week_rows) / len(week_rows),
+                    "meanChampionNll": sum(-math.log(max(row["probability"], 1e-9)) for row in week_rows) / len(week_rows),
+                }
+            )
+    ece = sum(abs(row["predicted"] - row["observed"]) * row["count"] for row in bins) / max(
+        1, sum(row["count"] for row in bins)
+    )
+    return {"models": diagnostics, "calibration": bins, "byWeek": by_week, "expectedCalibrationError": ece}
 
 
 def build_champion_profile(payload: dict) -> dict:
@@ -661,6 +792,27 @@ def update_current_season_page(payload: dict, current_year: int, rows: list[dict
     payload["meta"]["updatedSeason"] = current_year
 
 
+def write_data_files(payload: dict) -> None:
+    rendered = json.dumps(payload, indent=2)
+    DATA_PATH.write_text(rendered, encoding="utf-8")
+    PUBLIC_DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PUBLIC_DATA_PATH.write_text(rendered, encoding="utf-8")
+
+    weekly = payload.get("weeklyPredictions", {})
+    core = {**payload, "weeklyPredictions": {}}
+    core["meta"] = {
+        **core.get("meta", {}),
+        "weeklyYears": sorted((int(year) for year in weekly), reverse=True),
+        "dataShards": True,
+    }
+    core_rendered = json.dumps(core, separators=(",", ":"))
+    for root in [DATA_PATH.parent, PUBLIC_DATA_PATH.parent]:
+        (root / "app-core.json").write_text(core_rendered, encoding="utf-8")
+        for year, snapshots in weekly.items():
+            shard = {"year": int(year), "snapshots": snapshots}
+            (root / f"weekly-{year}.json").write_text(json.dumps(shard, separators=(",", ":")), encoding="utf-8")
+
+
 def main() -> None:
     payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
     existing_weekly = payload.get("weeklyPredictions", {})
@@ -669,7 +821,7 @@ def main() -> None:
     weekly = {}
     for year in years:
         season = payload["seasonPredictions"].get(str(year), {})
-        actual = season.get("actualChampion", "TBD")
+        actual = CHAMPIONS.get(year, season.get("actualChampion", "TBD"))
         if year in COMPLETED_YEARS and existing_weekly.get(str(year)):
             season_rows = [
                 add_snapshot_identity(dict(row), frozen=True, captured_at=row.get("capturedAt"))
@@ -687,10 +839,14 @@ def main() -> None:
         }
         latest_existing = max(existing_by_week, default=0)
         fetched_by_week: dict[int, dict] = {}
-        for week in range(max(1, latest_existing), max(WEEKS) + 1):
-            prediction = predict_week(year, week, actual)
-            if prediction is not None:
-                fetched_by_week[week] = prediction
+        weeks_to_fetch = list(range(max(1, latest_existing), max(WEEKS) + 1))
+        with ThreadPoolExecutor(max_workers=min(8, len(weeks_to_fetch))) as executor:
+            futures = {executor.submit(predict_week, year, week, actual): week for week in weeks_to_fetch}
+            for future in as_completed(futures):
+                week = futures[future]
+                prediction = future.result()
+                if prediction is not None:
+                    fetched_by_week[week] = prediction
 
         new_weeks = sorted(week for week in fetched_by_week if week > latest_existing)
         if new_weeks:
@@ -734,6 +890,7 @@ def main() -> None:
     payload["weeklyPredictions"] = weekly
     update_current_season_page(payload, current_year, weekly.get(str(current_year), []))
     current_records = payload["seasonPredictions"].get(str(current_year), {}).get("records", [])
+    payload["seasonSchedule"] = fetch_season_schedule(current_year)
     add_score_metrics(payload, current_year, current_records)
     payload["meta"]["weeklyModels"] = [*MODEL_WEIGHTS.keys(), *TRAINED_MODEL_NAMES, TRAINED_ENSEMBLE]
     payload["meta"]["weeklySourceNote"] = (
@@ -744,6 +901,8 @@ def main() -> None:
     diagnostics = build_weekly_diagnostics(weekly)
     payload["weeklyModelDiagnostics"] = diagnostics["models"]
     payload["weeklyCalibration"] = diagnostics["calibration"]
+    payload["weeklyEvaluationByWeek"] = diagnostics["byWeek"]
+    payload["summary"]["weeklyExpectedCalibrationError"] = diagnostics["expectedCalibrationError"]
     payload["championProfile"] = build_champion_profile(payload)
     all_snapshots = [row for rows in weekly.values() for row in rows]
     current_rows = weekly.get(str(current_year), [])
@@ -777,12 +936,19 @@ def main() -> None:
     }
     payload["meta"]["weeklyModelMethod"] = (
         "Forward-season training: each historical season uses only earlier completed seasons; "
-        "the current season uses 2021-2025 snapshots."
+        f"the current season uses {min(COMPLETED_YEARS)}-{max(COMPLETED_YEARS)} snapshots."
     )
-    rendered = json.dumps(payload, indent=2)
-    DATA_PATH.write_text(rendered, encoding="utf-8")
-    PUBLIC_DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
-    PUBLIC_DATA_PATH.write_text(rendered, encoding="utf-8")
+    payload["meta"]["advancedMetrics"] = [
+        {"name": "Points per game", "status": "available", "source": "ESPN scoreboard"},
+        {"name": "Points allowed", "status": "available", "source": "ESPN scoreboard"},
+        {"name": "Scoring margin", "status": "available", "source": "ESPN scoreboard"},
+        {"name": "Recent form", "status": "available", "source": "Last three completed games"},
+        {"name": "Ranked wins", "status": "available", "source": "Opponent game-day rank"},
+        {"name": "Close-game record", "status": "available", "source": "Games decided by 8 or fewer"},
+        {"name": "Play-level EPA", "status": "unavailable", "source": "No play-level feed in this pipeline"},
+        {"name": "Injury adjustments", "status": "unavailable", "source": "No stable injury feed"},
+    ]
+    write_data_files(payload)
 
 
 if __name__ == "__main__":

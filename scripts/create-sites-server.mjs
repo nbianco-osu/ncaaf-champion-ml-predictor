@@ -1,9 +1,13 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { extname, join, relative, sep } from "node:path";
 
 const distDir = join(process.cwd(), "dist");
 const serverDir = join(process.cwd(), "dist", "server");
 const serverEntry = join(serverDir, "index.js");
+
+// The dashboard loads the compact core plus weekly shards. Keep the legacy
+// monolith in source for Streamlit and automation compatibility, not hosting.
+await rm(join(distDir, "data", "app-data.json"), { force: true });
 
 const contentTypes = {
   ".css": "text/css; charset=utf-8",

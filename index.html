@@ -13,21 +13,16 @@
           <div class="brand-mark">CFB</div>
           <div>
             <h1>NCAAF Champion ML Predictor</h1>
-            <p>2005-2025 model plus live weekly snapshots</p>
+            <p>2005-2025 training data plus 2014-2026 weekly history</p>
           </div>
         </div>
-        <nav class="nav-stack">
-          <a href="#prediction">Prediction</a>
-          <a href="#scores">Scores</a>
-          <a href="#model">Model</a>
-          <a href="#backtest">Backtest</a>
-          <a href="#movement">Movement</a>
-          <a href="#compare">Compare</a>
-          <a href="#simulator">Simulator</a>
-          <a href="#research">Research</a>
-          <a href="#metrics">Metrics</a>
-          <a href="#health">Data health</a>
-          <a href="#data">Data</a>
+        <nav class="nav-stack" aria-label="Dashboard views">
+          <a href="#overview" data-route="overview">Overview</a>
+          <a href="#weekly" data-route="weekly">Weekly history</a>
+          <a href="#models" data-route="models">Models</a>
+          <a href="#simulator" data-route="simulator">Simulator</a>
+          <a href="#scores" data-route="scores">Scores</a>
+          <a href="#data" data-route="data">Data lab</a>
         </nav>
         <div class="source-box">
           <span>Data refresh</span>
@@ -36,7 +31,7 @@
         </div>
       </aside>
 
-      <main>
+      <main data-active-view="overview">
         <header class="topbar">
           <div>
             <p class="small-label">Season pages</p>
@@ -59,9 +54,9 @@
           </div>
         </header>
 
-        <section id="seasonTabs" class="season-tabs" aria-label="Choose season"></section>
+        <section id="seasonTabs" class="season-tabs" aria-label="Choose season" data-view="overview"></section>
 
-        <section id="prediction" class="summary-grid" aria-label="Prediction summary">
+        <section id="prediction" class="summary-grid" aria-label="Prediction summary" data-view="overview">
           <article class="metric-card primary">
             <span>Predicted champion</span>
             <strong id="predictedChampion">-</strong>
@@ -94,7 +89,44 @@
           </article>
         </section>
 
-        <section class="panel scores-panel" id="scores">
+        <section class="panel-grid" data-view="overview">
+          <article class="panel wide" id="watchlist">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Saved locally</p>
+                <h3>Contender watchlist</h3>
+              </div>
+              <div class="watch-controls">
+                <select id="watchTeam" aria-label="Team to watch"></select>
+                <button class="refresh-button" id="addWatchTeam" type="button">Add team</button>
+              </div>
+            </div>
+            <div id="watchlistGrid" class="watchlist-grid"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Model spread</p>
+                <h3>Forecast uncertainty</h3>
+              </div>
+            </div>
+            <div id="uncertaintyPanel" class="uncertainty-panel"></div>
+          </article>
+        </section>
+
+        <section class="panel" id="advanced" data-view="overview">
+          <div class="panel-head">
+            <div>
+              <p class="small-label">Game-level context</p>
+              <h3>Advanced team metrics</h3>
+            </div>
+            <label class="compact-control">Team<select id="metricsTeam"></select></label>
+          </div>
+          <div id="advancedMetrics" class="advanced-metrics"></div>
+          <div id="metricAvailability" class="availability-grid"></div>
+        </section>
+
+        <section class="panel scores-panel" id="scores" data-view="scores">
           <div class="panel-head">
             <div>
               <p class="small-label">Live scoreboard</p>
@@ -118,7 +150,7 @@
           <div id="savedScoresGrid" class="scores-grid"></div>
         </section>
 
-        <section class="panel-grid">
+        <section class="panel-grid" data-view="overview">
           <article class="panel wide">
             <div class="panel-head">
               <div>
@@ -142,7 +174,7 @@
           </article>
         </section>
 
-        <section class="panel" id="metrics">
+        <section class="panel" id="metrics" data-view="models">
           <div class="panel-head">
             <div>
               <p class="small-label">Dataset coverage</p>
@@ -154,7 +186,7 @@
           <p id="evaluationNote" class="muted evaluation-note"></p>
         </section>
 
-        <section class="panel-grid">
+        <section class="panel-grid" data-view="models">
           <article class="panel">
             <div class="panel-head">
               <div>
@@ -176,7 +208,7 @@
           </article>
         </section>
 
-        <section class="panel-grid" id="model-diagnostics">
+        <section class="panel-grid" id="model-diagnostics" data-view="models">
           <article class="panel wide">
             <div class="panel-head">
               <div>
@@ -198,7 +230,18 @@
           </article>
         </section>
 
-        <section class="panel" id="weekly">
+        <section class="panel" id="weekly-evaluation" data-view="models">
+          <div class="panel-head">
+            <div>
+              <p class="small-label">Performance by forecast horizon</p>
+              <h3>Accuracy through the season</h3>
+            </div>
+            <label class="compact-control">Metric<select id="evaluationMetric"><option value="top3Rate">Top-3 rate</option><option value="top1Rate">Top-1 rate</option><option value="meanChampionRank">Champion rank</option><option value="meanChampionNll">Champion NLL</option></select></label>
+          </div>
+          <div id="weeklyEvaluationChart" class="movement-chart"></div>
+        </section>
+
+        <section class="panel" id="weekly" data-view="weekly">
           <div class="panel-head">
             <div>
               <p class="small-label" id="weeklySeasonLabel">Week by week</p>
@@ -206,6 +249,10 @@
             </div>
             <div class="panel-actions">
               <span class="model-chip" id="snapshotStatus">-</span>
+              <label class="compact-control">
+                Season
+                <select id="historyYear"></select>
+              </label>
               <label class="compact-control">
                 Weekly model
                 <select id="weeklyModel"></select>
@@ -216,7 +263,7 @@
           <div id="weeklyTimeline" class="weekly-timeline" aria-label="Weekly predicted winner timeline"></div>
         </section>
 
-        <section class="panel" id="movement">
+        <section class="panel" id="movement" data-view="weekly">
           <div class="panel-head">
             <div>
               <p class="small-label">Top contenders</p>
@@ -235,19 +282,21 @@
           <div id="movers" class="movers-grid"></div>
         </section>
 
-        <section class="panel-grid">
-          <article class="panel wide" id="compare">
+        <section class="panel-grid" data-view="simulator">
+          <article class="panel wide" id="seasonSimulator">
             <div class="panel-head">
               <div>
-                <p class="small-label">Head to head</p>
-                <h3>Team comparison</h3>
+                <p class="small-label">Schedule + playoff path</p>
+                <h3>Season Monte Carlo</h3>
               </div>
-              <div class="compare-controls">
-                <select id="compareTeamA" aria-label="First comparison team"></select>
-                <select id="compareTeamB" aria-label="Second comparison team"></select>
+              <div class="simulation-actions">
+                <label class="compact-control">Runs<select id="simulationRuns"><option value="1000">1,000</option><option value="2500" selected>2,500</option><option value="5000">5,000</option></select></label>
+                <button class="refresh-button" id="runSimulation" type="button">Run simulation</button>
               </div>
             </div>
-            <div id="comparisonGrid" class="comparison-grid"></div>
+            <p class="muted">Simulates remaining scheduled games, conference races, 12-team selection, and the playoff bracket from the current team-strength forecast.</p>
+            <div id="simulationSummary" class="simulation-summary"></div>
+            <div id="simulationResults" class="simulation-results"></div>
           </article>
 
           <article class="panel" id="simulator">
@@ -264,11 +313,11 @@
               <label>Margin <output id="marginOutput">10</output><input id="scenarioMargin" type="range" min="1" max="35" value="10" /></label>
             </div>
             <div id="scenarioResultPanel" class="scenario-result"></div>
-            <p class="muted">Scenario estimates reweight the current forecast; they are not a retrained game prediction.</p>
+            <p class="muted">Quick result sensitivity; use the Monte Carlo panel for the full remaining schedule.</p>
           </article>
         </section>
 
-        <section class="panel-grid" id="research">
+        <section class="panel-grid" id="research" data-view="data">
           <article class="panel wide">
             <div class="panel-head">
               <div>
@@ -290,7 +339,7 @@
           </article>
         </section>
 
-        <section class="panel" id="health">
+        <section class="panel" id="health" data-view="data">
           <div class="panel-head">
             <div>
               <p class="small-label">Pipeline observability</p>
@@ -302,7 +351,7 @@
           <div id="snapshotAudit" class="snapshot-audit"></div>
         </section>
 
-        <section id="data" class="panel table-panel">
+        <section id="data" class="panel table-panel" data-view="data">
           <div class="panel-head">
             <div>
               <p class="small-label" id="tableSeasonLabel">Final top 25</p>

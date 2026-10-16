@@ -98,7 +98,8 @@ h1 {
 }
 
 .nav-stack a:hover,
-.nav-stack a:focus-visible {
+.nav-stack a:focus-visible,
+.nav-stack a.is-active {
   outline: none;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
@@ -148,7 +149,7 @@ main {
 
 h2 {
   margin-top: 4px;
-  font-size: clamp(26px, 4vw, 40px);
+  font-size: 36px;
   line-height: 1;
 }
 
@@ -181,6 +182,219 @@ select {
   padding: 0 11px;
   font: inherit;
   font-size: 14px;
+}
+
+main [data-view] {
+  display: none;
+}
+
+main[data-active-view="overview"] [data-view="overview"],
+main[data-active-view="weekly"] [data-view="weekly"],
+main[data-active-view="models"] [data-view="models"],
+main[data-active-view="simulator"] [data-view="simulator"],
+main[data-active-view="scores"] [data-view="scores"],
+main[data-active-view="data"] [data-view="data"] {
+  display: grid;
+}
+
+main[data-active-view="overview"] section.panel[data-view="overview"],
+main[data-active-view="weekly"] section.panel[data-view="weekly"],
+main[data-active-view="models"] section.panel[data-view="models"],
+main[data-active-view="scores"] section.panel[data-view="scores"],
+main[data-active-view="data"] section.panel[data-view="data"] {
+  display: block;
+}
+
+.watch-controls,
+.simulation-actions {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+}
+
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.watch-card {
+  position: relative;
+  min-height: 126px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f8fafb;
+}
+
+.watch-card.has-alert {
+  border-color: var(--gold);
+  box-shadow: inset 4px 0 0 var(--gold);
+}
+
+.watch-card div,
+.watch-card label {
+  display: grid;
+  gap: 3px;
+}
+
+.watch-card p {
+  min-height: 32px;
+  margin: 10px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.watch-card input {
+  width: 72px;
+  height: 30px;
+}
+
+.watch-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.uncertainty-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.uncertainty-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) 1.4fr 76px;
+  gap: 10px;
+  align-items: center;
+}
+
+.uncertainty-row > div:first-child {
+  display: grid;
+}
+
+.uncertainty-row span,
+.uncertainty-row small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.uncertainty-track {
+  position: relative;
+  height: 10px;
+  background: #e7edf0;
+  border-radius: 5px;
+}
+
+.uncertainty-track i {
+  position: absolute;
+  top: 0;
+  height: 10px;
+  background: #6ca4b6;
+  border-radius: 5px;
+}
+
+.uncertainty-track b {
+  position: absolute;
+  top: -3px;
+  width: 3px;
+  height: 16px;
+  background: var(--navy);
+}
+
+.advanced-metrics,
+.availability-grid,
+.simulation-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.advanced-metrics > div,
+.simulation-summary > div {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  background: var(--panel-2);
+  border-radius: 7px;
+}
+
+.advanced-metrics strong,
+.simulation-summary strong {
+  font-size: 24px;
+}
+
+.advanced-metrics span,
+.simulation-summary span,
+.availability-item small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.availability-grid {
+  margin-top: 12px;
+}
+
+.availability-item {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border-left: 3px solid var(--green);
+  background: #f8faf9;
+}
+
+.availability-item.unavailable {
+  border-left-color: var(--red);
+}
+
+.availability-item strong {
+  color: var(--green);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.availability-item.unavailable strong {
+  color: var(--red);
+}
+
+.simulation-summary {
+  margin: 16px 0;
+}
+
+.simulation-results {
+  display: grid;
+  gap: 7px;
+}
+
+.simulation-row {
+  display: grid;
+  grid-template-columns: 24px minmax(110px, 1fr) 2fr 58px minmax(170px, 1fr);
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+}
+
+.simulation-row > div {
+  height: 8px;
+  overflow: hidden;
+  background: #e6edf0;
+  border-radius: 4px;
+}
+
+.simulation-row i {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+}
+
+.simulation-row small {
+  color: var(--muted);
 }
 
 .season-tabs {
@@ -1192,9 +1406,35 @@ footer {
   main {
     padding: 22px;
   }
+
+  h2 {
+    font-size: 30px;
+  }
 }
 
 @media (max-width: 620px) {
+  h2 {
+    font-size: 26px;
+  }
+
+  .nav-stack {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .nav-stack a {
+    text-align: center;
+  }
+
+  .watch-controls,
+  .simulation-actions {
+    display: grid;
+    margin-top: 12px;
+  }
+
+  .uncertainty-row,
+  .simulation-row {
+    grid-template-columns: 1fr;
+  }
   .bar-row {
     grid-template-columns: 1fr;
     gap: 5px;
