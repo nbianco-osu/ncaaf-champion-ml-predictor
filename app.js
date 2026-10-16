@@ -4,14 +4,21 @@ const state = {
   query: "",
   sortMode: "predictedRank",
   selectedYear: null,
-  weeklyModel: "Balanced ML Blend",
+  weeklyModel: "Weekly ML Ensemble",
+  movementCount: 8,
 };
 
 const fmtPct = (value) => (Number.isFinite(Number(value)) ? `${(Number(value) * 100).toFixed(1)}%` : "-");
 const fmtRank = (value) => (Number.isFinite(Number(value)) ? Number(value).toLocaleString() : "-");
 const fmtScore = (value) => (Number.isFinite(Number(value)) ? String(value) : "-");
 const fmtDecimal = (value, digits = 2) => (Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : "-");
+const fmtSigned = (value, digits = 1) => {
+  if (!Number.isFinite(Number(value))) return "-";
+  const number = Number(value);
+  return `${number > 0 ? "+" : ""}${number.toFixed(digits)}`;
+};
 const max = (items, key) => Math.max(...items.map((item) => Number(item[key])));
+const chartColors = ["#176b87", "#c44f3b", "#4e7a3e", "#8a5b9d", "#d08a19", "#3659a2", "#a83f70", "#55706e", "#7e642f", "#277d65"];
 const teamLogoIds = {
   Alabama: 333,
   Arizona: 12,
@@ -52,6 +59,10 @@ function currentSeason() {
   return state.data.seasonPredictions[state.selectedYear];
 }
 
+function currentWeeklyRows() {
+  return state.data.weeklyPredictions?.[state.selectedYear] || [];
+}
+
 function seasonYears() {
   return Object.keys(state.data.seasonPredictions).sort((a, b) => Number(b) - Number(a));
 }
@@ -88,7 +99,7 @@ function renderSummary() {
   document.getElementById("top3Rate").textContent = fmtPct(summary.backtestTop3Rate);
   document.getElementById("meanChampionRank").textContent = fmtDecimal(summary.meanChampionRank);
   document.getElementById("championNll").textContent = fmtDecimal(summary.meanChampionNll);
-  document.getElementById("modelChip").textContent = isCurrentSeason ? "Balanced weekly blend" : meta.selectedModel;
+  document.getElementById("modelChip").textContent = isCurrentSeason ? "Weekly ML Ensemble" : meta.selectedModel;
   const weeklySelect = document.getElementById("weeklyModel");
   const weeklyModels = meta.weeklyModels || ["Balanced ML Blend"];
   if (!weeklySelect.options.length) {
@@ -98,6 +109,11 @@ function renderSummary() {
     state.weeklyModel = weeklyModels[0];
   }
   weeklySelect.value = state.weeklyModel;
+  const weeklyRows = currentWeeklyRows();
+  const latest = weeklyRows.at(-1);
+  document.getElementById("snapshotStatus").textContent = latest
+    ? `${latest.isFrozen ? "Frozen" : "Provisional"} snapshot · W${latest.week}`
+    : "No snapshot";
   document.querySelectorAll(".season-tab").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.year === state.selectedYear);
   });
@@ -112,13 +128,29 @@ function renderProbabilityChart() {
       const width = Math.max(2, (row.championProbability / cap) * 100);
       return `
         <div class="bar-row">
-          <strong>${row.predictedRank}. ${row.Team}</strong>
+          <strong>${logoUrl(row.Team) ? `<img class="team-logo-small" src="${logoUrl(row.Team)}" alt="" />` : ""}${row.predictedRank}. ${row.Team}</strong>
           <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
           <span>${fmtPct(row.championProbability)}</span>
         </div>
       `;
     })
     .join("");
+}
+
+function renderPredictionExplanation() {
+  const container = document.getElementById("predictionExplanation");
+  const leader = currentSeason().records[0];
+  const reasons = leader?.predictionReasons;
+  if (!leader || !reasons) {
+    container.innerHTML = "";
+    return;
+  }
+  const strengths = reasons.strengths.map((item) => `${item.label} ${fmtDecimal(item.score, 0)}`).join(" and ");
+  container.innerHTML = `
+    <div><span>Why ${leader.Team} leads</span><strong>${strengths}</strong></div>
+    <div><span>Primary risk</span><strong>${reasons.risk.label} ${fmtDecimal(reasons.risk.score, 0)}</strong></div>
+    <div><span>Model rank</span><strong>#${leader.predictedRank} · ${fmtPct(leader.championProbability)}</strong></div>
+  `;
 }
 
 function renderWeeklyTimeline() {
@@ -231,6 +263,187 @@ function renderModelCards() {
     .join("");
 }
 
+function renderWeeklyDiagnostics() {
+  const rows = [...(state.data.weeklyModelDiagnostics || [])]
+    .filter((row) => row.model.startsWith("Weekly"))
+    .sort((a, b) => b.top1Rate - a.top1Rate || a.meanChampionNll - b.meanChampionNll);
+  document.getElementById("weeklyModelDiagnostics").innerHTML = `
+    <div class="diagnostic-row diagnostic-head"><span>Model</span><span>Hit</span><span>Top 3</span><span>Mean rank</span><span>NLL</span></div>
+    ${rows.map((row) => `
+      <div class="diagnostic-row ${row.model === "Weekly ML Ensemble" ? "is-selected" : ""}">
+        <strong>${row.model}</strong>
+        <span>${fmtPct(row.top1Rate)}</span>
+        <span>${fmtPct(row.top3Rate)}</span>
+        <span>${fmtDecimal(row.meanChampionRank)}</span>
+        <span>${fmtDecimal(row.meanChampionNll)}</span>
+      </div>
+    `).join("")}
+  `;
+  const audit = state.data.predictionAudit || {};
+  document.getElementById("agreementChip").textContent = audit.modelCount
+    ? `${audit.leaderVotes}/${audit.modelCount} models agree`
+    : "No current audit";
+}
+
+function renderCalibration() {
+  const rows = state.data.weeklyCalibration || [];
+  const container = document.getElementById("calibrationChart");
+  if (!rows.length) {
+    container.innerHTML = `<p class="muted">Calibration becomes available after completed-season tests.</p>`;
+    return;
+  }
+  const width = 360;
+  const height = 250;
+  const pad = 36;
+  const x = (value) => pad + value * (width - pad * 2);
+  const y = (value) => height - pad - value * (height - pad * 2);
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Weekly ensemble calibration">
+      <line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" class="calibration-perfect" />
+      ${[0, .25, .5, .75, 1].map((tick) => `<text x="${x(tick)}" y="${height - 12}" text-anchor="middle">${Math.round(tick * 100)}%</text><text x="28" y="${y(tick) + 4}" text-anchor="end">${Math.round(tick * 100)}%</text>`).join("")}
+      ${rows.map((row) => `<circle cx="${x(row.predicted)}" cy="${y(row.observed)}" r="${Math.min(12, 4 + Math.sqrt(row.count))}" class="calibration-point"><title>${row.count} observations: ${fmtPct(row.predicted)} predicted, ${fmtPct(row.observed)} observed</title></circle>`).join("")}
+      <text x="${width / 2}" y="${height - 1}" text-anchor="middle" class="axis-title">Predicted</text>
+      <text x="10" y="${height / 2}" transform="rotate(-90 10 ${height / 2})" text-anchor="middle" class="axis-title">Observed</text>
+    </svg>
+  `;
+}
+
+function renderMovement() {
+  const container = document.getElementById("movementChart");
+  const rows = currentWeeklyRows();
+  if (rows.length < 2) {
+    container.innerHTML = `<p class="muted">At least two weekly snapshots are needed for movement tracking.</p>`;
+    document.getElementById("movers").innerHTML = "";
+    return;
+  }
+  const latest = rows.at(-1);
+  const teams = latest.records.slice(0, state.movementCount).map((record) => record.Team);
+  const width = 980;
+  const height = 380;
+  const pad = { top: 24, right: 120, bottom: 46, left: 54 };
+  const allValues = rows.flatMap((week) => teams.map((team) => week.records.find((row) => row.Team === team)?.mlChampionProbability || 0));
+  const maxProbability = Math.max(.25, ...allValues) * 1.12;
+  const x = (index) => pad.left + (index / (rows.length - 1)) * (width - pad.left - pad.right);
+  const y = (value) => pad.top + (1 - value / maxProbability) * (height - pad.top - pad.bottom);
+  const ticks = [0, .1, .2, .3, .4, .5].filter((tick) => tick <= maxProbability);
+  const grid = ticks.map((tick) => `<line x1="${pad.left}" y1="${y(tick)}" x2="${width - pad.right}" y2="${y(tick)}"/><text x="${pad.left - 10}" y="${y(tick) + 4}" text-anchor="end">${fmtPct(tick)}</text>`).join("");
+  const series = teams.map((team, teamIndex) => {
+    const values = rows.map((week) => week.records.find((record) => record.Team === team)?.mlChampionProbability || 0);
+    const points = values.map((value, index) => `${x(index)},${y(value)}`).join(" ");
+    const lastX = x(values.length - 1);
+    const lastY = y(values.at(-1));
+    return `<g class="movement-series"><polyline points="${points}" style="stroke:${chartColors[teamIndex]}"/><circle cx="${lastX}" cy="${lastY}" r="5" style="fill:${chartColors[teamIndex]}"/><text x="${lastX + 9}" y="${lastY + 4}" style="fill:${chartColors[teamIndex]}">${team}</text><title>${team}: ${fmtPct(values.at(-1))}</title></g>`;
+  }).join("");
+  container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Contender probability movement"><g class="movement-grid">${grid}</g>${series}${rows.map((row, index) => `<text x="${x(index)}" y="${height - 16}" text-anchor="middle">W${row.week}</text>`).join("")}</svg>`;
+
+  const previous = rows.at(-2);
+  const movers = latest.records.map((record) => {
+    const prior = previous.records.find((item) => item.Team === record.Team);
+    return { team: record.Team, change: record.championProbability - (prior?.championProbability || 0), probability: record.championProbability };
+  }).sort((a, b) => b.change - a.change);
+  document.getElementById("movers").innerHTML = [
+    { label: "Biggest riser", row: movers[0] },
+    { label: "Biggest faller", row: movers.at(-1) },
+    { label: "Current leader", row: { ...movers.find((item) => item.team === latest.predictedChampion), team: latest.predictedChampion } },
+  ].map(({ label, row }) => `<div><span>${label}</span><strong>${row.team}</strong><b>${fmtSigned(row.change * 100)} pts</b></div>`).join("");
+}
+
+function teamOptions() {
+  return currentSeason().records.map((row) => `<option value="${row.Team}">${row.Team}</option>`).join("");
+}
+
+function populateTeamControls() {
+  const ids = ["compareTeamA", "compareTeamB", "scenarioTeam", "researchTeam"];
+  ids.forEach((id) => {
+    const select = document.getElementById(id);
+    const prior = select.value;
+    select.innerHTML = teamOptions();
+    if (prior && currentSeason().records.some((row) => row.Team === prior)) select.value = prior;
+  });
+  if (document.getElementById("compareTeamB").options.length > 1 && document.getElementById("compareTeamA").value === document.getElementById("compareTeamB").value) {
+    document.getElementById("compareTeamB").selectedIndex = 1;
+  }
+}
+
+function renderComparison() {
+  const rows = currentSeason().records;
+  const teamA = rows.find((row) => row.Team === document.getElementById("compareTeamA").value) || rows[0];
+  const teamB = rows.find((row) => row.Team === document.getElementById("compareTeamB").value) || rows[1];
+  const metrics = [
+    ["Title probability", "championProbability", (value) => fmtPct(value), (value) => value * 100],
+    ["Resume", "Resume Composite", (value) => fmtDecimal(value, 0), Number],
+    ["Power", "Power Composite", (value) => fmtDecimal(value, 0), Number],
+    ["Consensus", "Consensus Score", (value) => fmtDecimal(value, 0), Number],
+    ["Win rate", "Win Pct", (value) => fmtPct(value), (value) => value * 100],
+    ["Scoring margin", "Scoring Margin", (value) => fmtSigned(value), (value) => Math.max(0, Math.min(100, 50 + Number(value)))],
+  ];
+  document.getElementById("comparisonGrid").innerHTML = `
+    <div class="comparison-team"><strong>${teamA.Team}</strong><span>#${teamA.predictedRank}</span></div>
+    <div class="comparison-team align-right"><strong>${teamB.Team}</strong><span>#${teamB.predictedRank}</span></div>
+    ${metrics.map(([label, key, formatter, scale]) => {
+      const a = teamA[key];
+      const b = teamB[key];
+      return `<div class="comparison-metric"><span>${formatter(a)}</span><div><b>${label}</b><div class="compare-bars"><i style="width:${scale(a) || 0}%"></i><i style="width:${scale(b) || 0}%"></i></div></div><span>${formatter(b)}</span></div>`;
+    }).join("")}
+  `;
+}
+
+function renderScenario() {
+  const rows = currentSeason().records;
+  const team = rows.find((row) => row.Team === document.getElementById("scenarioTeam").value) || rows[0];
+  const result = document.getElementById("scenarioResult").value;
+  const opponent = document.getElementById("scenarioOpponent").value;
+  const margin = Number(document.getElementById("scenarioMargin").value);
+  document.getElementById("marginOutput").value = margin;
+  const opponentImpact = { top5: .62, top25: .42, ranked: .28, unranked: .10 }[opponent];
+  const direction = result === "win" ? 1 : -1;
+  const delta = direction * (opponentImpact + Math.min(margin, 28) / 70);
+  const factor = Math.exp(delta);
+  const base = Number(team.championProbability);
+  const adjusted = (base * factor) / ((1 - base) + base * factor);
+  const sorted = rows.map((row) => ({ team: row.Team, probability: row.Team === team.Team ? adjusted : row.championProbability * ((1 - adjusted) / (1 - base)) })).sort((a, b) => b.probability - a.probability);
+  const rank = sorted.findIndex((row) => row.team === team.Team) + 1;
+  document.getElementById("scenarioResultPanel").innerHTML = `<span>${team.Team} after a ${margin}-point ${result}</span><strong>${fmtPct(adjusted)}</strong><p>${fmtSigned((adjusted - base) * 100)} percentage points · projected rank #${rank}</p>`;
+}
+
+function renderResearch() {
+  const rows = currentSeason().records;
+  const team = rows.find((row) => row.Team === document.getElementById("researchTeam").value) || rows[0];
+  const profile = state.data.championProfile || { features: [], averages: {} };
+  const differences = profile.features.map((feature) => Math.abs(Number(team[feature] || 0) - Number(profile.averages[feature] || 0)));
+  const similarity = Math.max(0, 100 - (differences.reduce((sum, value) => sum + value, 0) / Math.max(1, differences.length)));
+  document.getElementById("championProfile").innerHTML = `
+    <div class="similarity-score"><span>Champion similarity</span><strong>${fmtDecimal(similarity, 0)}</strong><p>Compared with the 2021-2025 champion profile.</p></div>
+    <div class="profile-features">${profile.features.map((feature) => `<div><span>${feature.replace(" Composite", "")}</span><b>${fmtDecimal(team[feature], 0)}</b><div class="profile-track"><i style="width:${team[feature] || 0}%"></i><em style="left:${profile.averages[feature] || 0}%" title="Champion average ${fmtDecimal(profile.averages[feature], 0)}"></em></div></div>`).join("")}</div>
+  `;
+  const weekly = currentWeeklyRows();
+  const values = weekly.map((snapshot) => snapshot.records.find((row) => row.Team === team.Team)?.mlChampionProbability || 0);
+  const width = 360;
+  const height = 220;
+  const pad = 32;
+  const cap = Math.max(.1, ...values) * 1.15;
+  const x = (index) => pad + (index / Math.max(1, values.length - 1)) * (width - pad * 2);
+  const y = (value) => pad + (1 - value / cap) * (height - pad * 2);
+  document.getElementById("teamTimeline").innerHTML = values.length ? `<svg viewBox="0 0 ${width} ${height}"><polyline points="${values.map((value, index) => `${x(index)},${y(value)}`).join(" ")}"/><g>${values.map((value, index) => `<circle cx="${x(index)}" cy="${y(value)}" r="4"><title>Week ${weekly[index].week}: ${fmtPct(value)}</title></circle><text x="${x(index)}" y="${height - 8}" text-anchor="middle">${weekly[index].week}</text>`).join("")}</g></svg>` : `<p class="muted">No weekly history for this team.</p>`;
+}
+
+function renderHealth() {
+  const health = state.data.meta.dataHealth || {};
+  document.getElementById("healthStatus").textContent = health.status || "Unknown";
+  document.getElementById("healthStatus").classList.toggle("needs-attention", health.status !== "healthy");
+  const rows = [
+    ["Latest week", health.latestWeek],
+    ["Snapshots", health.snapshotCount],
+    ["Frozen", health.frozenSnapshots],
+    ["Provisional", health.provisionalSnapshots],
+    ["Source coverage", fmtPct(health.sourceCoverage)],
+    ["Score weeks", health.scoreWeeks],
+  ];
+  document.getElementById("healthMetrics").innerHTML = rows.map(([label, value]) => `<div><strong>${value ?? "-"}</strong><span>${label}</span></div>`).join("");
+  const snapshots = currentWeeklyRows();
+  document.getElementById("snapshotAudit").innerHTML = snapshots.map((snapshot) => `<div><span>Week ${snapshot.week}</span><strong>${snapshot.isFrozen ? "Frozen" : "Provisional"}</strong><code>${snapshot.snapshotId || "legacy"}</code></div>`).join("");
+}
+
 function renderBacktestChart() {
   const container = document.getElementById("backtestChart");
   const rows = state.data.backtest;
@@ -303,6 +516,8 @@ function renderTable() {
         <td>${fmtRank(row.Defense)}</td>
         <td>${fmtRank(row.FPI)}</td>
         <td>${fmtRank(row["Game Control"])}</td>
+        <td>${fmtPct(row["Win Pct"])}</td>
+        <td>${fmtSigned(row["Scoring Margin"])}</td>
         <td>${fmtDecimal(row["Consensus Score"], 1)}</td>
         <td>${fmtDecimal(row["Balance Score"], 1)}</td>
       </tr>
@@ -440,11 +655,20 @@ async function loadScores() {
 function renderAll() {
   renderSummary();
   renderProbabilityChart();
+  renderPredictionExplanation();
   renderFeatureImportance();
   renderModelCards();
+  renderWeeklyDiagnostics();
+  renderCalibration();
   renderDatasetMetrics();
   renderBacktestChart();
   renderWeeklyTimeline();
+  renderMovement();
+  populateTeamControls();
+  renderComparison();
+  renderScenario();
+  renderResearch();
+  renderHealth();
   renderTable();
   renderSources();
   renderSavedScores();
@@ -472,6 +696,15 @@ async function init() {
     renderSummary();
     renderWeeklyTimeline();
   });
+
+  document.getElementById("movementCount").addEventListener("change", (event) => {
+    state.movementCount = Number(event.target.value);
+    renderMovement();
+  });
+
+  ["compareTeamA", "compareTeamB"].forEach((id) => document.getElementById(id).addEventListener("change", renderComparison));
+  ["scenarioTeam", "scenarioResult", "scenarioOpponent", "scenarioMargin"].forEach((id) => document.getElementById(id).addEventListener("input", renderScenario));
+  document.getElementById("researchTeam").addEventListener("change", renderResearch);
 
   document.getElementById("refreshScores").addEventListener("click", loadScores);
   loadScores();

@@ -21,7 +21,12 @@
           <a href="#scores">Scores</a>
           <a href="#model">Model</a>
           <a href="#backtest">Backtest</a>
+          <a href="#movement">Movement</a>
+          <a href="#compare">Compare</a>
+          <a href="#simulator">Simulator</a>
+          <a href="#research">Research</a>
           <a href="#metrics">Metrics</a>
+          <a href="#health">Data health</a>
           <a href="#data">Data</a>
         </nav>
         <div class="source-box">
@@ -123,6 +128,7 @@
               <span class="model-chip" id="modelChip">-</span>
             </div>
             <div id="probabilityChart" class="bar-chart" role="img" aria-label="Top ten champion probabilities"></div>
+            <div id="predictionExplanation" class="explanation-strip"></div>
           </article>
 
           <article id="model" class="panel">
@@ -170,19 +176,130 @@
           </article>
         </section>
 
+        <section class="panel-grid" id="model-diagnostics">
+          <article class="panel wide">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Forward-only weekly testing</p>
+                <h3>Weekly model leaderboard</h3>
+              </div>
+              <span class="model-chip" id="agreementChip">-</span>
+            </div>
+            <div id="weeklyModelDiagnostics" class="diagnostic-table"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Probability quality</p>
+                <h3>Calibration</h3>
+              </div>
+            </div>
+            <div id="calibrationChart" class="calibration-chart"></div>
+          </article>
+        </section>
+
         <section class="panel" id="weekly">
           <div class="panel-head">
             <div>
               <p class="small-label" id="weeklySeasonLabel">Week by week</p>
               <h3>Predicted winner through the season</h3>
             </div>
-            <label class="compact-control">
-              Weekly model
-              <select id="weeklyModel"></select>
-            </label>
+            <div class="panel-actions">
+              <span class="model-chip" id="snapshotStatus">-</span>
+              <label class="compact-control">
+                Weekly model
+                <select id="weeklyModel"></select>
+              </label>
+            </div>
           </div>
           <p class="muted weekly-note">Built from ESPN weekly playoff-picture snapshots.</p>
           <div id="weeklyTimeline" class="weekly-timeline" aria-label="Weekly predicted winner timeline"></div>
+        </section>
+
+        <section class="panel" id="movement">
+          <div class="panel-head">
+            <div>
+              <p class="small-label">Top contenders</p>
+              <h3>Probability movement by week</h3>
+            </div>
+            <label class="compact-control">
+              Teams shown
+              <select id="movementCount">
+                <option value="5">Top 5</option>
+                <option value="8" selected>Top 8</option>
+                <option value="10">Top 10</option>
+              </select>
+            </label>
+          </div>
+          <div id="movementChart" class="movement-chart"></div>
+          <div id="movers" class="movers-grid"></div>
+        </section>
+
+        <section class="panel-grid">
+          <article class="panel wide" id="compare">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Head to head</p>
+                <h3>Team comparison</h3>
+              </div>
+              <div class="compare-controls">
+                <select id="compareTeamA" aria-label="First comparison team"></select>
+                <select id="compareTeamB" aria-label="Second comparison team"></select>
+              </div>
+            </div>
+            <div id="comparisonGrid" class="comparison-grid"></div>
+          </article>
+
+          <article class="panel" id="simulator">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">What-if estimate</p>
+                <h3>Result simulator</h3>
+              </div>
+            </div>
+            <div class="simulator-controls">
+              <label>Team<select id="scenarioTeam"></select></label>
+              <label>Result<select id="scenarioResult"><option value="win">Win</option><option value="loss">Loss</option></select></label>
+              <label>Opponent<select id="scenarioOpponent"><option value="top5">Top 5</option><option value="top25">Top 25</option><option value="ranked">Ranked</option><option value="unranked">Unranked</option></select></label>
+              <label>Margin <output id="marginOutput">10</output><input id="scenarioMargin" type="range" min="1" max="35" value="10" /></label>
+            </div>
+            <div id="scenarioResultPanel" class="scenario-result"></div>
+            <p class="muted">Scenario estimates reweight the current forecast; they are not a retrained game prediction.</p>
+          </article>
+        </section>
+
+        <section class="panel-grid" id="research">
+          <article class="panel wide">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Historical research</p>
+                <h3>Champion profile similarity</h3>
+              </div>
+              <label class="compact-control">Team<select id="researchTeam"></select></label>
+            </div>
+            <div id="championProfile" class="profile-grid"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Season path</p>
+                <h3>Team probability timeline</h3>
+              </div>
+            </div>
+            <div id="teamTimeline" class="team-timeline"></div>
+          </article>
+        </section>
+
+        <section class="panel" id="health">
+          <div class="panel-head">
+            <div>
+              <p class="small-label">Pipeline observability</p>
+              <h3>Data health and snapshot audit</h3>
+            </div>
+            <span class="health-status" id="healthStatus">-</span>
+          </div>
+          <div id="healthMetrics" class="dataset-metrics"></div>
+          <div id="snapshotAudit" class="snapshot-audit"></div>
         </section>
 
         <section id="data" class="panel table-panel">
@@ -207,6 +324,8 @@
                   <th>Def</th>
                   <th>FPI</th>
                   <th>GC</th>
+                  <th>Win %</th>
+                  <th>Margin</th>
                   <th>Consensus</th>
                   <th>Balance</th>
                 </tr>
