@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { extname, join, relative, sep } from "node:path";
 
 const distDir = join(process.cwd(), "dist");
@@ -75,6 +75,9 @@ function normalizeGame(event) {
     winner: Boolean(competitor.winner),
     logo: competitor.team?.logo,
   }));
+  const situation = competition.situation || {};
+  const status = event.status || {};
+  const liveWinProbability = calculateLiveWinProbability(competitors, status, situation);
   return {
     id: event.id,
     name: event.name,
@@ -86,7 +89,39 @@ function normalizeGame(event) {
     completed: Boolean(event.status?.type?.completed),
     venue: competition.venue?.fullName || null,
     broadcast: competition.broadcasts?.[0]?.names?.join(", ") || null,
+    situation: {
+      possession: situation.possession || null,
+      downDistance: situation.downDistanceText || null,
+      lastPlay: situation.lastPlay?.text || null,
+      homeTimeouts: situation.homeTimeouts ?? null,
+      awayTimeouts: situation.awayTimeouts ?? null,
+    },
+    liveWinProbability,
     competitors,
+  };
+}
+
+function clockToSeconds(displayValue) {
+  const parts = String(displayValue || "0:00").split(":").map(Number);
+  return (parts[0] || 0) * 60 + (parts[1] || 0);
+}
+
+function calculateLiveWinProbability(competitors, status, situation) {
+  if (status.type?.name !== "STATUS_IN_PROGRESS") return null;
+  const home = competitors.find((team) => team.homeAway === "home") || competitors[1];
+  const away = competitors.find((team) => team.homeAway === "away") || competitors[0];
+  if (!home || !away) return null;
+  const period = Number(status.period || 1);
+  const seconds = Math.max(0, (4 - Math.min(period, 4)) * 900 + clockToSeconds(status.displayClock));
+  const leverage = 1 + (3600 - seconds) / 1050;
+  const scoreEdge = (Number(home.score || 0) - Number(away.score || 0)) * 0.12 * leverage;
+  const rankEdge = ((Number(away.rank || 35) - Number(home.rank || 35)) / 35) * 0.55;
+  const possessionEdge = String(situation.possession || "") === String(home.id || "") ? 0.16 : -0.16;
+  const homeProbability = 1 / (1 + Math.exp(-(scoreEdge + rankEdge + possessionEdge + 0.12)));
+  return {
+    home: Math.max(0.001, Math.min(0.999, homeProbability)),
+    away: Math.max(0.001, Math.min(0.999, 1 - homeProbability)),
+    method: "Score-clock-possession model",
   };
 }
 
@@ -185,6 +220,30 @@ async function fetchCoreScores() {
   };
 }
 
+function watchlistIdentity(request) {
+  const authenticated = request.headers.get("oai-authenticated-user-email");
+  if (authenticated) return "user:" + authenticated.toLowerCase();
+  const device = (request.headers.get("x-ncaaf-device") || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
+  return device ? "device:" + device : null;
+}
+
+async function watchlistResponse(request, env) {
+  if (!env?.DB) return jsonResponse({ error: "Cloud watchlists are not configured." }, 503);
+  const identity = watchlistIdentity(request);
+  if (!identity) return jsonResponse({ error: "A device identity is required." }, 400);
+  if (request.method === "GET") {
+    const row = await env.DB.prepare("SELECT payload, updated_at FROM watchlists WHERE identity = ?").bind(identity).first();
+    return jsonResponse({ watchlist: row ? JSON.parse(row.payload) : [], updatedAt: row?.updated_at || null, scope: identity.startsWith("user:") ? "account" : "device" });
+  }
+  if (request.method === "PUT") {
+    const body = await request.json();
+    const watchlist = Array.isArray(body.watchlist) ? body.watchlist.slice(0, 20).map((row) => ({ team: String(row.team || "").slice(0, 80), threshold: Math.max(0, Math.min(1, Number(row.threshold || 0))) })).filter((row) => row.team) : [];
+    await env.DB.prepare("INSERT INTO watchlists (identity, payload, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(identity) DO UPDATE SET payload = excluded.payload, updated_at = CURRENT_TIMESTAMP").bind(identity, JSON.stringify(watchlist)).run();
+    return jsonResponse({ watchlist, saved: true, scope: identity.startsWith("user:") ? "account" : "device" });
+  }
+  return jsonResponse({ error: "Method not allowed." }, 405);
+}
+
 function responseFor(route, status = 200) {
   const asset = ROUTES[route];
 
@@ -204,13 +263,20 @@ function responseFor(route, status = 200) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/api/scores") {
       try {
         return jsonResponse(await fetchScores());
       } catch (error) {
         return jsonResponse({ updatedAt: new Date().toISOString(), error: error.message, games: [] }, 502);
+      }
+    }
+    if (url.pathname === "/api/watchlist") {
+      try {
+        return await watchlistResponse(request, env);
+      } catch (error) {
+        return jsonResponse({ error: error.message }, 500);
       }
     }
 
@@ -228,3 +294,6 @@ export default {
 
 await mkdir(serverDir, { recursive: true });
 await writeFile(serverEntry, source);
+await mkdir(join(distDir, ".openai"), { recursive: true });
+await cp(join(process.cwd(), ".openai", "hosting.json"), join(distDir, ".openai", "hosting.json"), { force: true });
+await cp(join(process.cwd(), "drizzle"), join(distDir, "drizzle"), { recursive: true, force: true });

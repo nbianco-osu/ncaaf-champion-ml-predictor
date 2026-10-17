@@ -21,6 +21,7 @@ DATA_PATH = APP_DIR / "data" / "app-data.json"
 PUBLIC_DATA_PATH = APP_DIR / "public" / "data" / "app-data.json"
 GAME_HISTORY_PATH = APP_DIR / "data" / "game-history.json"
 PLAY_CACHE_PATH = APP_DIR / "data" / "play-metrics-cache.json"
+PREGAME_STORE_PATH = APP_DIR / "data" / "pregame-feature-store.json"
 WEEKLY_FEATURES = ["SOR", "SOS", "FPI", "Game Control"]
 WEEKLY_MODEL_FEATURES = [
     "SOR Score",
@@ -108,6 +109,17 @@ GAME_MODEL_FEATURES = [
     "Home field",
     "Conference game",
 ]
+SELECTION_FEATURES = [
+    "Resume Composite",
+    "Power Composite",
+    "Consensus Score",
+    "SOR Score",
+    "SOS Score",
+    "AP Poll Score",
+    "Win Pct",
+]
+GAME_FEATURE_SCHEMA = "game-features-v3-prior-only-calibrated"
+PLAY_METRIC_SCHEMA = 2
 
 
 def current_college_football_season(today: date | None = None) -> int:
@@ -734,15 +746,12 @@ def game_feature_rows(games: list[dict], initial_elo: dict[str, float] | None = 
     return rows, elo, margins
 
 
-def fit_game_model(rows: list[dict]) -> dict:
-    x = np.asarray([row["features"] for row in rows], dtype=float)
-    y = np.asarray([row["teamAWon"] for row in rows], dtype=float)
+def fit_binary_model(x: np.ndarray, y: np.ndarray, regularization: float = 0.012) -> dict:
     mean, scale = x.mean(axis=0), x.std(axis=0)
     scale[scale < 1e-8] = 1.0
     standardized = (x - mean) / scale
     design = np.column_stack([np.ones(len(standardized)), standardized])
     weights = np.zeros(design.shape[1])
-    regularization = 0.012
     for _ in range(40):
         predicted = 1 / (1 + np.exp(-np.clip(design @ weights, -20, 20)))
         gradient = design.T @ (predicted - y) / len(y)
@@ -757,22 +766,104 @@ def fit_game_model(rows: list[dict]) -> dict:
     return {"mean": mean, "scale": scale, "weights": weights}
 
 
-def game_probability(model: dict, features: list[float]) -> tuple[float, list[dict]]:
+def fit_game_model(rows: list[dict]) -> dict:
+    x = np.asarray([row["features"] for row in rows], dtype=float)
+    y = np.asarray([row["teamAWon"] for row in rows], dtype=float)
+    return fit_binary_model(x, y)
+
+
+def binary_probability(model: dict, features: list[float]) -> float:
+    standardized = (np.asarray(features, dtype=float) - model["mean"]) / model["scale"]
+    logit = model["weights"][0] + standardized @ model["weights"][1:]
+    return float(1 / (1 + math.exp(-float(np.clip(logit, -20, 20)))))
+
+
+def fit_platt_calibrator(probabilities: list[float], labels: list[int]) -> dict:
+    logits = np.asarray([math.log(max(value, 1e-8) / max(1 - value, 1e-8)) for value in probabilities], dtype=float)
+    x = logits.reshape(-1, 1)
+    y = np.asarray(labels, dtype=float)
+    model = fit_binary_model(x, y, regularization=0.002)
+    return {
+        "mean": float(model["mean"][0]),
+        "scale": float(model["scale"][0]),
+        "intercept": float(model["weights"][0]),
+        "slope": float(model["weights"][1]),
+    }
+
+
+def apply_platt(probability: float, calibrator: dict) -> float:
+    logit = math.log(max(probability, 1e-8) / max(1 - probability, 1e-8))
+    standardized = (logit - calibrator["mean"]) / calibrator["scale"]
+    calibrated_logit = calibrator["intercept"] + calibrator["slope"] * standardized
+    return float(1 / (1 + math.exp(-float(np.clip(calibrated_logit, -20, 20)))))
+
+
+def reliability_bins(probabilities: list[float], labels: list[int]) -> list[dict]:
+    bins = []
+    for low in np.arange(0, 1, 0.1):
+        selected = [
+            (probability, label)
+            for probability, label in zip(probabilities, labels)
+            if low <= probability < low + 0.1 or (low == 0.9 and probability == 1)
+        ]
+        if selected:
+            bins.append(
+                {
+                    "low": float(low),
+                    "high": float(low + 0.1),
+                    "predicted": float(np.mean([row[0] for row in selected])),
+                    "observed": float(np.mean([row[1] for row in selected])),
+                    "count": len(selected),
+                }
+            )
+    return bins
+
+
+def build_pregame_feature_store(rows: list[dict]) -> dict:
+    stored_rows = [
+        {
+            "season": row["year"],
+            "week": row["week"],
+            "gameId": row["gameId"],
+            "teamA": row["teamA"],
+            "teamB": row["teamB"],
+            "features": {name: float(value) for name, value in zip(GAME_MODEL_FEATURES, row["features"])},
+            "label": int(row["teamAWon"]),
+        }
+        for row in rows
+    ]
+    content = {"schema": GAME_FEATURE_SCHEMA, "rows": stored_rows}
+    rendered = json.dumps(content, separators=(",", ":"))
+    PREGAME_STORE_PATH.write_text(rendered, encoding="utf-8")
+    return {
+        "schema": GAME_FEATURE_SCHEMA,
+        "rows": len(stored_rows),
+        "seasons": f"{min(row['year'] for row in rows)}-{max(row['year'] for row in rows)}",
+        "features": GAME_MODEL_FEATURES,
+        "leakagePolicy": "Every feature is reconstructed from information available before kickoff; season records reset annually.",
+        "sha256": hashlib.sha256(rendered.encode()).hexdigest(),
+    }
+
+
+def game_probability(model: dict, features: list[float], calibrator: dict | None = None) -> tuple[float, list[dict], float]:
     standardized = (np.asarray(features, dtype=float) - model["mean"]) / model["scale"]
     contributions = standardized * model["weights"][1:]
     logit = model["weights"][0] + contributions.sum()
-    probability = float(1 / (1 + math.exp(-float(np.clip(logit, -20, 20)))))
+    raw_probability = float(1 / (1 + math.exp(-float(np.clip(logit, -20, 20)))))
+    probability = apply_platt(raw_probability, calibrator) if calibrator else raw_probability
     factors = sorted(
         [{"feature": name, "impact": float(value)} for name, value in zip(GAME_MODEL_FEATURES, contributions)],
         key=lambda item: abs(item["impact"]),
         reverse=True,
     )[:3]
-    return probability, factors
+    return probability, factors, raw_probability
 
 
 def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
     historical_rows, historical_elo, historical_margins = game_feature_rows(history_games)
     evaluations = []
+    oof_probabilities = []
+    oof_labels = []
     for year in range(2017, max(COMPLETED_YEARS) + 1):
         train = [row for row in historical_rows if row["year"] < year]
         test = [row for row in historical_rows if row["year"] == year]
@@ -781,6 +872,8 @@ def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
         fold_model = fit_game_model(train)
         probs = [game_probability(fold_model, row["features"])[0] for row in test]
         labels = [row["teamAWon"] for row in test]
+        oof_probabilities.extend(probs)
+        oof_labels.extend(labels)
         evaluations.append(
             {
                 "year": year,
@@ -790,6 +883,8 @@ def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
                 "logLoss": sum(-(label * math.log(max(prob, 1e-9)) + (1 - label) * math.log(max(1 - prob, 1e-9))) for prob, label in zip(probs, labels)) / len(test),
             }
         )
+    calibrator = fit_platt_calibrator(oof_probabilities, oof_labels)
+    calibrated_oof = [apply_platt(probability, calibrator) for probability in oof_probabilities]
     model = fit_game_model(historical_rows)
     current_games = [{**game, "year": int(current_schedule.get("year", 0))} for game in current_schedule.get("games", [])]
     current_rows, current_elo, current_margins = game_feature_rows(current_games, historical_elo)
@@ -799,12 +894,13 @@ def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
         row = row_map.get(game.get("id"))
         if not row:
             continue
-        probability, factors = game_probability(model, row["features"])
+        probability, factors, raw_probability = game_probability(model, row["features"], calibrator)
         game["gameModel"] = {
             "teamA": row["teamA"],
             "teamB": row["teamB"],
             "teamAWinProbability": probability,
             "teamBWinProbability": 1 - probability,
+            "rawTeamAWinProbability": raw_probability,
             "factors": factors,
         }
         if not game.get("completed"):
@@ -813,7 +909,7 @@ def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
     digest = hashlib.sha256(
         json.dumps(
             {
-                "schema": "game-features-v2-prior-record",
+                "schema": GAME_FEATURE_SCHEMA,
                 "games": [[row["gameId"], row["teamAWon"]] for row in historical_rows],
                 "weights": [round(float(value), 8) for value in model["weights"]],
             },
@@ -832,6 +928,7 @@ def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
         "trainingGames": len(historical_rows),
         "trainingSeasons": f"{min(COMPLETED_YEARS)}-{max(COMPLETED_YEARS)}",
         "features": GAME_MODEL_FEATURES,
+        "featureSchema": GAME_FEATURE_SCHEMA,
         "coefficients": [
             {"feature": name, "coefficient": float(weight)}
             for name, weight in zip(GAME_MODEL_FEATURES, model["weights"][1:])
@@ -840,6 +937,15 @@ def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
         "accuracy": float(np.average([row["accuracy"] for row in evaluations], weights=[row["games"] for row in evaluations])),
         "brier": float(np.average([row["brier"] for row in evaluations], weights=[row["games"] for row in evaluations])),
         "logLoss": float(np.average([row["logLoss"] for row in evaluations], weights=[row["games"] for row in evaluations])),
+        "calibration": {
+            "method": "Platt scaling on forward-season out-of-fold games",
+            "samples": len(oof_labels),
+            "parameters": calibrator,
+            "rawBrier": float(np.mean([(probability - label) ** 2 for probability, label in zip(oof_probabilities, oof_labels)])),
+            "calibratedBrier": float(np.mean([(probability - label) ** 2 for probability, label in zip(calibrated_oof, oof_labels)])),
+            "bins": reliability_bins(calibrated_oof, oof_labels),
+        },
+        "pregameFeatureStore": build_pregame_feature_store(historical_rows),
         "currentTeams": {
             team: {
                 "elo": float(current_elo.get(team, historical_elo.get(team, 1500.0))),
@@ -872,7 +978,7 @@ def fetch_play_metrics(game: dict) -> dict:
     competitors = game.get("competitors", [])
     id_to_name = {str(item.get("teamId")): item.get("team") for item in competitors}
     aggregates = {
-        name: {"plays": 0, "successes": 0, "explosives": 0, "epa": 0.0, "earlyPlays": 0, "earlySuccesses": 0, "havoc": 0, "opportunities": 0, "finishes": 0}
+        name: {"plays": 0, "successes": 0, "explosives": 0, "epa": 0.0, "earlyPlays": 0, "earlySuccesses": 0, "havoc": 0, "opportunities": 0, "finishes": 0, "defensePlays": 0, "successesAllowed": 0, "epaAllowed": 0.0, "explosivesAllowed": 0}
         for name in id_to_name.values()
         if name
     }
@@ -906,7 +1012,14 @@ def fetch_play_metrics(game: dict) -> dict:
             row["plays"] += 1
             row["successes"] += int(success)
             row["explosives"] += int(yards >= 20)
-            row["epa"] += float(np.clip(expected_points(play.get("end")) - expected_points(start), -8, 8))
+            play_epa = float(np.clip(expected_points(play.get("end")) - expected_points(start), -8, 8))
+            row["epa"] += play_epa
+            if defense_name:
+                defense = aggregates[defense_name]
+                defense["defensePlays"] += 1
+                defense["successesAllowed"] += int(success)
+                defense["epaAllowed"] += play_epa
+                defense["explosivesAllowed"] += int(yards >= 20)
             if down <= 2:
                 row["earlyPlays"] += 1
                 row["earlySuccesses"] += int(success)
@@ -922,7 +1035,11 @@ def build_play_level_metrics(schedule: dict, contender_names: set[str]) -> dict:
         game for game in schedule.get("games", [])
         if game.get("completed") and any(item.get("team") in contender_names for item in game.get("competitors", []))
     ]
-    missing = [game for game in targets if game.get("id") not in cache]
+    missing = [
+        game for game in targets
+        if game.get("id") not in cache
+        or any("defensePlays" not in values for values in cache.get(game.get("id"), {}).values())
+    ]
     with ThreadPoolExecutor(max_workers=10) as executor:
         futures = {executor.submit(fetch_play_metrics, game): game for game in missing}
         for future in as_completed(futures):
@@ -947,8 +1064,26 @@ def build_play_level_metrics(schedule: dict, contender_names: set[str]) -> dict:
             "earlyDownSuccessRate": row["earlySuccesses"] / max(1, row["earlyPlays"]),
             "havocRate": row["havoc"] / plays,
             "finishingDrives": row["finishes"] / max(1, row["opportunities"]),
+            "defensiveSuccessAllowed": row["successesAllowed"] / max(1, row["defensePlays"]),
+            "estimatedEpaAllowedPerPlay": row["epaAllowed"] / max(1, row["defensePlays"]),
+            "explosiveAllowedRate": row["explosivesAllowed"] / max(1, row["defensePlays"]),
             "gamesCovered": sum(any(norm_name(name) == team for name in cache.get(game["id"], {})) for game in targets),
         }
+    league_success = float(np.mean([row["successRate"] for row in result.values()])) if result else 0
+    league_epa = float(np.mean([row["estimatedEpaPerPlay"] for row in result.values()])) if result else 0
+    opponents: dict[str, list[str]] = {}
+    for game in targets:
+        names = [norm_name(item.get("team") or "") for item in game.get("competitors", [])]
+        if len(names) == 2:
+            opponents.setdefault(names[0], []).append(names[1])
+            opponents.setdefault(names[1], []).append(names[0])
+    for team, row in result.items():
+        opponent_rows = [result[name] for name in opponents.get(team, []) if name in result]
+        opponent_success_allowed = float(np.mean([item["defensiveSuccessAllowed"] for item in opponent_rows])) if opponent_rows else league_success
+        opponent_epa_allowed = float(np.mean([item["estimatedEpaAllowedPerPlay"] for item in opponent_rows])) if opponent_rows else league_epa
+        row["opponentAdjustedSuccessRate"] = row["successRate"] + (league_success - opponent_success_allowed)
+        row["opponentAdjustedEpaPerPlay"] = row["estimatedEpaPerPlay"] + (league_epa - opponent_epa_allowed)
+        row["metricSchema"] = PLAY_METRIC_SCHEMA
     return result
 
 
@@ -1006,6 +1141,10 @@ def add_play_metrics(records: list[dict], metrics: dict[str, dict]) -> None:
         record["Early Down Success Rate"] = row["earlyDownSuccessRate"]
         record["Havoc Rate"] = row["havocRate"]
         record["Finishing Drives"] = row["finishingDrives"]
+        record["Defensive Success Allowed"] = row["defensiveSuccessAllowed"]
+        record["Estimated EPA Allowed Per Play"] = row["estimatedEpaAllowedPerPlay"]
+        record["Opponent Adjusted Success Rate"] = row["opponentAdjustedSuccessRate"]
+        record["Opponent Adjusted EPA Per Play"] = row["opponentAdjustedEpaPerPlay"]
         record["Play Data Games"] = row["gamesCovered"]
 
 
@@ -1035,6 +1174,118 @@ def build_prediction_changelog(current_rows: list[dict]) -> list[dict]:
     return entries
 
 
+def selection_training_rows(weekly: dict[str, list[dict]]) -> list[dict]:
+    rows = []
+    for year_text, snapshots in weekly.items():
+        if int(year_text) not in COMPLETED_YEARS or not snapshots:
+            continue
+        for record in snapshots[-1].get("records", []):
+            rank = record.get("CFP") or record.get("AP POLL") or record.get("predictedRank")
+            values = [record.get(feature) for feature in SELECTION_FEATURES]
+            if rank is None or any(value is None for value in values):
+                continue
+            rows.append(
+                {
+                    "year": int(year_text),
+                    "team": record["Team"],
+                    "features": [float(value) for value in values],
+                    "selected": int(float(rank) <= 12),
+                }
+            )
+    return rows
+
+
+def build_selection_model(weekly: dict[str, list[dict]], current_records: list[dict]) -> dict:
+    rows = selection_training_rows(weekly)
+    evaluations = []
+    for year in sorted({row["year"] for row in rows if row["year"] >= 2017}):
+        train = [row for row in rows if row["year"] < year]
+        test = [row for row in rows if row["year"] == year]
+        if not train or not test:
+            continue
+        model = fit_binary_model(
+            np.asarray([row["features"] for row in train], dtype=float),
+            np.asarray([row["selected"] for row in train], dtype=float),
+            regularization=0.025,
+        )
+        probabilities = [binary_probability(model, row["features"]) for row in test]
+        labels = [row["selected"] for row in test]
+        evaluations.append(
+            {
+                "year": year,
+                "teams": len(test),
+                "accuracy": sum((probability >= 0.5) == bool(label) for probability, label in zip(probabilities, labels)) / len(test),
+                "brier": float(np.mean([(probability - label) ** 2 for probability, label in zip(probabilities, labels)])),
+            }
+        )
+    model = fit_binary_model(
+        np.asarray([row["features"] for row in rows], dtype=float),
+        np.asarray([row["selected"] for row in rows], dtype=float),
+        regularization=0.025,
+    )
+    for record in current_records:
+        values = [record.get(feature) for feature in SELECTION_FEATURES]
+        record["CFP Selection Probability"] = binary_probability(model, [float(value or 0) for value in values])
+    ranked = sorted(current_records, key=lambda row: row.get("CFP Selection Probability", 0), reverse=True)
+    for seed, record in enumerate(ranked, 1):
+        record["Projected CFP Seed"] = seed if seed <= 12 else None
+    digest = hashlib.sha256(
+        json.dumps(
+            {"schema": "cfp-selection-v1", "rows": [[row["year"], row["team"], row["selected"]] for row in rows]},
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()[:12]
+    return {
+        "name": "CFP Selection Logistic",
+        "version": f"selection-{max(COMPLETED_YEARS)}-{digest}",
+        "trainingTeams": len(rows),
+        "trainingSeasons": f"{min(row['year'] for row in rows)}-{max(row['year'] for row in rows)}",
+        "target": "Final CFP/AP top-12 field proxy",
+        "features": SELECTION_FEATURES,
+        "coefficients": [
+            {"feature": feature, "coefficient": float(weight)}
+            for feature, weight in zip(SELECTION_FEATURES, model["weights"][1:])
+        ],
+        "forwardValidation": evaluations,
+        "accuracy": float(np.average([row["accuracy"] for row in evaluations], weights=[row["teams"] for row in evaluations])),
+        "brier": float(np.average([row["brier"] for row in evaluations], weights=[row["teams"] for row in evaluations])),
+    }
+
+
+def build_weekly_report(current_rows: list[dict]) -> dict:
+    if not current_rows:
+        return {}
+    latest = current_rows[-1]
+    prior = current_rows[-2] if len(current_rows) > 1 else None
+    latest_records = latest.get("records", [])
+    prior_map = {row["Team"]: float(row.get("mlChampionProbability") or 0) for row in (prior or {}).get("records", [])}
+    movers = sorted(
+        [
+            {
+                "team": row["Team"],
+                "probability": float(row.get("mlChampionProbability") or 0),
+                "change": float(row.get("mlChampionProbability") or 0) - prior_map.get(row["Team"], 0),
+            }
+            for row in latest_records
+        ],
+        key=lambda row: row["change"],
+        reverse=True,
+    )
+    field = sorted(latest_records, key=lambda row: row.get("CFP Selection Probability", 0), reverse=True)[:12]
+    return {
+        "season": latest.get("year"),
+        "week": latest.get("week"),
+        "leader": latest.get("predictedChampion"),
+        "leaderProbability": latest.get("predictedProbability"),
+        "leaderChanged": bool(prior and prior.get("predictedChampion") != latest.get("predictedChampion")),
+        "biggestRisers": movers[:3],
+        "biggestFallers": list(reversed(movers[-3:])),
+        "projectedField": [{"seed": index, "team": row["Team"], "probability": row.get("CFP Selection Probability")} for index, row in enumerate(field, 1)],
+        "modelAgreement": latest.get("modelPredictions", []),
+        "snapshotId": latest.get("snapshotId"),
+    }
+
+
 def build_data_quality(payload: dict, current_records: list[dict]) -> dict:
     schedule = payload.get("seasonSchedule", {})
     games = schedule.get("games", [])
@@ -1049,6 +1300,18 @@ def build_data_quality(payload: dict, current_records: list[dict]) -> dict:
     missing_play = [row["Team"] for row in current_records if not row.get("Play Data Games")]
     if missing_play:
         issues.append(f"Play-level coverage missing for {len(missing_play)} ranked teams.")
+    missing_adjusted = [row["Team"] for row in current_records if row.get("Opponent Adjusted EPA Per Play") is None]
+    if missing_adjusted:
+        issues.append(f"Opponent-adjusted efficiency missing for {len(missing_adjusted)} ranked teams.")
+    unmodeled_games = [game for game in games if not game.get("gameModel")]
+    if unmodeled_games:
+        issues.append(f"Game probabilities missing for {len(unmodeled_games)} scheduled games.")
+    if not payload.get("gameModel", {}).get("calibration", {}).get("bins"):
+        issues.append("Game probability calibration is unavailable.")
+    if not payload.get("selectionModel", {}).get("version"):
+        issues.append("CFP selection model is unavailable.")
+    if not payload.get("gameModel", {}).get("pregameFeatureStore", {}).get("sha256"):
+        issues.append("Pregame feature store provenance is unavailable.")
     history = payload.get("weeklyPredictions", {})
     current_year = str(payload.get("meta", {}).get("currentSeason"))
     current_snapshots = history.get(current_year, [])
@@ -1068,6 +1331,8 @@ def build_data_quality(payload: dict, current_records: list[dict]) -> dict:
         "playLevelTeams": len(current_records) - len(missing_play),
         "completedGames": sum(bool(game.get("completed")) for game in games),
         "scheduledGames": len(games),
+        "modeledGames": len(games) - len(unmodeled_games),
+        "opponentAdjustedTeams": len(current_records) - len(missing_adjusted),
     }
     return {"status": "healthy" if not issues else "attention", "issues": issues, "coverage": coverage, "featureDrift": drift}
 
@@ -1317,6 +1582,7 @@ def main() -> None:
         payload["seasonSchedule"], {record["Team"] for record in current_records}
     )
     add_play_metrics(current_records, payload["playLevelMetrics"])
+    payload["selectionModel"] = build_selection_model(weekly, current_records)
     for record in current_records:
         record["predictionReasons"] = prediction_reasons(record)
     payload["meta"]["weeklyModels"] = [*MODEL_WEIGHTS.keys(), *TRAINED_MODEL_NAMES, TRAINED_ENSEMBLE]
@@ -1349,6 +1615,7 @@ def main() -> None:
         ),
     }
     payload["predictionChangelog"] = build_prediction_changelog(current_rows)
+    payload["weeklyReport"] = build_weekly_report(current_rows)
     payload["dataQuality"] = build_data_quality(payload, current_records)
     champion_version = hashlib.sha256(
         json.dumps([row.get("snapshotId") for rows in weekly.values() for row in rows], separators=(",", ":")).encode()
@@ -1360,6 +1627,9 @@ def main() -> None:
             "status": "production",
             "trainingCutoff": max(COMPLETED_YEARS),
             "validation": "Forward-season champion ranking",
+            "featureSchema": "weekly-features-v2",
+            "sourceHash": champion_version,
+            "calibration": "Season-normalized ensemble",
         },
         {
             "name": payload["gameModel"]["name"],
@@ -1367,6 +1637,19 @@ def main() -> None:
             "status": "production",
             "trainingCutoff": max(COMPLETED_YEARS),
             "validation": "Forward-season game probability",
+            "featureSchema": payload["gameModel"]["featureSchema"],
+            "sourceHash": payload["gameModel"]["pregameFeatureStore"]["sha256"][:16],
+            "calibration": payload["gameModel"]["calibration"]["method"],
+        },
+        {
+            "name": payload["selectionModel"]["name"],
+            "version": payload["selectionModel"]["version"],
+            "status": "production",
+            "trainingCutoff": max(COMPLETED_YEARS),
+            "validation": "Forward-season top-12 field classification",
+            "featureSchema": "cfp-selection-v1",
+            "sourceHash": payload["selectionModel"]["version"].split("-")[-1],
+            "calibration": "Native logistic probability",
         },
     ]
     score_weeks = sum(len(weeks) for weeks in payload.get("scoreSnapshots", {}).values())
@@ -1398,6 +1681,9 @@ def main() -> None:
         {"name": "Explosiveness", "status": "available", "source": "20+ yard scrimmage plays"},
         {"name": "Havoc rate", "status": "available", "source": "Turnovers, sacks and negative plays"},
         {"name": "Finishing drives", "status": "available", "source": "Scoring opportunities inside the 40"},
+        {"name": "Opponent-adjusted EPA/play", "status": "available", "source": "Play-by-play adjusted for opponent defensive efficiency"},
+        {"name": "Opponent-adjusted success rate", "status": "available", "source": "Play-by-play adjusted for opponent defensive efficiency"},
+        {"name": "CFP selection probability", "status": "available", "source": "Forward-season top-12 selection model"},
         {"name": "Injury adjustments", "status": "unavailable", "source": "No stable injury feed"},
     ]
     write_data_files(payload)

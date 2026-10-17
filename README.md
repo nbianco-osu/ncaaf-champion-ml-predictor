@@ -1,6 +1,6 @@
 # NCAAF Champion ML Predictor
 
-Static and Streamlit web app for exploring machine-learning champion predictions. The static dashboard includes weekly history from 2014 forward, 13 weekly models and baselines, a historical game win-probability model, play-level efficiency estimates, forecast uncertainty, team dossiers, a rules-aware playoff simulator, multi-game scenarios, browser alerts, live scores, prediction changelogs, exports, and pipeline health.
+Static and Streamlit web app for exploring machine-learning champion predictions. The static dashboard includes weekly history from 2014 forward, 13 weekly models and baselines, calibrated game probabilities, a learned CFP selection model, opponent-adjusted play efficiency, forecast uncertainty, team dossiers, historical replay, weekly reports, a model laboratory, a rules-aware interactive playoff bracket, browser alerts, live scores with in-game win probability, exports, and pipeline health.
 
 ## Run locally
 
@@ -34,16 +34,19 @@ streamlit run streamlit_app.py
 
 - `index.html` - app shell
 - `styles.css` - dashboard styling
-- `app.js` - routed dashboard views, team dossiers, watchlists, schedule simulation, scenarios, research, charts, exports, search, and sorting
+- `app.js` - routed dashboard views, reports, replay, team dossiers, cloud watchlists, schedule simulation, interactive bracket, model lab, charts, exports, search, and sorting
 - `streamlit_app.py` - Streamlit Cloud entrypoint
 - `requirements.txt` - Streamlit dependencies
-- `build_weekly_predictions.py` - freezes completed weekly snapshots, refreshes the provisional week, trains weekly and game models without look-ahead, derives play-level metrics, and produces diagnostics
+- `build_weekly_predictions.py` - freezes completed weekly snapshots, refreshes the provisional week, builds the pregame feature store, trains weekly/game/selection models without look-ahead, calibrates game probabilities, derives opponent-adjusted play metrics, and produces diagnostics
 - `train_models.py` - reproducible seven-model training, forward-season backtesting, and dashboard data refresh
 - `data/app-data.json` - trained model outputs and season prediction records
 - `data/app-core.json` and `data/weekly-*.json` - performance-oriented core and lazy-loaded weekly shards
 - `data/game-history.json` - cached ESPN game history used by the forward-season win-probability model
 - `data/play-metrics-cache.json` - cached play-by-play aggregates used for current efficiency metrics
+- `data/pregame-feature-store.json` - immutable, prior-information-only game features with source and schema hashes
 - `data/cfb_top25_2005_2025.csv` - augmented top-25 dataset
+- `scripts/validate-data.mjs` - release gate for provenance, leakage controls, calibration, selection-model, schedule, and metric coverage
+- `drizzle/` - Sites D1 schema migrations for account/device watchlists
 
 ## Model
 
@@ -51,9 +54,21 @@ The app compares logistic regression, random forest, extra trees, gradient boost
 
 The weekly pipeline separately trains logistic regression, Gaussian naive Bayes, nearest-neighbor, and ridge-probability models from prior completed seasons. It also benchmarks six weighted blends plus AP and FPI baselines. Their ensemble powers the current weekly ranking. Historical diagnostics exclude seasons with no earlier training data. Prior weeks become immutable as soon as a newer week is captured; the latest week remains provisional so in-week ESPN changes can be incorporated.
 
-The game model is a standardized logistic regression trained on 2014-2025 results with Elo, poll, record, recent-margin, home-field, and conference-game signals. Forward-season validation reports accuracy, Brier score, and log loss. Current ESPN play-by-play is converted into estimated EPA per play, success rate, explosiveness, early-down success, havoc, and finishing-drives metrics with garbage-time filtering.
+The game model is a standardized logistic regression trained on 2014-2025 results with Elo, poll, record, recent-margin, home-field, and conference-game signals. Forward-season out-of-fold predictions fit a Platt probability calibrator, and the dashboard reports reliability bins alongside raw and calibrated Brier scores. The separate CFP selection model learns a top-12 field proxy from prior seasons and supplies current selection probability and projected seeding. Current ESPN play-by-play is converted into estimated EPA per play, success rate, explosiveness, early-down success, havoc, finishing-drives, and opponent-adjusted efficiency with garbage-time filtering.
 
-The season simulator uses the current ESPN FBS schedule, trained game probabilities, completed records, and conference identifiers. It models the 2026 12-team format with five conference-champion automatic bids, the Notre Dame top-12 guarantee, seven at-large positions when applicable, four first-round byes, and the fixed playoff bracket. It is a scenario engine, not a betting market or injury-adjusted forecast.
+The season simulator uses the current ESPN FBS schedule, calibrated game probabilities, completed records, the learned selection score, and conference identifiers. It models the 2026 12-team format with five conference-champion automatic bids, the Notre Dame top-12 guarantee, seven at-large positions when applicable, four first-round byes, and the fixed playoff bracket. Users can lock schedule outcomes and select winners in each playoff round. It is a scenario engine, not a betting market or injury-adjusted forecast.
+
+## Sites deployment
+
+The Sites worker serves the static build, proxies live ESPN scores, computes contextual live win probability, and persists watchlists through the logical D1 binding `DB`. The release archive includes `.openai/hosting.json` and the Drizzle migration automatically.
+
+```bash
+npm run check:data
+npm run build
+node scripts/create-sites-server.mjs
+```
+
+Run `npm run check:data` before publishing. It fails when the pregame store, feature provenance, calibration diagnostics, selection model, opponent-adjusted metrics, current schedule, or weekly report is missing.
 
 Regenerate the model outputs with:
 

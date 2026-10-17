@@ -20,7 +20,10 @@
           <a href="#overview" data-route="overview">Overview</a>
           <a href="#team" data-route="team">Team lab</a>
           <a href="#weekly" data-route="weekly">Weekly history</a>
+          <a href="#report" data-route="report">Weekly report</a>
+          <a href="#replay" data-route="replay">Replay</a>
           <a href="#models" data-route="models">Models</a>
+          <a href="#lab" data-route="lab">Model lab</a>
           <a href="#simulator" data-route="simulator">Simulator</a>
           <a href="#scores" data-route="scores">Scores</a>
           <a href="#data" data-route="data">Data lab</a>
@@ -97,7 +100,7 @@
           <article class="panel wide" id="watchlist">
             <div class="panel-head">
               <div>
-                <p class="small-label">Saved locally</p>
+                <p class="small-label">Cloud watchlist</p>
                 <h3>Contender watchlist</h3>
               </div>
               <div class="watch-controls">
@@ -106,6 +109,7 @@
                 <button class="refresh-button" id="addWatchTeam" type="button">Add team</button>
               </div>
             </div>
+            <p class="muted sync-status" id="watchSyncStatus">Connecting watchlist</p>
             <div id="watchlistGrid" class="watchlist-grid"></div>
           </article>
           <article class="panel">
@@ -231,6 +235,30 @@
           </article>
         </section>
 
+        <section class="panel-grid" data-view="models">
+          <article class="panel wide">
+            <div class="panel-head"><div><p class="small-label">Post-fit reliability</p><h3>Game probability calibration</h3></div><span class="model-chip" id="calibrationMethod">-</span></div>
+            <div id="gameCalibrationMetrics" class="dataset-metrics"></div>
+            <div id="gameCalibrationChart" class="calibration-chart"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="small-label">Committee field proxy</p><h3>CFP selection model</h3></div><span class="model-chip" id="selectionModelVersion">-</span></div>
+            <div id="selectionModelMetrics" class="advanced-metrics"></div>
+            <div id="selectionField" class="selection-field"></div>
+          </article>
+        </section>
+
+        <section class="lab-workspace" data-view="lab">
+          <section class="panel">
+            <div class="panel-head">
+              <div><p class="small-label">Head-to-head</p><h3>Model laboratory</h3></div>
+              <div class="compare-controls"><label>Model A<select id="labModelA"></select></label><label>Model B<select id="labModelB"></select></label></div>
+            </div>
+            <div id="labSummary" class="simulation-summary"></div>
+            <div id="modelLabTable" class="diagnostic-table"></div>
+          </section>
+        </section>
+
         <section class="panel-grid" id="model-diagnostics" data-view="models">
           <article class="panel wide">
             <div class="panel-head">
@@ -317,6 +345,19 @@
           <div id="movers" class="movers-grid"></div>
         </section>
 
+        <section class="report-workspace" data-view="report">
+          <section class="panel report-lead"><div class="panel-head"><div><p class="small-label" id="reportWeekLabel">Weekly briefing</p><h3 id="reportHeadline">Forecast report</h3></div><button class="toolbar-button" id="copyReport" type="button">Copy report</button></div><div id="weeklyReport" class="weekly-report"></div></section>
+          <section class="panel-grid"><article class="panel wide"><div class="panel-head"><div><p class="small-label">Projected bracket</p><h3>Selection field</h3></div></div><div id="reportField" class="selection-field"></div></article><article class="panel"><div class="panel-head"><div><p class="small-label">Model consensus</p><h3>Champion votes</h3></div></div><div id="reportVotes" class="model-cards"></div></article></section>
+        </section>
+
+        <section class="replay-workspace" data-view="replay">
+          <section class="panel">
+            <div class="panel-head"><div><p class="small-label">Point-in-time archive</p><h3>Historical replay</h3></div><div class="compare-controls"><label>Season<select id="replayYear"></select></label><label>Week<select id="replayWeek"></select></label></div></div>
+            <div id="replaySummary" class="summary-grid"></div>
+          </section>
+          <section class="panel-grid"><article class="panel wide"><div class="panel-head"><div><p class="small-label">As published then</p><h3>Top contenders</h3></div></div><div id="replayRanking" class="bar-chart"></div></article><article class="panel"><div class="panel-head"><div><p class="small-label">Field snapshot</p><h3>Projected top 12</h3></div></div><div id="replayField" class="selection-field"></div></article></section>
+        </section>
+
         <section class="panel-grid" data-view="simulator">
           <article class="panel wide" id="seasonSimulator">
             <div class="panel-head">
@@ -356,6 +397,12 @@
           <div class="panel-head"><div><p class="small-label">Multi-game path</p><h3>Scenario builder</h3></div><button class="toolbar-button" id="clearScenario" type="button">Clear picks</button></div>
           <p class="muted">Lock winners for upcoming ranked-team games, then rerun the Monte Carlo field.</p>
           <div id="scenarioBuilder" class="scenario-builder"></div>
+        </section>
+
+        <section class="panel" data-view="simulator">
+          <div class="panel-head"><div><p class="small-label">Fixed 12-team path</p><h3>Interactive playoff bracket</h3></div><button class="toolbar-button" id="resetBracket" type="button">Reset bracket</button></div>
+          <p class="muted">Select a team in each opening matchup to lock a winner; later rounds update immediately.</p>
+          <div id="playoffBracket" class="playoff-bracket"></div>
         </section>
 
         <section class="panel-grid" id="research" data-view="data">

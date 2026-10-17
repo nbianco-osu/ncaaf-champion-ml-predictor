@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build && node scripts/create-sites-server.mjs",
+    "check:data": "node scripts/validate-data.mjs",
     "dev": "vite --host 127.0.0.1"
   },
   "dependencies": {
