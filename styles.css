@@ -40,6 +40,7 @@ body {
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
   padding: 28px 22px;
   background: #102a3d;
   color: white;
@@ -106,10 +107,8 @@ h1 {
 }
 
 .source-box {
-  position: absolute;
-  right: 22px;
-  bottom: 24px;
-  left: 22px;
+  position: static;
+  margin-top: 22px;
   padding: 16px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -192,6 +191,7 @@ main[data-active-view="overview"] [data-view="overview"],
 main[data-active-view="team"] [data-view="team"],
 main[data-active-view="weekly"] [data-view="weekly"],
 main[data-active-view="report"] [data-view="report"],
+main[data-active-view="decision"] [data-view="decision"],
 main[data-active-view="replay"] [data-view="replay"],
 main[data-active-view="models"] [data-view="models"],
 main[data-active-view="lab"] [data-view="lab"],
@@ -211,8 +211,187 @@ main[data-active-view="data"] section.panel[data-view="data"] {
 
 .lab-workspace,
 .report-workspace,
+.decision-workspace,
 .replay-workspace {
   gap: 14px;
+}
+
+.decision-lead {
+  margin-bottom: 0;
+}
+
+.attribution-list,
+.availability-board,
+.conference-race,
+.drift-board,
+.scenario-library,
+.provenance-grid,
+.api-endpoints {
+  display: grid;
+  gap: 8px;
+}
+
+.attribution-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.7fr) minmax(180px, 1fr) 80px;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafb;
+}
+
+.attribution-row div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #e7edf0;
+}
+
+.attribution-row i {
+  display: block;
+  height: 100%;
+  background: var(--blue);
+}
+
+.attribution-row.is-negative i {
+  margin-left: auto;
+  background: var(--red);
+}
+
+.attribution-row strong,
+.attribution-row b {
+  font-size: 13px;
+}
+
+.attribution-row small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
+.availability-board > div,
+.drift-board > div,
+.scenario-row,
+.api-endpoints a,
+.provenance-grid > div {
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f8fafb;
+}
+
+.availability-board span,
+.availability-board strong,
+.availability-board small,
+.drift-board span,
+.drift-board strong,
+.provenance-grid span,
+.provenance-grid strong,
+.provenance-grid code {
+  display: block;
+}
+
+.availability-board span,
+.drift-board span,
+.provenance-grid span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.availability-board strong,
+.drift-board strong,
+.provenance-grid strong {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.availability-board small,
+.provenance-grid code {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.conference-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.8fr) minmax(150px, 1.4fr) 70px 70px;
+  gap: 10px;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.conference-row:first-child {
+  border-top: 1px solid var(--line);
+}
+
+.scenario-library-controls {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.scenario-library-controls label {
+  flex: 1;
+}
+
+.scenario-library-controls input {
+  width: 100%;
+}
+
+.scenario-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.scenario-row small {
+  color: var(--muted);
+}
+
+.scenario-row button {
+  min-height: 34px;
+}
+
+.preference-form {
+  display: grid;
+  gap: 12px;
+}
+
+.preference-form select {
+  width: 100%;
+}
+
+.toggle-row {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: var(--ink);
+}
+
+.toggle-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.provenance-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.api-endpoints a {
+  color: var(--navy);
+  text-decoration: none;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 
 .sync-status {
@@ -1838,7 +2017,6 @@ footer {
   }
 
   .source-box {
-    position: static;
     margin-top: 24px;
   }
 
@@ -1858,7 +2036,8 @@ footer {
   .summary-grid,
   .panel-grid,
   .season-tabs,
-  .weekly-report {
+  .weekly-report,
+  .provenance-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1944,7 +2123,11 @@ footer {
 
   .compare-controls,
   .simulator-controls,
-  .scenario-game {
+  .scenario-game,
+  .scenario-library-controls,
+  .scenario-row,
+  .attribution-row,
+  .conference-row {
     display: grid;
     grid-template-columns: 1fr;
     margin-top: 12px;

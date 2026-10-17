@@ -14,6 +14,9 @@ const state = {
   teamPage: null,
   replayYear: null,
   replayWeek: null,
+  savedScenarios: JSON.parse(localStorage.getItem("ncaaf-scenarios") || "[]"),
+  preferences: JSON.parse(localStorage.getItem("ncaaf-alert-preferences") || '{"moveThreshold":0.02,"elimination":true,"leader":true}'),
+  simulationResults: [],
 };
 
 const fmtPct = (value) => (Number.isFinite(Number(value)) ? `${(Number(value) * 100).toFixed(1)}%` : "-");
@@ -25,6 +28,7 @@ const fmtSigned = (value, digits = 1) => {
   const number = Number(value);
   return `${number > 0 ? "+" : ""}${number.toFixed(digits)}`;
 };
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 const max = (items, key) => Math.max(...items.map((item) => Number(item[key])));
 const chartColors = ["#176b87", "#c44f3b", "#4e7a3e", "#8a5b9d", "#d08a19", "#3659a2", "#a83f70", "#55706e", "#7e642f", "#277d65"];
 const teamLogoIds = {
@@ -282,18 +286,26 @@ function renderWatchlist() {
 function checkWatchlistAlerts() {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
   const rows = currentSeason().records;
+  const [latest, prior] = latestDecisionSnapshots();
   const latestWeek = state.data.meta.dataHealth?.latestWeek || 0;
   const delivered = JSON.parse(localStorage.getItem("ncaaf-alerts-delivered") || "[]");
+  const notify = (key, title, body, team = null) => {
+    if (delivered.includes(key)) return;
+    new Notification(title, { body, tag: key });
+    delivered.push(key);
+  };
   for (const watch of state.watchlist) {
     const row = rows.find((item) => item.Team === watch.team);
-    if (!row || Number(row.championProbability) < Number(watch.threshold)) continue;
-    const key = `${latestWeek}:${watch.team}:${watch.threshold}`;
-    if (delivered.includes(key)) continue;
-    new Notification(`${watch.team} crossed your title threshold`, {
-      body: `${fmtPct(row.championProbability)} championship probability after week ${latestWeek}.`,
-      tag: key,
-    });
-    delivered.push(key);
+    if (!row) continue;
+    if (Number(row.championProbability) >= Number(watch.threshold)) notify(`${latestWeek}:${watch.team}:threshold:${watch.threshold}`, `${watch.team} crossed your title threshold`, `${fmtPct(row.championProbability)} championship probability after week ${latestWeek}.`, watch.team);
+    const now = latest?.records?.find((item) => item.Team === watch.team);
+    const before = prior?.records?.find((item) => item.Team === watch.team);
+    const move = Number(now?.mlChampionProbability ?? now?.championProbability ?? row.championProbability) - Number(before?.mlChampionProbability ?? before?.championProbability ?? row.championProbability);
+    if (Math.abs(move) >= Number(state.preferences.moveThreshold || .02)) notify(`${latestWeek}:${watch.team}:move:${Math.round(move * 1000)}`, `${watch.team} forecast moved`, `${fmtSigned(move * 100)} percentage points this week.`, watch.team);
+    if (state.preferences.elimination && Number(row["CFP Selection Probability"] || 0) < .01 && Number(before?.["CFP Selection Probability"] || .05) >= .01) notify(`${latestWeek}:${watch.team}:eliminated`, `${watch.team} fell below the playoff threshold`, `${fmtPct(row["CFP Selection Probability"])} projected CFP selection probability.`, watch.team);
+  }
+  if (state.preferences.leader && latest?.predictedChampion && prior?.predictedChampion && latest.predictedChampion !== prior.predictedChampion) {
+    notify(`${latestWeek}:leader:${latest.predictedChampion}`, `${latest.predictedChampion} is the new forecast leader`, `${fmtPct(latest.predictedProbability)} championship probability after week ${latestWeek}.`, latest.predictedChampion);
   }
   localStorage.setItem("ncaaf-alerts-delivered", JSON.stringify(delivered.slice(-50)));
 }
@@ -428,7 +440,14 @@ function renderCalibratedModels() {
   document.getElementById("gameCalibrationChart").innerHTML = calibrationSvg(calibration.bins, "Calibrated game probabilities");
   const selection = state.data.selectionModel || {};
   document.getElementById("selectionModelVersion").textContent = selection.version || "Unavailable";
-  document.getElementById("selectionModelMetrics").innerHTML = [["Training teams", fmtRank(selection.trainingTeams)],["Accuracy", fmtPct(selection.accuracy)],["Brier", fmtDecimal(selection.brier,3)]].map(([label,value]) => `<div><span>${label}</span><strong>${value}</strong></div>`).join("");
+  document.getElementById("selectionModelMetrics").innerHTML = [
+    ["Training teams", fmtRank(selection.trainingTeams)],
+    ["Accuracy", fmtPct(selection.accuracy)],
+    ["Brier", fmtDecimal(selection.brier, 3)],
+    ["Active format", selection.activeEra || "Current CFP era"],
+    ["Field size", fmtRank(selection.activeFieldSize)],
+    ["Label eras", `${selection.eras?.length || 0} validated`],
+  ].map(([label,value]) => `<div><span>${label}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
   document.getElementById("selectionField").innerHTML = fieldMarkup(projectedField());
 }
 
@@ -468,6 +487,272 @@ function renderWeeklyReport() {
   document.getElementById("reportField").innerHTML = fieldMarkup(report.projectedField || []);
   const votes = state.data.predictionAudit?.votes || [];
   document.getElementById("reportVotes").innerHTML = votes.map((row) => `<div class="model-row"><strong>${row.team}</strong><span>${row.votes} votes</span></div>`).join("");
+}
+
+function latestDecisionSnapshots() {
+  const snapshots = state.data.weeklyPredictions?.[String(state.selectedYear)] || [];
+  return [snapshots.at(-1), snapshots.at(-2)];
+}
+
+function currentDecisionTeam() {
+  const rows = currentSeason().records;
+  return rows.find((row) => row.Team === document.getElementById("decisionTeam").value) || rows[0];
+}
+
+function fallbackMovementAttribution(team) {
+  const [latest, prior] = latestDecisionSnapshots();
+  const now = latest?.records?.find((row) => row.Team === team);
+  const before = prior?.records?.find((row) => row.Team === team);
+  if (!now || !before) return [];
+  const inputs = [
+    ["Poll movement", "AP Poll Score", .22],
+    ["Resume and schedule", "Resume Composite", .28],
+    ["Efficiency", "Power Composite", .22],
+    ["Opponent results", "SOS Score", .14],
+    ["Model consensus", "Consensus Score", .14],
+  ];
+  const probabilityChange = Number(now.mlChampionProbability ?? now.championProbability) - Number(before.mlChampionProbability ?? before.championProbability);
+  const raw = inputs.map(([label, key, weight]) => ({ label, signal: (Number(now[key] || 0) - Number(before[key] || 0)) * weight }));
+  const total = raw.reduce((sum, row) => sum + Math.abs(row.signal), 0) || 1;
+  return raw.map((row) => ({ ...row, effect: probabilityChange * Math.abs(row.signal) / total * (Math.sign(row.signal) || Math.sign(probabilityChange) || 1), evidence: `${fmtSigned(row.signal, 1)} signal change` }));
+}
+
+function movementAttribution(team) {
+  const change = state.data.predictionChangelog?.at(-1)?.teamChanges?.find((row) => row.team === team || row.Team === team);
+  if (change?.explanation?.effects && !Array.isArray(change.explanation.effects)) {
+    const labels = { poll: "Poll movement", resume: "Resume and schedule", efficiency: "Efficiency", opponent: "Opponent results", modelConsensus: "Model consensus" };
+    return Object.entries(change.explanation.effects).map(([key, effect]) => {
+      const evidence = change.explanation.evidence?.[key] || {};
+      const features = Array.isArray(evidence.features) ? evidence.features.join(", ") : "Forward-only inputs";
+      return { label: labels[key] || key, effect: Number(effect || 0), evidence: `${features}: ${fmtSigned(Number(evidence.scoreDelta || 0), 2)} score` };
+    });
+  }
+  const product = state.data.predictionChangeExplanations || state.data.predictionChanges || [];
+  const rows = Array.isArray(product) ? product : product.teams || [];
+  const found = rows.find((row) => row.team === team || row.Team === team);
+  const factors = found?.factors || found?.components || found?.attribution;
+  if (Array.isArray(factors)) return factors.map((row) => ({ label: row.label || row.feature, effect: Number(row.effect ?? row.contribution ?? row.change ?? 0), evidence: row.evidence || row.detail || row.source || "Forward-only weekly attribution" }));
+  return fallbackMovementAttribution(team);
+}
+
+function conferenceMap() {
+  const names = { "1": "ACC", "4": "Big 12", "5": "Big Ten", "8": "SEC", "9": "Pac-12", "12": "Conference USA", "15": "MAC", "17": "Mountain West", "18": "Independent", "37": "Sun Belt", "151": "American" };
+  const map = {};
+  for (const game of state.data.seasonSchedule?.games || []) for (const competitor of game.competitors || []) {
+    if (competitor.team && competitor.conferenceId) map[competitor.team] = names[String(competitor.conferenceId)] || `Conference ${competitor.conferenceId}`;
+  }
+  return map;
+}
+
+function derivedConferenceRaces() {
+  const supplied = state.data.conferenceRace?.conferences || state.data.conferenceRaces?.conferences || state.data.conferenceRaceProjections || [];
+  if (Array.isArray(supplied) && supplied.length) return supplied;
+  const conferences = conferenceMap();
+  const grouped = currentSeason().records.reduce((out, row) => {
+    const conference = conferences[row.Team];
+    if (conference && conference !== "Independent") (out[conference] ||= []).push(row);
+    return out;
+  }, {});
+  return Object.entries(grouped).map(([conference, rows]) => {
+    const contenders = rows.sort((a, b) => Number(b["CFP Selection Probability"] || 0) - Number(a["CFP Selection Probability"] || 0)).slice(0, 3);
+    const weights = contenders.map((row) => Math.exp(Number(row["CFP Selection Probability"] || 0) * 3));
+    const total = weights.reduce((sum, value) => sum + value, 0) || 1;
+    return { conference, leader: contenders[0]?.Team, contenders: contenders.map((row, index) => ({ team: row.Team, titleProbability: weights[index] / total })), evidence: "Record, calibrated game odds and CFP selection strength" };
+  }).sort((a, b) => Number(b.contenders?.[0]?.titleProbability || 0) - Number(a.contenders?.[0]?.titleProbability || 0));
+}
+
+function availabilityFor(team) {
+  const rows = state.data.rosterAvailability?.teams || state.data.availabilityAdjustments || [];
+  const row = Array.isArray(rows) ? rows.find((item) => item.team === team || item.Team === team) : rows[team];
+  return row || { team, status: "Neutral", adjustment: 0, confidence: "Low", source: "No stable roster-availability feed; no adjustment applied", updatedAt: state.data.meta.dataHealth?.lastUpdatedAt };
+}
+
+function driftMetrics() {
+  const drift = state.data.modelDrift || state.data.driftMonitoring || {};
+  if (Array.isArray(drift.metrics)) return drift.metrics;
+  if (Array.isArray(drift.latest) && drift.latest.length) {
+    const worst = [...drift.latest].sort((a, b) => Number(a.rankingStability ?? 1) - Number(b.rankingStability ?? 1))[0];
+    const featureDrift = Math.max(...drift.latest.map((row) => Number(row.featureDrift || 0)));
+    const stable = Number(drift.statusCounts?.stable || 0);
+    return [
+      { label: "Stable models", value: stable / drift.latest.length, format: "percent", status: stable === drift.latest.length ? "healthy" : "watch" },
+      { label: "Feature drift", value: featureDrift, status: featureDrift >= Number(drift.thresholds?.featureDrift?.warning || .75) ? "watch" : "healthy" },
+      { label: "Lowest rank stability", value: Number(worst?.rankingStability || 0), format: "percent", status: worst?.status || "healthy" },
+      { label: worst?.model || "Model requiring review", value: Number(worst?.rankingStability || 0), format: "percent", status: worst?.status || "healthy" },
+    ];
+  }
+  const feature = state.data.dataQuality?.featureDrift || [];
+  const weekly = state.data.weeklyCalibration || {};
+  return [
+    { label: "Feature drift", value: Math.max(0, ...feature.map((row) => Math.abs(Number(row.meanShift || 0)))), status: feature.some((row) => Math.abs(Number(row.meanShift || 0)) > 12) ? "watch" : "healthy" },
+    { label: "Weekly calibration", value: Number(weekly.expectedCalibrationError ?? state.data.summary.weeklyExpectedCalibrationError ?? 0), format: "percent", status: Number(weekly.expectedCalibrationError ?? 0) > .08 ? "watch" : "healthy" },
+    { label: "Model disagreement", value: Number(state.data.predictionAudit?.agreementRate ?? 0), format: "percent", status: Number(state.data.predictionAudit?.agreementRate ?? 1) < .45 ? "watch" : "healthy" },
+  ];
+}
+
+function encodeScenario(payload) {
+  const bytes = new TextEncoder().encode(JSON.stringify(payload));
+  let binary = "";
+  bytes.forEach((byte) => { binary += String.fromCharCode(byte); });
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
+}
+
+function decodeScenario(value) {
+  try {
+    const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
+    const binary = atob(normalized + "=".repeat((4 - normalized.length % 4) % 4));
+    return JSON.parse(new TextDecoder().decode(Uint8Array.from(binary, (char) => char.charCodeAt(0))));
+  } catch {
+    return null;
+  }
+}
+
+function scenarioPayload(name = "Shared scenario") {
+  return { version: 1, name, season: Number(state.selectedYear), scenarioPicks: state.scenarioPicks, bracketPicks: state.bracketPicks, runs: Number(document.getElementById("simulationRuns").value), savedAt: new Date().toISOString() };
+}
+
+function scenarioUrl(payload = scenarioPayload()) {
+  const url = new URL(location.href);
+  url.hash = "simulator";
+  url.searchParams.set("scenario", encodeScenario(payload));
+  return url.toString();
+}
+
+async function copyScenarioUrl(payload = scenarioPayload()) {
+  const url = scenarioUrl(payload);
+  try { await navigator.clipboard.writeText(url); } catch { prompt("Share this scenario", url); }
+}
+
+function persistScenarios() {
+  localStorage.setItem("ncaaf-scenarios", JSON.stringify(state.savedScenarios));
+}
+
+async function syncScenario(row) {
+  const status = document.getElementById("scenarioSyncStatus");
+  try {
+    const response = await watchlistFetch(`/api/scenarios/${encodeURIComponent(row.id)}?device=${encodeURIComponent(deviceIdentity())}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: row.name, season: Number(row.season || state.selectedYear), week: state.data.meta.dataHealth?.latestWeek || null, description: "Saved dashboard simulation path", state: { scenarioPicks: row.scenarioPicks || {}, bracketPicks: row.bracketPicks || {}, runs: Number(row.runs || 2500), savedAt: row.savedAt } }) });
+    if (!response.ok) throw new Error("sync unavailable");
+    const payload = await response.json();
+    status.textContent = `Synced to ${payload.scope === "account" ? "your account" : "this device"}`;
+  } catch { status.textContent = "Saved in this browser"; }
+}
+
+async function deleteCloudScenario(id) {
+  try { await watchlistFetch(`/api/scenarios/${encodeURIComponent(id)}?device=${encodeURIComponent(deviceIdentity())}`, { method: "DELETE" }); } catch { /* Local deletion remains authoritative in this browser. */ }
+}
+
+async function loadCloudDecisionState() {
+  try {
+    const [scenarioResponse, preferenceResponse] = await Promise.all([
+      watchlistFetch(`/api/scenarios?device=${encodeURIComponent(deviceIdentity())}`),
+      watchlistFetch(`/api/preferences?device=${encodeURIComponent(deviceIdentity())}`),
+    ]);
+    if (scenarioResponse.ok) {
+      const payload = await scenarioResponse.json();
+      if (payload.scenarios?.length) state.savedScenarios = payload.scenarios.map((row) => ({ id: row.id, name: row.name, season: row.season, savedAt: row.updatedAt, ...(row.state || {}) }));
+      else if (state.savedScenarios.length) await Promise.all(state.savedScenarios.map(syncScenario));
+      document.getElementById("scenarioSyncStatus").textContent = `Synced to ${payload.scope === "account" ? "your account" : "this device"}`;
+    }
+    if (preferenceResponse.ok) {
+      const payload = await preferenceResponse.json();
+      if (payload.preferences) state.preferences = { ...state.preferences, moveThreshold: payload.preferences.alerts?.probabilityMoveThreshold ?? state.preferences.moveThreshold, elimination: payload.preferences.alerts?.elimination ?? state.preferences.elimination, leader: payload.preferences.alerts?.weeklyDigest ?? state.preferences.leader };
+    }
+  } catch { /* Browser-local state remains active. */ }
+  persistScenarios();
+  renderDecisionCenter();
+}
+
+async function savePreferences() {
+  state.preferences = {
+    moveThreshold: Number(document.getElementById("preferenceMoveThreshold").value),
+    elimination: document.getElementById("preferenceElimination").checked,
+    leader: document.getElementById("preferenceLeader").checked,
+  };
+  localStorage.setItem("ncaaf-alert-preferences", JSON.stringify(state.preferences));
+  const status = document.getElementById("preferenceStatus");
+  try {
+    const response = await watchlistFetch(`/api/preferences?device=${encodeURIComponent(deviceIdentity())}`, { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ favoriteTeams: state.watchlist.map((row) => row.team), alerts: { enabled: true, probabilityMoveThreshold: state.preferences.moveThreshold, elimination: state.preferences.elimination, liveGames: true, weeklyDigest: state.preferences.leader, browser: "Notification" in window && Notification.permission === "granted" }, display: { defaultView: "decision", density: "comfortable" } }) });
+    if (!response.ok) throw new Error("sync unavailable");
+    const payload = await response.json();
+    status.textContent = `Preferences synced to ${payload.scope === "account" ? "your account" : "this device"}.`;
+  } catch { status.textContent = "Preferences saved in this browser."; }
+}
+
+function renderScenarioLibrary() {
+  const container = document.getElementById("scenarioLibrary");
+  if (!state.savedScenarios.length) {
+    container.innerHTML = `<p class="muted">No saved scenarios yet. Lock game or bracket outcomes in the simulator, then save the path here.</p>`;
+    return;
+  }
+  container.innerHTML = state.savedScenarios.map((row) => `<div class="scenario-row"><div><strong>${escapeHtml(row.name || "Scenario")}</strong><small>${Object.keys(row.scenarioPicks || {}).length} game locks · ${Object.keys(row.bracketPicks || {}).length} bracket locks</small></div><button class="toolbar-button" type="button" data-load-scenario="${escapeHtml(row.id)}">Load</button><button class="toolbar-button" type="button" data-share-scenario="${escapeHtml(row.id)}">Share</button><button class="toolbar-button" type="button" data-delete-scenario="${escapeHtml(row.id)}">Remove</button></div>`).join("");
+  container.querySelectorAll("[data-load-scenario]").forEach((button) => button.addEventListener("click", () => {
+    const row = state.savedScenarios.find((item) => item.id === button.dataset.loadScenario);
+    if (!row) return;
+    state.scenarioPicks = { ...(row.scenarioPicks || {}) };
+    state.bracketPicks = { ...(row.bracketPicks || {}) };
+    document.getElementById("simulationRuns").value = String(row.runs || 2500);
+    renderScenarioBuilder(); renderPlayoffBracket(); runSeasonSimulation(); setView("simulator");
+  }));
+  container.querySelectorAll("[data-share-scenario]").forEach((button) => button.addEventListener("click", () => {
+    const row = state.savedScenarios.find((item) => item.id === button.dataset.shareScenario);
+    if (row) copyScenarioUrl(row);
+  }));
+  container.querySelectorAll("[data-delete-scenario]").forEach((button) => button.addEventListener("click", () => {
+    state.savedScenarios = state.savedScenarios.filter((item) => item.id !== button.dataset.deleteScenario);
+    persistScenarios(); renderScenarioLibrary(); deleteCloudScenario(button.dataset.deleteScenario);
+  }));
+}
+
+function renderDecisionCenter() {
+  const team = currentDecisionTeam();
+  if (!team) return;
+  const [latest, prior] = latestDecisionSnapshots();
+  const latestRow = latest?.records?.find((row) => row.Team === team.Team) || team;
+  const priorRow = prior?.records?.find((row) => row.Team === team.Team);
+  const probability = Number(latestRow.mlChampionProbability ?? latestRow.championProbability ?? team.championProbability);
+  const change = probability - Number(priorRow?.mlChampionProbability ?? priorRow?.championProbability ?? probability);
+  const conference = conferenceMap()[team.Team] || "Independent / unclassified";
+  const conferenceRace = derivedConferenceRaces().find((row) => row.conference === conference);
+  const conferenceTeams = conferenceRace?.teams || conferenceRace?.contenders || [];
+  const conferenceOdds = conferenceTeams.find((row) => row.team === team.Team)?.conferenceTitleProbability ?? conferenceTeams.find((row) => row.team === team.Team)?.titleProbability ?? team["Conference Title Probability"] ?? 0;
+  document.getElementById("decisionSummary").innerHTML = `<article class="metric-card primary"><span>Title forecast</span><strong>${fmtPct(probability)}</strong><p>${fmtSigned(change * 100)} points this week</p></article><article class="metric-card"><span>CFP field</span><strong>${fmtPct(team["CFP Selection Probability"])}</strong><p>Projected seed ${fmtRank(team["Projected CFP Seed"])}</p></article><article class="metric-card"><span>${conference === "Independent" ? "Conference title" : `${conference} title`}</span><strong>${conference === "Independent" ? "N/A" : fmtPct(conferenceOdds)}</strong><p>${conference === "Independent" ? "Independent program" : "Conference race projection"}</p></article>`;
+  document.getElementById("movementWeek").textContent = latest ? `Week ${latest.week}` : "Current";
+  const attribution = movementAttribution(team.Team);
+  const maxEffect = Math.max(.001, ...attribution.map((row) => Math.abs(Number(row.effect || 0))));
+  document.getElementById("decisionMovement").innerHTML = attribution.length ? attribution.map((row) => `<div class="attribution-row ${Number(row.effect) < 0 ? "is-negative" : ""}"><strong>${escapeHtml(row.label)}</strong><div><i style="width:${Math.max(2, Math.abs(Number(row.effect)) / maxEffect * 100)}%"></i></div><b>${fmtSigned(Number(row.effect) * 100, 2)} pts</b><small>${escapeHtml(row.evidence || "")}</small></div>`).join("") : `<p class="muted">A prior weekly snapshot is required for attribution.</p>`;
+  const availability = availabilityFor(team.Team);
+  const availabilityConfidence = typeof availability.confidence === "number" ? fmtPct(availability.confidence) : availability.confidence || "Low";
+  document.getElementById("availabilityConfidence").textContent = `${availabilityConfidence} confidence`;
+  document.getElementById("availabilityBoard").innerHTML = `<div><span>Status</span><strong>${escapeHtml(availability.status || "Neutral")}</strong><small>${escapeHtml(availability.source || availability.note || "No verified source")}</small></div><div><span>Forecast adjustment</span><strong>${fmtSigned(Number(availability.adjustment || 0) * 100, 2)} pts</strong><small>Explicit adjustment; never inferred silently.</small></div><div><span>Last checked</span><strong>${availability.reportedAt || availability.updatedAt ? new Date(availability.reportedAt || availability.updatedAt).toLocaleString() : "Not available"}</strong></div>`;
+  const races = derivedConferenceRaces().filter((row) => !/independent|unknown/i.test(String(row.conference || ""))).slice(0, 10);
+  document.getElementById("conferenceFormat").textContent = `${races.length} races tracked`;
+  document.getElementById("conferenceRace").innerHTML = races.map((row) => { const top = row.teams || row.contenders || []; const evidence = top[0]?.tiebreakerEvidence?.[0] || row.tiebreakerStatus || row.evidence || "Projected standings"; return `<div class="conference-row"><strong>${escapeHtml(row.conference)}</strong><span>${top.slice(0, 2).map((item) => escapeHtml(item.team)).join(" vs ") || escapeHtml(row.projectedChampion || row.leader)}</span><b>${fmtPct(top[0]?.conferenceTitleProbability ?? top[0]?.titleProbability ?? row.leaderProbability)}</b><small>${escapeHtml(evidence)}</small></div>`; }).join("");
+  const drift = driftMetrics();
+  const unhealthy = drift.some((row) => ["watch", "warning", "degraded"].includes(String(row.status).toLowerCase()));
+  document.getElementById("driftStatus").textContent = unhealthy ? "Watch" : "Healthy";
+  document.getElementById("driftStatus").classList.toggle("needs-attention", unhealthy);
+  document.getElementById("driftBoard").innerHTML = drift.map((row) => `<div><span>${escapeHtml(row.label || row.metric)}</span><strong>${row.format === "percent" ? fmtPct(row.value) : fmtDecimal(row.value, 3)}</strong><small>${escapeHtml(row.status || "healthy")}</small></div>`).join("");
+  document.getElementById("preferenceMoveThreshold").value = String(state.preferences.moveThreshold ?? .02);
+  document.getElementById("preferenceElimination").checked = state.preferences.elimination !== false;
+  document.getElementById("preferenceLeader").checked = state.preferences.leader !== false;
+  const registry = state.data.modelRegistry || [];
+  const provenance = state.data.provenance || state.data.meta.provenance || state.data.meta.lineage || {};
+  const ensemble = state.data.ensembleMetadata || {};
+  const rows = [
+    ["Data snapshot", state.data.meta.dataHealth?.lastUpdatedAt || "Unknown"],
+    ["Feature store", provenance.featureStoreVersion || state.data.gameModel?.featureStore?.schema || "Prior-only pregame store"],
+    ["Champion model", registry[0]?.version || state.data.meta.selectedModel],
+    ["Game model", state.data.gameModel?.version || "Unknown"],
+    ["Selection model", state.data.selectionModel?.version || "Unknown"],
+    ["Source hash", provenance.sourceHash || registry[0]?.sourceHash || "See model registry"],
+    ["Production ensemble", ensemble.productionEnsemble || "Weekly ML Ensemble"],
+    ["Ensemble members", ensemble.members?.length ? `${ensemble.members.length} models` : "See model registry"],
+    ["Stacker training", ensemble.stacking?.outOfFoldTeams ? `${fmtRank(ensemble.stacking.outOfFoldTeams)} out-of-fold teams` : "Forward-season only"],
+  ];
+  document.getElementById("provenanceDetails").innerHTML = rows.map(([label, value]) => `<div><span>${label}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  const endpoints = ["/api/v1", "/api/v1/forecast", "/api/v1/rankings", `/api/v1/teams/${encodeURIComponent(team.Team)}`, "/api/v1/weekly-report", "/api/v1/models", "/api/v1/conference-races", "/api/v1/health"];
+  document.getElementById("apiEndpoints").innerHTML = endpoints.map((path) => `<a href="${path}" target="_blank" rel="noreferrer">GET ${escapeHtml(path)}</a>`).join("");
+  renderScenarioLibrary();
 }
 
 function renderReplay() {
@@ -696,7 +981,7 @@ function teamOptions() {
 }
 
 function populateTeamControls() {
-  const ids = ["scenarioTeam", "researchTeam", "metricsTeam", "watchTeam", "teamPageSelect"];
+  const ids = ["scenarioTeam", "researchTeam", "metricsTeam", "watchTeam", "teamPageSelect", "decisionTeam"];
   ids.forEach((id) => {
     const select = document.getElementById(id);
     const prior = select.value;
@@ -840,6 +1125,7 @@ function runSeasonSimulation() {
 
   const results = teams.map((team) => ({ team, playoff: playoffCounts[team] / runs, bye: byeCounts[team] / runs, semifinal: semifinalCounts[team] / runs, final: finalCounts[team] / runs, title: titleCounts[team] / runs, conference: conferenceCounts[team] / runs }))
     .sort((a, b) => b.title - a.title).slice(0, 12);
+  state.simulationResults = results;
   document.getElementById("simulationSummary").innerHTML = `<div><strong>${runs.toLocaleString()}</strong><span>simulations</span></div><div><strong>${remaining.length}</strong><span>remaining games</span></div><div><strong>${conferenceCount}</strong><span>conference races</span></div><div><strong>${Object.keys(state.scenarioPicks).length}</strong><span>locked outcomes</span></div>`;
   document.getElementById("simulationResults").innerHTML = results.map((row, index) => `<div class="simulation-row"><span>${index + 1}</span><strong>${row.team}</strong><div><i style="width:${Math.max(1, row.title * 100)}%"></i></div><b>${fmtPct(row.title)}</b><small>${fmtPct(row.playoff)} field · ${fmtPct(row.bye)} bye · ${fmtPct(row.semifinal)} semi · ${fmtPct(row.final)} final</small></div>`).join("");
 }
@@ -901,7 +1187,7 @@ function setView(view) {
     state.teamPage = decoded.slice(5);
     view = "team";
   }
-  const allowed = ["overview", "team", "weekly", "report", "replay", "models", "lab", "simulator", "scores", "data"];
+  const allowed = ["overview", "team", "weekly", "report", "decision", "replay", "models", "lab", "simulator", "scores", "data"];
   state.currentView = allowed.includes(view) ? view : "overview";
   document.querySelector("main").dataset.activeView = state.currentView;
   document.querySelectorAll("[data-route]").forEach((item) => item.classList.toggle("is-active", item.dataset.route === state.currentView));
@@ -1197,6 +1483,9 @@ function exportCsv() {
 async function shareCurrentView() {
   const url = new URL(location.href);
   url.hash = state.currentView === "team" ? `team=${encodeURIComponent(state.teamPage)}` : state.currentView;
+  if (Object.keys(state.scenarioPicks).length || Object.keys(state.bracketPicks).length) {
+    url.searchParams.set("scenario", encodeScenario(scenarioPayload(document.getElementById("scenarioName").value || "Shared scenario")));
+  }
   try {
     await navigator.clipboard.writeText(url.toString());
     document.getElementById("shareView").textContent = "Link copied";
@@ -1236,6 +1525,7 @@ function renderAll() {
   renderCalibratedModels();
   renderModelLab();
   renderWeeklyReport();
+  renderDecisionCenter();
   renderReplay();
   renderScenarioBuilder();
   renderPlayoffBracket();
@@ -1254,6 +1544,13 @@ async function init() {
   state.selectedYear = String(state.data.meta.currentSeason || seasonYears()[0]);
   state.weeklyYear = state.selectedYear;
   await loadWeeklyYear(state.weeklyYear);
+  const sharedScenario = decodeScenario(new URL(location.href).searchParams.get("scenario") || "");
+  if (sharedScenario) {
+    state.scenarioPicks = { ...(sharedScenario.scenarioPicks || {}) };
+    state.bracketPicks = { ...(sharedScenario.bracketPicks || {}) };
+    if ([1000, 2500, 5000].includes(Number(sharedScenario.runs))) document.getElementById("simulationRuns").value = String(sharedScenario.runs);
+    document.getElementById("scenarioName").value = sharedScenario.name || "Shared scenario";
+  }
   const history = document.getElementById("historyYear");
   history.innerHTML = (state.data.meta.weeklyYears || []).map((year) => `<option value="${year}">${year}</option>`).join("");
   history.value = state.weeklyYear;
@@ -1265,6 +1562,7 @@ async function init() {
   renderAll();
   setView(location.hash.slice(1) || "overview");
   loadCloudWatchlist().then(renderWatchlist);
+  loadCloudDecisionState();
 
   document.getElementById("teamSearch").addEventListener("input", (event) => {
     state.query = event.target.value;
@@ -1305,10 +1603,11 @@ async function init() {
   ["scenarioTeam", "scenarioResult", "scenarioOpponent", "scenarioMargin"].forEach((id) => document.getElementById(id).addEventListener("input", renderScenario));
   document.getElementById("researchTeam").addEventListener("change", renderResearch);
   document.getElementById("metricsTeam").addEventListener("change", renderAdvancedMetrics);
+  document.getElementById("decisionTeam").addEventListener("change", renderDecisionCenter);
   document.getElementById("teamPageSelect").addEventListener("change", (event) => {
     state.teamPage = event.target.value;
     renderTeamPage();
-    history.replaceState(null, "", `#team=${encodeURIComponent(state.teamPage)}`);
+    window.history.replaceState(null, "", `#team=${encodeURIComponent(state.teamPage)}`);
   });
   document.getElementById("evaluationMetric").addEventListener("change", renderWeeklyEvaluation);
   ["labModelA", "labModelB"].forEach((id) => document.getElementById(id).addEventListener("change", renderModelLab));
@@ -1331,6 +1630,18 @@ async function init() {
     runSeasonSimulation();
   });
   document.getElementById("resetBracket").addEventListener("click", () => { state.bracketPicks = {}; renderPlayoffBracket(); });
+  document.getElementById("saveScenario").addEventListener("click", () => {
+    const name = document.getElementById("scenarioName").value.trim() || `Scenario ${state.savedScenarios.length + 1}`;
+    const payload = { ...scenarioPayload(name), id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}`, name };
+    state.savedScenarios = [payload, ...state.savedScenarios.filter((row) => row.name !== name)].slice(0, 20);
+    persistScenarios(); renderScenarioLibrary(); syncScenario(payload);
+  });
+  document.getElementById("copyScenario").addEventListener("click", async () => {
+    await copyScenarioUrl(scenarioPayload(document.getElementById("scenarioName").value || "Shared scenario"));
+    document.getElementById("copyScenario").textContent = "Copied";
+    setTimeout(() => { document.getElementById("copyScenario").textContent = "Copy scenario URL"; }, 1600);
+  });
+  document.getElementById("savePreferences").addEventListener("click", savePreferences);
   document.getElementById("enableAlerts").addEventListener("click", async () => {
     if (!("Notification" in window)) return;
     const permission = await Notification.requestPermission();

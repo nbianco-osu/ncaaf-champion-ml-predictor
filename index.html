@@ -21,6 +21,7 @@
           <a href="#team" data-route="team">Team lab</a>
           <a href="#weekly" data-route="weekly">Weekly history</a>
           <a href="#report" data-route="report">Weekly report</a>
+          <a href="#decision" data-route="decision">Decision center</a>
           <a href="#replay" data-route="replay">Replay</a>
           <a href="#models" data-route="models">Models</a>
           <a href="#lab" data-route="lab">Model lab</a>
@@ -348,6 +349,65 @@
         <section class="report-workspace" data-view="report">
           <section class="panel report-lead"><div class="panel-head"><div><p class="small-label" id="reportWeekLabel">Weekly briefing</p><h3 id="reportHeadline">Forecast report</h3></div><button class="toolbar-button" id="copyReport" type="button">Copy report</button></div><div id="weeklyReport" class="weekly-report"></div></section>
           <section class="panel-grid"><article class="panel wide"><div class="panel-head"><div><p class="small-label">Projected bracket</p><h3>Selection field</h3></div></div><div id="reportField" class="selection-field"></div></article><article class="panel"><div class="panel-head"><div><p class="small-label">Model consensus</p><h3>Champion votes</h3></div></div><div id="reportVotes" class="model-cards"></div></article></section>
+        </section>
+
+        <section class="decision-workspace" data-view="decision">
+          <section class="panel decision-lead">
+            <div class="panel-head">
+              <div><p class="small-label">Forecast operations</p><h3>Decision center</h3></div>
+              <label class="compact-control">Team<select id="decisionTeam"></select></label>
+            </div>
+            <div id="decisionSummary" class="summary-grid"></div>
+          </section>
+
+          <section class="panel-grid">
+            <article class="panel wide">
+              <div class="panel-head"><div><p class="small-label">Week-over-week attribution</p><h3>Why the forecast moved</h3></div><span class="model-chip" id="movementWeek">-</span></div>
+              <div id="decisionMovement" class="attribution-list"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><p class="small-label">Roster context</p><h3>Availability adjustment</h3></div><span class="model-chip" id="availabilityConfidence">-</span></div>
+              <div id="availabilityBoard" class="availability-board"></div>
+            </article>
+          </section>
+
+          <section class="panel-grid">
+            <article class="panel wide">
+              <div class="panel-head"><div><p class="small-label">Championship qualification</p><h3>Conference race engine</h3></div><span class="model-chip" id="conferenceFormat">-</span></div>
+              <div id="conferenceRace" class="conference-race"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><p class="small-label">Production guardrails</p><h3>Forecast drift</h3></div><span class="health-status" id="driftStatus">-</span></div>
+              <div id="driftBoard" class="drift-board"></div>
+            </article>
+          </section>
+
+          <section class="panel-grid">
+            <article class="panel wide">
+              <div class="panel-head"><div><p class="small-label">Saved what-if paths</p><h3>Scenario library</h3></div><span class="model-chip" id="scenarioSyncStatus">Local fallback</span></div>
+              <div class="scenario-library-controls">
+                <label>Scenario name<input id="scenarioName" type="text" maxlength="80" placeholder="Georgia title path" /></label>
+                <button class="refresh-button" id="saveScenario" type="button">Save scenario</button>
+                <button class="toolbar-button" id="copyScenario" type="button">Copy scenario URL</button>
+              </div>
+              <div id="scenarioLibrary" class="scenario-library"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><div><p class="small-label">Personal contender center</p><h3>Alert preferences</h3></div></div>
+              <div class="preference-form">
+                <label>Minimum weekly move<select id="preferenceMoveThreshold"><option value="0.01">1 percentage point</option><option value="0.02" selected>2 percentage points</option><option value="0.05">5 percentage points</option></select></label>
+                <label class="toggle-row"><input id="preferenceElimination" type="checkbox" checked /> Playoff elimination alerts</label>
+                <label class="toggle-row"><input id="preferenceLeader" type="checkbox" checked /> New forecast leader alerts</label>
+                <button class="refresh-button" id="savePreferences" type="button">Save preferences</button>
+                <p class="muted" id="preferenceStatus">Stored locally until cloud sync completes.</p>
+              </div>
+            </article>
+          </section>
+
+          <section class="panel-grid">
+            <article class="panel wide"><div class="panel-head"><div><p class="small-label">Reproducible release</p><h3>Forecast provenance</h3></div></div><div id="provenanceDetails" class="provenance-grid"></div></article>
+            <article class="panel"><div class="panel-head"><div><p class="small-label">Read-only integration</p><h3>Public API</h3></div></div><div id="apiEndpoints" class="api-endpoints"></div></article>
+          </section>
         </section>
 
         <section class="replay-workspace" data-view="replay">

@@ -99,7 +99,10 @@ TRAINED_MODEL_NAMES = [
     "Weekly Gaussian Naive Bayes",
     "Weekly K-Nearest Neighbors",
     "Weekly Ridge Probability",
+    "Weekly Bayesian Logistic",
+    "Weekly Elo Rating",
 ]
+STACKED_MODEL = "Weekly Forward Stacker"
 TRAINED_ENSEMBLE = "Weekly ML Ensemble"
 GAME_MODEL_FEATURES = [
     "Elo edge",
@@ -120,6 +123,12 @@ SELECTION_FEATURES = [
 ]
 GAME_FEATURE_SCHEMA = "game-features-v3-prior-only-calibrated"
 PLAY_METRIC_SCHEMA = 2
+PREDICTION_CHANGE_COMPONENTS = {
+    "poll": ["AP Poll Score"],
+    "resume": ["Resume Composite", "Win Pct"],
+    "efficiency": ["Power Composite", "Game Control Score"],
+    "opponent": ["SOS Score"],
+}
 
 
 def current_college_football_season(today: date | None = None) -> int:
@@ -400,14 +409,96 @@ def ridge_probability(train_x: np.ndarray, train_y: np.ndarray, target_x: np.nda
     return np.clip(target @ weights, 1e-5, 1)
 
 
+def bayesian_logistic_probability(train_x: np.ndarray, train_y: np.ndarray, target_x: np.ndarray) -> np.ndarray:
+    """MAP logistic approximation with a stronger zero-centered Gaussian prior."""
+    model = fit_binary_model(train_x, train_y, regularization=0.09)
+    return np.asarray([binary_probability(model, row.tolist()) for row in target_x], dtype=float)
+
+
+def elo_rating_probability(records: list[dict]) -> np.ndarray:
+    ratings = np.asarray(
+        [
+            1200
+            + 3.2 * float(record.get("Power Composite") or 0)
+            + 2.8 * float(record.get("Resume Composite") or 0)
+            + 120 * float(record.get("Win Pct") or 0)
+            for record in records
+        ],
+        dtype=float,
+    )
+    strengths = np.power(10.0, (ratings - float(np.max(ratings))) / 400.0)
+    return normalized_probability(strengths)
+
+
 def predict_trained_model(name: str, train_x: np.ndarray, train_y: np.ndarray, target_x: np.ndarray) -> np.ndarray:
     predictors = {
         "Weekly Logistic Regression": logistic_probability,
         "Weekly Gaussian Naive Bayes": gaussian_nb_probability,
         "Weekly K-Nearest Neighbors": knn_probability,
         "Weekly Ridge Probability": ridge_probability,
+        "Weekly Bayesian Logistic": bayesian_logistic_probability,
     }
     return predictors[name](train_x, train_y, target_x)
+
+
+def base_weekly_probabilities(training: pd.DataFrame, records: list[dict]) -> dict[str, np.ndarray]:
+    target_x = pd.DataFrame(records)[WEEKLY_MODEL_FEATURES].fillna(0).to_numpy(dtype=float)
+    fallback_scores = np.array([score_record(record, MODEL_WEIGHTS["Balanced ML Blend"]) for record in records])
+    fallback = np.asarray(softmax(fallback_scores.tolist()))
+    probabilities: dict[str, np.ndarray] = {}
+    if not training.empty and training["isChampion"].nunique() == 2:
+        train_x = training[WEEKLY_MODEL_FEATURES].fillna(0).to_numpy(dtype=float)
+        train_y = training["isChampion"].to_numpy(dtype=float)
+        for name in TRAINED_MODEL_NAMES:
+            if name == "Weekly Elo Rating":
+                probabilities[name] = elo_rating_probability(records)
+                continue
+            try:
+                probabilities[name] = normalized_probability(predict_trained_model(name, train_x, train_y, target_x))
+            except (ValueError, TypeError, np.linalg.LinAlgError):
+                probabilities[name] = fallback
+    else:
+        probabilities = {
+            name: elo_rating_probability(records) if name == "Weekly Elo Rating" else fallback
+            for name in TRAINED_MODEL_NAMES
+        }
+    return probabilities
+
+
+def forward_stacked_probability(training: pd.DataFrame, records: list[dict], target_base: dict[str, np.ndarray]) -> tuple[np.ndarray, dict]:
+    base_names = list(TRAINED_MODEL_NAMES)
+    oof_x: list[list[float]] = []
+    oof_y: list[float] = []
+    years = sorted(int(value) for value in training.get("trainingYear", pd.Series(dtype=int)).unique())
+    for year in years[1:]:
+        prior = training[training["trainingYear"] < year]
+        held_out = training[training["trainingYear"] == year]
+        if prior.empty or held_out.empty or prior["isChampion"].nunique() < 2:
+            continue
+        held_records = json.loads(held_out.replace({np.nan: None}).to_json(orient="records"))
+        fold = base_weekly_probabilities(prior, held_records)
+        for index, (_, row) in enumerate(held_out.iterrows()):
+            oof_x.append([float(fold[name][index]) for name in base_names])
+            oof_y.append(float(row["isChampion"]))
+    target_matrix = np.column_stack([target_base[name] for name in base_names])
+    if len(oof_x) >= 25 and len(set(oof_y)) == 2:
+        model = fit_binary_model(np.asarray(oof_x, dtype=float), np.asarray(oof_y, dtype=float), regularization=0.12)
+        stacked = np.asarray([binary_probability(model, row.tolist()) for row in target_matrix], dtype=float)
+        weights = [float(value) for value in model["weights"][1:]]
+        return normalized_probability(stacked), {
+            "method": "Forward-season level-2 logistic stack",
+            "outOfFoldTeams": len(oof_y),
+            "baseModels": base_names,
+            "coefficients": dict(zip(base_names, weights)),
+            "leakagePolicy": "Every level-2 training row was predicted by base models fit only on earlier seasons.",
+        }
+    return normalized_probability(np.mean(list(target_base.values()), axis=0)), {
+        "method": "Equal-weight fallback until forward-season stack has enough classes",
+        "outOfFoldTeams": len(oof_y),
+        "baseModels": base_names,
+        "coefficients": {name: 1 / len(base_names) for name in base_names},
+        "leakagePolicy": "Fallback contains no fitted target-season information.",
+    }
 
 
 def snapshot_frame(snapshot: dict) -> pd.DataFrame:
@@ -472,34 +563,18 @@ def trained_predictions_for_snapshot(weekly: dict[str, list[dict]], snapshot: di
     actual = snapshot.get("actualChampion")
     training = prior_training_frame(weekly, target_year, target_week)
     trained_seasons = int(training["trainingYear"].nunique()) if not training.empty else 0
-    fallback_scores = np.array([score_record(record, MODEL_WEIGHTS["Balanced ML Blend"]) for record in records])
-    fallback = np.asarray(softmax(fallback_scores.tolist()))
-    model_probabilities: dict[str, np.ndarray] = {}
-
-    if trained_seasons and training["isChampion"].nunique() == 2:
-        train_x = training[WEEKLY_MODEL_FEATURES].fillna(0)
-        train_y = training["isChampion"]
-        target_x = pd.DataFrame(records)[WEEKLY_MODEL_FEATURES].fillna(0)
-        for name in TRAINED_MODEL_NAMES:
-            try:
-                raw = predict_trained_model(
-                    name,
-                    train_x.to_numpy(dtype=float),
-                    train_y.to_numpy(dtype=float),
-                    target_x.to_numpy(dtype=float),
-                )
-                model_probabilities[name] = normalized_probability(raw)
-            except (ValueError, TypeError, np.linalg.LinAlgError):
-                model_probabilities[name] = fallback
-    else:
-        model_probabilities = {name: fallback for name in TRAINED_MODEL_NAMES}
-
+    model_probabilities = base_weekly_probabilities(training, records)
+    stacked, stack_metadata = forward_stacked_probability(training, records, model_probabilities)
+    model_probabilities[STACKED_MODEL] = stacked
     ensemble = np.mean(list(model_probabilities.values()), axis=0)
     model_probabilities[TRAINED_ENSEMBLE] = normalized_probability(ensemble)
     predictions = [
         prediction_summary(name, records, probabilities, actual, trained_seasons)
         for name, probabilities in model_probabilities.items()
     ]
+    for prediction in predictions:
+        if prediction["model"] == STACKED_MODEL:
+            prediction["stacking"] = stack_metadata
     return predictions, {
         record["Team"]: float(probability)
         for record, probability in zip(records, model_probabilities[TRAINED_ENSEMBLE])
@@ -1148,13 +1223,65 @@ def add_play_metrics(records: list[dict], metrics: dict[str, dict]) -> None:
         record["Play Data Games"] = row["gamesCovered"]
 
 
+def prediction_change_explanation(prior: dict | None, current: dict | None) -> dict:
+    prior = prior or {}
+    current = current or {}
+    probability_change = float(current.get("mlChampionProbability") or 0) - float(prior.get("mlChampionProbability") or 0)
+    direct_effects = {}
+    evidence = {}
+    for component, features in PREDICTION_CHANGE_COMPONENTS.items():
+        deltas = []
+        for feature in features:
+            old = float(prior.get(feature) or 0)
+            new = float(current.get(feature) or 0)
+            scale = 100.0 if feature == "Win Pct" else 1.0
+            deltas.append((new - old) * scale)
+        score_delta = float(np.mean(deltas)) if deltas else 0.0
+        direct_effects[component] = score_delta * 0.00035
+        evidence[component] = {"scoreDelta": score_delta, "features": features}
+    feature_total = sum(direct_effects.values())
+    direct_effects["modelConsensus"] = probability_change - feature_total
+    consensus_delta = float(current.get("modelProbabilityMean") or 0) - float(prior.get("modelProbabilityMean") or 0)
+    evidence["modelConsensus"] = {
+        "scoreDelta": consensus_delta,
+        "features": ["modelProbabilityMean", "modelProbabilityStdDev"],
+        "includesReconciliationResidual": True,
+    }
+    strongest = max(direct_effects, key=lambda key: abs(direct_effects[key]))
+    return {
+        "probabilityChange": probability_change,
+        "effects": direct_effects,
+        "evidence": evidence,
+        "strongestEffect": strongest,
+        "decompositionResidual": probability_change - sum(direct_effects.values()),
+        "method": "Local week-over-week score deltas with model-consensus reconciliation",
+    }
+
+
 def build_prediction_changelog(current_rows: list[dict]) -> list[dict]:
     entries = []
     for prior, current in zip(current_rows, current_rows[1:]):
-        prior_map = {row["Team"]: float(row.get("mlChampionProbability") or 0) for row in prior.get("records", [])}
-        current_map = {row["Team"]: float(row.get("mlChampionProbability") or 0) for row in current.get("records", [])}
+        prior_records = {row["Team"]: row for row in prior.get("records", [])}
+        current_records = {row["Team"]: row for row in current.get("records", [])}
+        prior_map = {team: float(row.get("mlChampionProbability") or 0) for team, row in prior_records.items()}
+        current_map = {team: float(row.get("mlChampionProbability") or 0) for team, row in current_records.items()}
+        team_changes = []
+        for team in sorted(set(prior_records) | set(current_records)):
+            explanation = prediction_change_explanation(prior_records.get(team), current_records.get(team))
+            team_changes.append(
+                {
+                    "team": team,
+                    "priorProbability": prior_map.get(team, 0),
+                    "probability": current_map.get(team, 0),
+                    "change": explanation["probabilityChange"],
+                    "status": "entered" if team not in prior_records else "left" if team not in current_records else "tracked",
+                    "explanation": explanation,
+                }
+            )
+            if team in current_records:
+                current_records[team]["predictionChange"] = explanation
         moves = sorted(
-            [{"team": team, "change": probability - prior_map.get(team, 0)} for team, probability in current_map.items()],
+            team_changes,
             key=lambda item: abs(item["change"]),
             reverse=True,
         )
@@ -1167,6 +1294,8 @@ def build_prediction_changelog(current_rows: list[dict]) -> list[dict]:
                 "leader": current.get("predictedChampion"),
                 "leaderChanged": prior.get("predictedChampion") != current.get("predictedChampion"),
                 "largestMoves": moves[:5],
+                "teamChanges": sorted(team_changes, key=lambda item: item["probability"], reverse=True),
+                "components": ["poll", "resume", "efficiency", "opponent", "modelConsensus"],
                 "enteredTop12": sorted(current_top12 - prior_top12),
                 "leftTop12": sorted(prior_top12 - current_top12),
             }
@@ -1174,34 +1303,51 @@ def build_prediction_changelog(current_rows: list[dict]) -> list[dict]:
     return entries
 
 
-def selection_training_rows(weekly: dict[str, list[dict]]) -> list[dict]:
+def selection_training_rows(weekly: dict[str, list[dict]], start_year: int, end_year: int, field_size: int) -> list[dict]:
     rows = []
     for year_text, snapshots in weekly.items():
-        if int(year_text) not in COMPLETED_YEARS or not snapshots:
+        year = int(year_text)
+        if year not in COMPLETED_YEARS or not start_year <= year <= end_year or not snapshots:
             continue
-        for record in snapshots[-1].get("records", []):
-            rank = record.get("CFP") or record.get("AP POLL") or record.get("predictedRank")
+        label_snapshot = snapshots[-1]
+        feature_snapshot = snapshots[-2] if len(snapshots) > 1 else snapshots[-1]
+        label_records = {record["Team"]: record for record in label_snapshot.get("records", [])}
+        for record in feature_snapshot.get("records", []):
+            label_record = label_records.get(record["Team"], {})
+            if label_record.get("CFP") is not None:
+                rank, source, proxy = label_record["CFP"], "final CFP rank", False
+            elif label_record.get("AP POLL") is not None:
+                rank, source, proxy = label_record["AP POLL"], "final AP rank proxy", True
+            else:
+                rank, source, proxy = label_record.get("predictedRank"), "model rank proxy", True
             values = [record.get(feature) for feature in SELECTION_FEATURES]
             if rank is None or any(value is None for value in values):
                 continue
             rows.append(
                 {
-                    "year": int(year_text),
+                    "year": year,
                     "team": record["Team"],
                     "features": [float(value) for value in values],
-                    "selected": int(float(rank) <= 12),
+                    "selected": int(float(rank) <= field_size),
+                    "fieldSize": field_size,
+                    "featureWeek": int(feature_snapshot.get("week", 0)),
+                    "labelWeek": int(label_snapshot.get("week", 0)),
+                    "labelRank": float(rank),
+                    "labelSource": source,
+                    "isProxyLabel": proxy,
+                    "leakageSafe": int(feature_snapshot.get("week", 0)) < int(label_snapshot.get("week", 0)),
                 }
             )
     return rows
 
 
-def build_selection_model(weekly: dict[str, list[dict]], current_records: list[dict]) -> dict:
-    rows = selection_training_rows(weekly)
+def fit_selection_era(weekly: dict[str, list[dict]], name: str, start_year: int, end_year: int, field_size: int) -> dict:
+    rows = selection_training_rows(weekly, start_year, end_year, field_size)
     evaluations = []
-    for year in sorted({row["year"] for row in rows if row["year"] >= 2017}):
+    for year in sorted({row["year"] for row in rows})[1:]:
         train = [row for row in rows if row["year"] < year]
         test = [row for row in rows if row["year"] == year]
-        if not train or not test:
+        if not train or not test or len({row["selected"] for row in train}) < 2:
             continue
         model = fit_binary_model(
             np.asarray([row["features"] for row in train], dtype=float),
@@ -1216,6 +1362,8 @@ def build_selection_model(weekly: dict[str, list[dict]], current_records: list[d
                 "teams": len(test),
                 "accuracy": sum((probability >= 0.5) == bool(label) for probability, label in zip(probabilities, labels)) / len(test),
                 "brier": float(np.mean([(probability - label) ** 2 for probability, label in zip(probabilities, labels)])),
+                "featureCutoffWeek": max(row["featureWeek"] for row in test),
+                "labelWeek": max(row["labelWeek"] for row in test),
             }
         )
     model = fit_binary_model(
@@ -1223,32 +1371,295 @@ def build_selection_model(weekly: dict[str, list[dict]], current_records: list[d
         np.asarray([row["selected"] for row in rows], dtype=float),
         regularization=0.025,
     )
-    for record in current_records:
-        values = [record.get(feature) for feature in SELECTION_FEATURES]
-        record["CFP Selection Probability"] = binary_probability(model, [float(value or 0) for value in values])
-    ranked = sorted(current_records, key=lambda row: row.get("CFP Selection Probability", 0), reverse=True)
-    for seed, record in enumerate(ranked, 1):
-        record["Projected CFP Seed"] = seed if seed <= 12 else None
+    source_counts = {
+        source: sum(row["labelSource"] == source for row in rows)
+        for source in sorted({row["labelSource"] for row in rows})
+    }
     digest = hashlib.sha256(
         json.dumps(
-            {"schema": "cfp-selection-v1", "rows": [[row["year"], row["team"], row["selected"]] for row in rows]},
+            {
+                "schema": "cfp-selection-v2-era-split",
+                "era": name,
+                "rows": [[row["year"], row["team"], row["selected"], row["labelSource"]] for row in rows],
+            },
             separators=(",", ":"),
         ).encode()
     ).hexdigest()[:12]
     return {
-        "name": "CFP Selection Logistic",
-        "version": f"selection-{max(COMPLETED_YEARS)}-{digest}",
+        "name": name,
+        "fieldSize": field_size,
+        "years": f"{start_year}-{end_year}",
+        "version": f"selection-{field_size}-{max(row['year'] for row in rows)}-{digest}",
         "trainingTeams": len(rows),
         "trainingSeasons": f"{min(row['year'] for row in rows)}-{max(row['year'] for row in rows)}",
-        "target": "Final CFP/AP top-12 field proxy",
+        "target": f"Final {field_size}-team CFP field",
+        "labelPolicy": "Final CFP rank when present; final AP rank or model rank only as an explicitly marked proxy.",
+        "labelEvidence": source_counts,
+        "proxyLabels": sum(row["isProxyLabel"] for row in rows),
+        "leakageSafeRows": sum(row["leakageSafe"] for row in rows),
+        "leakagePolicy": "Features come from the prior available weekly snapshot; final ranking evidence supplies labels only.",
         "features": SELECTION_FEATURES,
         "coefficients": [
             {"feature": feature, "coefficient": float(weight)}
             for feature, weight in zip(SELECTION_FEATURES, model["weights"][1:])
         ],
         "forwardValidation": evaluations,
-        "accuracy": float(np.average([row["accuracy"] for row in evaluations], weights=[row["teams"] for row in evaluations])),
-        "brier": float(np.average([row["brier"] for row in evaluations], weights=[row["teams"] for row in evaluations])),
+        "accuracy": float(np.average([row["accuracy"] for row in evaluations], weights=[row["teams"] for row in evaluations])) if evaluations else None,
+        "brier": float(np.average([row["brier"] for row in evaluations], weights=[row["teams"] for row in evaluations])) if evaluations else None,
+        "model": model,
+    }
+
+
+def build_selection_model(weekly: dict[str, list[dict]], current_records: list[dict], current_year: int) -> dict:
+    era_specs = [
+        ("Four-team CFP era", 2014, 2023, 4),
+        ("Twelve-team CFP era", 2024, max(COMPLETED_YEARS), 12),
+    ]
+    eras = [fit_selection_era(weekly, *spec) for spec in era_specs]
+    active = next(era for era in eras if era["fieldSize"] == (12 if current_year >= 2024 else 4))
+    model = active.pop("model")
+    for era in eras:
+        era.pop("model", None)
+    for record in current_records:
+        values = [record.get(feature) for feature in SELECTION_FEATURES]
+        record["CFP Selection Probability"] = binary_probability(model, [float(value or 0) for value in values])
+    ranked = sorted(current_records, key=lambda row: row.get("CFP Selection Probability", 0), reverse=True)
+    for seed, record in enumerate(ranked, 1):
+        record["Projected CFP Seed"] = seed if seed <= active["fieldSize"] else None
+    return {
+        "name": "CFP Selection Logistic",
+        "version": active["version"],
+        "schema": "cfp-selection-v2-era-split",
+        "activeEra": active["name"],
+        "activeFieldSize": active["fieldSize"],
+        "trainingTeams": active["trainingTeams"],
+        "trainingSeasons": active["trainingSeasons"],
+        "target": active["target"],
+        "features": SELECTION_FEATURES,
+        "coefficients": active["coefficients"],
+        "forwardValidation": active["forwardValidation"],
+        "accuracy": active["accuracy"],
+        "brier": active["brier"],
+        "labelPolicy": active["labelPolicy"],
+        "leakagePolicy": active["leakagePolicy"],
+        "eras": eras,
+    }
+
+
+def build_roster_availability(current_records: list[dict], as_of: str | None) -> dict:
+    teams = {}
+    for record in current_records:
+        record["Roster Availability Adjustment"] = 0.0
+        record["Roster Availability Confidence"] = 0.0
+        teams[record["Team"]] = {
+            "adjustment": 0.0,
+            "confidence": 0.0,
+            "source": "neutral fallback",
+            "sourceUrl": None,
+            "reportedAt": None,
+            "status": "no stable structured feed",
+        }
+    return {
+        "contractVersion": "roster-availability-v1",
+        "asOf": as_of,
+        "feedStatus": "neutral-fallback",
+        "appliedToPredictions": False,
+        "neutralAdjustment": 0.0,
+        "confidenceScale": {"minimum": 0.0, "maximum": 1.0},
+        "requiredSourceFields": ["source", "sourceUrl", "reportedAt", "confidence"],
+        "policy": "No adjustment is applied without a stable, attributable roster-availability feed.",
+        "teams": teams,
+    }
+
+
+def build_conference_race(schedule: dict, current_records: list[dict], game_model: dict) -> dict:
+    teams: dict[str, dict] = {}
+    conference_names: dict[str, str] = {}
+    head_to_head: dict[str, list[str]] = {}
+    for game in schedule.get("games", []):
+        competitors = game.get("competitors", [])
+        if len(competitors) != 2:
+            continue
+        for competitor in competitors:
+            team = competitor.get("team")
+            conference_id = str(competitor.get("conferenceId") or "independent")
+            if not team:
+                continue
+            teams.setdefault(
+                team,
+                {
+                    "team": team,
+                    "conferenceId": conference_id,
+                    "conference": game.get("conference") if game.get("conferenceGame") else None,
+                    "conferenceWins": 0,
+                    "conferenceLosses": 0,
+                    "pointsFor": 0.0,
+                    "pointsAgainst": 0.0,
+                    "projectedRemainingConferenceWins": 0.0,
+                },
+            )
+            if game.get("conferenceGame") and game.get("conference"):
+                teams[team]["conference"] = game["conference"]
+                conference_names[conference_id] = game["conference"]
+        if not game.get("conferenceGame"):
+            continue
+        a, b = competitors
+        if game.get("completed"):
+            for competitor, opponent in [(a, b), (b, a)]:
+                row = teams[competitor["team"]]
+                row["conferenceWins" if competitor.get("winner") else "conferenceLosses"] += 1
+                row["pointsFor"] += float(competitor.get("score") or 0)
+                row["pointsAgainst"] += float(opponent.get("score") or 0)
+                if competitor.get("winner"):
+                    head_to_head.setdefault(competitor["team"], []).append(opponent["team"])
+        else:
+            probability = (game.get("gameModel") or {}).get("teamAWinProbability")
+            modeled_a = (game.get("gameModel") or {}).get("teamA")
+            if probability is None:
+                probability = 0.5
+            for competitor in competitors:
+                win_probability = float(probability) if competitor["team"] == modeled_a else 1 - float(probability)
+                teams[competitor["team"]]["projectedRemainingConferenceWins"] += win_probability
+    grouped: dict[str, list[dict]] = {}
+    current_map = {row["Team"]: row for row in current_records}
+    for team, row in teams.items():
+        row["conference"] = row["conference"] or conference_names.get(row["conferenceId"]) or "Independent / unknown"
+        row["projectedConferenceWins"] = row["conferenceWins"] + row["projectedRemainingConferenceWins"]
+        row["pointDifferential"] = row["pointsFor"] - row["pointsAgainst"]
+        row["elo"] = float(game_model.get("currentTeams", {}).get(team, {}).get("elo", 1500.0))
+        grouped.setdefault(row["conferenceId"], []).append(row)
+    conferences = []
+    for conference_id, members in grouped.items():
+        if conference_id == "independent" or len(members) < 2:
+            continue
+        logits = np.asarray(
+            [member["projectedConferenceWins"] * 1.35 + (member["elo"] - 1500) / 240 for member in members],
+            dtype=float,
+        )
+        probabilities = normalized_probability(np.exp(logits - np.max(logits)))
+        projected = []
+        for member, probability in zip(members, probabilities):
+            evidence = [
+                f"Conference record {member['conferenceWins']}-{member['conferenceLosses']}",
+                f"Projected remaining conference wins {member['projectedRemainingConferenceWins']:.2f}",
+                f"Head-to-head wins: {', '.join(head_to_head.get(member['team'], [])) or 'none recorded'}",
+                "Point differential and Elo are projection inputs, not official tiebreakers",
+            ]
+            projected.append(
+                {
+                    **member,
+                    "conferenceTitleProbability": float(probability),
+                    "tiebreakerEvidence": evidence,
+                }
+            )
+            if member["team"] in current_map:
+                current_map[member["team"]]["Conference Title Probability"] = float(probability)
+                current_map[member["team"]]["Conference Projected Wins"] = member["projectedConferenceWins"]
+        projected.sort(key=lambda item: item["conferenceTitleProbability"], reverse=True)
+        conferences.append(
+            {
+                "conferenceId": conference_id,
+                "conference": conference_names.get(conference_id) or projected[0]["conference"],
+                "projectedChampion": projected[0]["team"],
+                "teams": projected,
+            }
+        )
+    conferences.sort(key=lambda item: item["conference"])
+    return {
+        "season": schedule.get("year"),
+        "method": "Conference record plus modeled remaining conference games and Elo strength",
+        "tiebreakerStatus": "Evidence is informational; conference-specific multi-team procedures are not fully encoded.",
+        "conferenceCount": len(conferences),
+        "conferences": conferences,
+    }
+
+
+def rank_stability(prior: dict, current: dict, model: str) -> float | None:
+    prior_prediction = next((row for row in prior.get("modelPredictions", []) if row.get("model") == model), None)
+    current_prediction = next((row for row in current.get("modelPredictions", []) if row.get("model") == model), None)
+    if not prior_prediction or not current_prediction:
+        return None
+    teams = sorted(set(prior_prediction.get("probabilities", {})) & set(current_prediction.get("probabilities", {})))
+    if len(teams) < 3:
+        return None
+    prior_order = {team: rank for rank, team in enumerate(sorted(teams, key=lambda team: prior_prediction["probabilities"][team], reverse=True), 1)}
+    current_order = {team: rank for rank, team in enumerate(sorted(teams, key=lambda team: current_prediction["probabilities"][team], reverse=True), 1)}
+    left = np.asarray([prior_order[team] for team in teams], dtype=float)
+    right = np.asarray([current_order[team] for team in teams], dtype=float)
+    correlation = np.corrcoef(left, right)[0, 1]
+    return None if np.isnan(correlation) else float(correlation)
+
+
+def snapshot_feature_drift(prior: dict, current: dict) -> float | None:
+    prior_map = {row["Team"]: row for row in prior.get("records", [])}
+    current_map = {row["Team"]: row for row in current.get("records", [])}
+    teams = set(prior_map) & set(current_map)
+    values = []
+    for feature in ["Resume Composite", "Power Composite", "Consensus Score", "Balance Score"]:
+        baseline = [float(prior_map[team].get(feature) or 0) for team in teams]
+        scale = float(np.std(baseline)) or 1.0
+        values.extend(abs(float(current_map[team].get(feature) or 0) - float(prior_map[team].get(feature) or 0)) / scale for team in teams)
+    return float(np.mean(values)) if values else None
+
+
+def build_model_drift(weekly: dict[str, list[dict]]) -> dict:
+    thresholds = {
+        "calibrationDelta": {"warning": 0.15, "critical": 0.30},
+        "rankingStability": {"warningBelow": 0.65, "criticalBelow": 0.35},
+        "featureDrift": {"warning": 0.75, "critical": 1.50},
+    }
+    rows = []
+    for year_text, snapshots in weekly.items():
+        for index, snapshot in enumerate(snapshots):
+            prior = snapshots[index - 1] if index else None
+            actual = snapshot.get("actualChampion")
+            feature_drift = snapshot_feature_drift(prior, snapshot) if prior else None
+            for prediction in snapshot.get("modelPredictions", []):
+                probabilities = prediction.get("probabilities", {})
+                brier = None
+                if actual and actual != "TBD" and actual in probabilities:
+                    brier = float(sum((float(value) - (1 if team == actual else 0)) ** 2 for team, value in probabilities.items()))
+                rows.append(
+                    {
+                        "season": int(year_text),
+                        "week": int(snapshot.get("week", 0)),
+                        "model": prediction.get("model"),
+                        "multiclassBrier": brier,
+                        "calibrationDelta": None,
+                        "rankingStability": rank_stability(prior, snapshot, prediction.get("model")) if prior else None,
+                        "featureDrift": feature_drift,
+                    }
+                )
+    baselines: dict[tuple[str, int], float] = {}
+    for row in rows:
+        key = (row["model"], row["week"])
+        peers = [item["multiclassBrier"] for item in rows if (item["model"], item["week"]) == key and item["season"] < row["season"] and item["multiclassBrier"] is not None]
+        if peers:
+            baselines[key] = float(np.median(peers))
+        if row["multiclassBrier"] is not None and key in baselines:
+            row["calibrationDelta"] = row["multiclassBrier"] - baselines[key]
+        critical = (
+            row["calibrationDelta"] is not None and abs(row["calibrationDelta"]) >= thresholds["calibrationDelta"]["critical"]
+        ) or (
+            row["rankingStability"] is not None and row["rankingStability"] <= thresholds["rankingStability"]["criticalBelow"]
+        ) or (row["featureDrift"] is not None and row["featureDrift"] >= thresholds["featureDrift"]["critical"])
+        warning = (
+            row["calibrationDelta"] is not None and abs(row["calibrationDelta"]) >= thresholds["calibrationDelta"]["warning"]
+        ) or (
+            row["rankingStability"] is not None and row["rankingStability"] <= thresholds["rankingStability"]["warningBelow"]
+        ) or (row["featureDrift"] is not None and row["featureDrift"] >= thresholds["featureDrift"]["warning"])
+        row["status"] = "critical" if critical else "warning" if warning else "stable"
+    latest_season = max((int(year) for year in weekly if weekly[year]), default=0)
+    latest_week = max((int(row.get("week", 0)) for row in weekly.get(str(latest_season), [])), default=0)
+    latest = [row for row in rows if row["season"] == latest_season and row["week"] == latest_week]
+    return {
+        "contractVersion": "model-drift-v1",
+        "thresholds": thresholds,
+        "latestSeason": latest_season,
+        "latestWeek": latest_week,
+        "latest": latest,
+        "byWeekModel": rows,
+        "statusCounts": {status: sum(row["status"] == status for row in latest) for status in ["stable", "warning", "critical"]},
     }
 
 
@@ -1310,6 +1721,14 @@ def build_data_quality(payload: dict, current_records: list[dict]) -> dict:
         issues.append("Game probability calibration is unavailable.")
     if not payload.get("selectionModel", {}).get("version"):
         issues.append("CFP selection model is unavailable.")
+    if len(payload.get("selectionModel", {}).get("eras", [])) != 2:
+        issues.append("Era-specific CFP selection models are unavailable.")
+    if not payload.get("rosterAvailability", {}).get("contractVersion"):
+        issues.append("Roster-availability adjustment contract is unavailable.")
+    if not payload.get("conferenceRace", {}).get("conferences"):
+        issues.append("Conference race projections are unavailable.")
+    if not payload.get("modelDrift", {}).get("byWeekModel"):
+        issues.append("Model drift monitoring is unavailable.")
     if not payload.get("gameModel", {}).get("pregameFeatureStore", {}).get("sha256"):
         issues.append("Pregame feature store provenance is unavailable.")
     history = payload.get("weeklyPredictions", {})
@@ -1333,6 +1752,8 @@ def build_data_quality(payload: dict, current_records: list[dict]) -> dict:
         "scheduledGames": len(games),
         "modeledGames": len(games) - len(unmodeled_games),
         "opponentAdjustedTeams": len(current_records) - len(missing_adjusted),
+        "conferenceRaceTeams": sum(len(row.get("teams", [])) for row in payload.get("conferenceRace", {}).get("conferences", [])),
+        "rosterAvailabilityTeams": len(payload.get("rosterAvailability", {}).get("teams", {})),
     }
     return {"status": "healthy" if not issues else "attention", "issues": issues, "coverage": coverage, "featureDrift": drift}
 
@@ -1582,13 +2003,13 @@ def main() -> None:
         payload["seasonSchedule"], {record["Team"] for record in current_records}
     )
     add_play_metrics(current_records, payload["playLevelMetrics"])
-    payload["selectionModel"] = build_selection_model(weekly, current_records)
+    payload["selectionModel"] = build_selection_model(weekly, current_records, current_year)
     for record in current_records:
         record["predictionReasons"] = prediction_reasons(record)
-    payload["meta"]["weeklyModels"] = [*MODEL_WEIGHTS.keys(), *TRAINED_MODEL_NAMES, TRAINED_ENSEMBLE]
+    payload["meta"]["weeklyModels"] = [*MODEL_WEIGHTS.keys(), *TRAINED_MODEL_NAMES, STACKED_MODEL, TRAINED_ENSEMBLE]
     payload["meta"]["weeklySourceNote"] = (
         "Weekly predictions use frozen ESPN College Football Playoff Picture snapshots. "
-        "Prior weeks never refresh after a new week is captured. Four classifiers and an ensemble "
+        "Prior weeks never refresh after a new week is captured. Six base variants, a forward stacker and an ensemble "
         "are trained only on completed seasons before the season being predicted."
     )
     diagnostics = build_weekly_diagnostics(weekly)
@@ -1615,11 +2036,82 @@ def main() -> None:
         ),
     }
     payload["predictionChangelog"] = build_prediction_changelog(current_rows)
+    payload["rosterAvailability"] = build_roster_availability(
+        current_records, latest.get("lastCheckedAt") if latest else None
+    )
+    payload["conferenceRace"] = build_conference_race(payload["seasonSchedule"], current_records, payload["gameModel"])
+    payload["modelDrift"] = build_model_drift(weekly)
+    latest_stack = next(
+        (prediction.get("stacking") for prediction in current_predictions if prediction.get("model") == STACKED_MODEL),
+        None,
+    )
+    payload["ensembleMetadata"] = {
+        "contractVersion": "weekly-ensemble-v3",
+        "productionEnsemble": TRAINED_ENSEMBLE,
+        "members": [
+            {"name": name, "family": "Bayesian MAP logistic" if name == "Weekly Bayesian Logistic" else "Elo-style rating" if name == "Weekly Elo Rating" else "base classifier"}
+            for name in TRAINED_MODEL_NAMES
+        ] + [{"name": STACKED_MODEL, "family": "forward-season stacking"}],
+        "stacking": latest_stack,
+        "combination": "Normalized mean of base and forward-stacked championship probabilities",
+        "thirdPartyDependenciesAdded": False,
+    }
     payload["weeklyReport"] = build_weekly_report(current_rows)
-    payload["dataQuality"] = build_data_quality(payload, current_records)
     champion_version = hashlib.sha256(
         json.dumps([row.get("snapshotId") for rows in weekly.values() for row in rows], separators=(",", ":")).encode()
     ).hexdigest()[:12]
+    payload["meta"]["lineage"] = {
+        "contractVersion": "source-lineage-v2",
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "pipeline": "build_weekly_predictions.py",
+        "sourceHash": champion_version,
+        "sources": [
+            {"name": "ESPN Playoff Picture", "role": "weekly rankings and resume/power inputs", "frozenSnapshots": True},
+            {"name": "ESPN FBS scoreboard", "role": "schedule, scores, records and conference games", "frozenSnapshots": False},
+            {"name": "ESPN play-by-play summary", "role": "efficiency and opponent-adjusted metrics", "frozenSnapshots": False},
+        ],
+        "transformations": [
+            "rank normalization and composite feature construction",
+            "forward-season champion model training",
+            "Platt-calibrated pregame probability training",
+            "era-specific CFP selection classification",
+            "conference record and remaining-game projection",
+        ],
+        "leakageControls": [
+            "Champion models train only on earlier completed seasons.",
+            "Game features are reconstructed from information available before kickoff.",
+            "CFP selection features precede the final ranking label snapshot whenever history permits.",
+            "Stacker meta-features are generated by earlier-season base models.",
+        ],
+        "artifacts": {
+            "weeklySnapshotHash": champion_version,
+            "pregameFeatureStoreHash": payload["gameModel"]["pregameFeatureStore"]["sha256"],
+            "gameModelVersion": payload["gameModel"]["version"],
+            "selectionModelVersion": payload["selectionModel"]["version"],
+        },
+    }
+    payload["publicApi"] = {
+        "contractVersion": "ncaaf-public-data-v2",
+        "generatedAt": payload["meta"]["lineage"]["generatedAt"],
+        "season": current_year,
+        "staticData": [
+            {"path": "/data/app-core.json", "payload": "Core forecasts, diagnostics, provenance and current season"},
+            *[
+                {"path": f"/data/weekly-{year}.json", "payload": f"Frozen weekly snapshots for {year}"}
+                for year in sorted(weekly, key=int)
+            ],
+        ],
+        "dynamicEndpoints": [
+            {"path": "/api/scores", "method": "GET", "payload": "Live scoreboard and win probability"},
+            {"path": "/api/watchlist", "method": "GET/PUT", "payload": "Identity-scoped watchlist"},
+        ],
+        "additiveCompatibility": "Existing fields remain stable; new contracts are additive.",
+        "freshness": {
+            "latestSnapshotId": latest.get("snapshotId") if latest else None,
+            "latestCheckedAt": latest.get("lastCheckedAt") if latest else None,
+            "latestWeek": latest.get("week") if latest else None,
+        },
+    }
     payload["modelRegistry"] = [
         {
             "name": "Weekly ML Ensemble",
@@ -1630,6 +2122,8 @@ def main() -> None:
             "featureSchema": "weekly-features-v2",
             "sourceHash": champion_version,
             "calibration": "Season-normalized ensemble",
+            "members": payload["ensembleMetadata"]["members"],
+            "stacking": payload["ensembleMetadata"]["stacking"],
         },
         {
             "name": payload["gameModel"]["name"],
@@ -1646,12 +2140,14 @@ def main() -> None:
             "version": payload["selectionModel"]["version"],
             "status": "production",
             "trainingCutoff": max(COMPLETED_YEARS),
-            "validation": "Forward-season top-12 field classification",
-            "featureSchema": "cfp-selection-v1",
+            "validation": "Forward-season era-specific CFP field classification",
+            "featureSchema": payload["selectionModel"]["schema"],
             "sourceHash": payload["selectionModel"]["version"].split("-")[-1],
             "calibration": "Native logistic probability",
+            "eras": payload["selectionModel"]["eras"],
         },
     ]
+    payload["dataQuality"] = build_data_quality(payload, current_records)
     score_weeks = sum(len(weeks) for weeks in payload.get("scoreSnapshots", {}).values())
     payload["meta"]["dataHealth"] = {
         "lastUpdatedAt": latest.get("lastCheckedAt") if latest else None,
@@ -1684,7 +2180,9 @@ def main() -> None:
         {"name": "Opponent-adjusted EPA/play", "status": "available", "source": "Play-by-play adjusted for opponent defensive efficiency"},
         {"name": "Opponent-adjusted success rate", "status": "available", "source": "Play-by-play adjusted for opponent defensive efficiency"},
         {"name": "CFP selection probability", "status": "available", "source": "Forward-season top-12 selection model"},
-        {"name": "Injury adjustments", "status": "unavailable", "source": "No stable injury feed"},
+        {"name": "Roster availability adjustments", "status": "neutral fallback", "source": "Contract requires attributable source and confidence"},
+        {"name": "Conference title probability", "status": "available", "source": "Conference record, remaining game probabilities and Elo"},
+        {"name": "Model drift monitoring", "status": "available", "source": "Weekly calibration, rank stability and standardized feature drift"},
     ]
     write_data_files(payload)
 
