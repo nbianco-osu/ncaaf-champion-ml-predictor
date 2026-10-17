@@ -189,6 +189,7 @@ main [data-view] {
 }
 
 main[data-active-view="overview"] [data-view="overview"],
+main[data-active-view="team"] [data-view="team"],
 main[data-active-view="weekly"] [data-view="weekly"],
 main[data-active-view="models"] [data-view="models"],
 main[data-active-view="simulator"] [data-view="simulator"],
@@ -203,6 +204,303 @@ main[data-active-view="models"] section.panel[data-view="models"],
 main[data-active-view="scores"] section.panel[data-view="scores"],
 main[data-active-view="data"] section.panel[data-view="data"] {
   display: block;
+}
+
+.toolbar-button {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: white;
+  color: var(--navy);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.toolbar-button:hover,
+.toolbar-button:focus-visible {
+  outline: none;
+  border-color: #91a9b8;
+  background: #f4f8fa;
+}
+
+.team-workspace {
+  gap: 14px;
+}
+
+.team-page-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--line);
+}
+
+.team-page-summary > div {
+  min-height: 88px;
+  padding: 14px;
+  background: #f8fafb;
+}
+
+.team-page-summary span,
+.team-page-summary strong {
+  display: block;
+}
+
+.team-page-summary span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.team-page-summary strong {
+  margin-top: 7px;
+  font-size: 22px;
+}
+
+.explanation-list,
+.team-schedule,
+.model-registry,
+.prediction-changelog,
+.data-quality {
+  display: grid;
+  gap: 9px;
+}
+
+.explanation-list > div {
+  padding: 11px 12px;
+  border-left: 3px solid var(--blue);
+  background: #f7fafb;
+}
+
+.explanation-list strong,
+.explanation-list span,
+.explanation-list small {
+  display: block;
+}
+
+.explanation-list span,
+.explanation-list small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.team-schedule {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.team-game {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 4px 9px;
+  align-items: center;
+  min-height: 68px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fbfdfe;
+  font-size: 12px;
+}
+
+.team-game span,
+.team-game small {
+  color: var(--muted);
+}
+
+.team-game small {
+  grid-column: 2 / -1;
+}
+
+.team-game b {
+  color: var(--green);
+}
+
+.team-game b.loss {
+  color: var(--red);
+}
+
+.model-registry {
+  gap: 8px;
+}
+
+.registry-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 9px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f8fafb;
+}
+
+.registry-row span {
+  align-self: center;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: #dcefe8;
+  color: var(--green);
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.registry-row code,
+.registry-row small {
+  grid-column: 2;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.scenario-builder {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.scenario-game {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px;
+  gap: 5px 10px;
+  align-items: center;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f8fafb;
+}
+
+.scenario-game div,
+.scenario-game div > span,
+.scenario-game div > strong {
+  display: block;
+}
+
+.scenario-game span,
+.scenario-game small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.scenario-game select {
+  width: 100%;
+}
+
+.scenario-game small {
+  grid-column: 1 / -1;
+}
+
+.change-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 4px 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.change-row:last-child {
+  border-bottom: 0;
+}
+
+.change-row div,
+.change-row div span {
+  display: block;
+}
+
+.change-row span,
+.change-row small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.change-row p {
+  font-size: 12px;
+}
+
+.change-row small {
+  grid-column: 2;
+}
+
+.quality-status {
+  justify-self: start;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: #dcefe8;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.quality-status.attention,
+.quality-status.warning,
+.quality-status.error {
+  background: #f3e1e0;
+  color: var(--red);
+}
+
+.quality-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.quality-grid > div {
+  padding: 10px;
+  background: var(--panel-2);
+  border-radius: 6px;
+}
+
+.quality-grid strong,
+.quality-grid span {
+  display: block;
+}
+
+.quality-grid span,
+.quality-issues,
+.drift-list {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.quality-issues p {
+  padding-left: 9px;
+  border-left: 3px solid var(--gold);
+  line-height: 1.45;
+}
+
+.drift-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.drift-list span {
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.live-impact {
+  display: grid;
+  gap: 2px;
+  margin-top: 10px;
+  padding: 9px;
+  border-left: 3px solid var(--gold);
+  background: #fff9e8;
+}
+
+.live-impact span,
+.live-impact small {
+  color: var(--muted);
+  font-size: 10px;
 }
 
 .watch-controls,
@@ -1391,6 +1689,10 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .toolbar-button {
+    width: 100%;
+  }
+
   .dataset-metrics {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1462,10 +1764,15 @@ footer {
   }
 
   .compare-controls,
-  .simulator-controls {
+  .simulator-controls,
+  .scenario-game {
     display: grid;
     grid-template-columns: 1fr;
     margin-top: 12px;
+  }
+
+  .scenario-game select {
+    grid-column: 1;
   }
 
   .compare-controls select {
@@ -1500,6 +1807,14 @@ footer {
 
   .model-row {
     grid-template-columns: 1fr;
+  }
+
+  .change-row {
+    grid-template-columns: 1fr;
+  }
+
+  .change-row small {
+    grid-column: 1;
   }
 
   .dataset-metrics {

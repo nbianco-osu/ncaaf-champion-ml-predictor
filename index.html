@@ -18,6 +18,7 @@
         </div>
         <nav class="nav-stack" aria-label="Dashboard views">
           <a href="#overview" data-route="overview">Overview</a>
+          <a href="#team" data-route="team">Team lab</a>
           <a href="#weekly" data-route="weekly">Weekly history</a>
           <a href="#models" data-route="models">Models</a>
           <a href="#simulator" data-route="simulator">Simulator</a>
@@ -38,6 +39,9 @@
             <h2>Champion predictions, updated through the season</h2>
           </div>
           <div class="toolbar">
+            <button class="toolbar-button" id="shareView" type="button">Share view</button>
+            <button class="toolbar-button" id="exportCsv" type="button">Export CSV</button>
+            <button class="toolbar-button" id="exportChart" type="button">Export chart</button>
             <label>
               Search team
               <input id="teamSearch" type="search" placeholder="Indiana, Oregon..." />
@@ -97,6 +101,7 @@
                 <h3>Contender watchlist</h3>
               </div>
               <div class="watch-controls">
+                <button class="refresh-button" id="enableAlerts" type="button">Enable alerts</button>
                 <select id="watchTeam" aria-label="Team to watch"></select>
                 <button class="refresh-button" id="addWatchTeam" type="button">Add team</button>
               </div>
@@ -112,6 +117,24 @@
             </div>
             <div id="uncertaintyPanel" class="uncertainty-panel"></div>
           </article>
+        </section>
+
+        <section class="team-workspace" data-view="team">
+          <div class="team-hero panel">
+            <div class="panel-head">
+              <div>
+                <p class="small-label">Contender dossier</p>
+                <h3 id="teamPageTitle">Team detail</h3>
+              </div>
+              <label class="compact-control">Team<select id="teamPageSelect"></select></label>
+            </div>
+            <div id="teamPageSummary" class="team-page-summary"></div>
+          </div>
+          <div class="panel-grid">
+            <article class="panel wide"><div class="panel-head"><div><p class="small-label">Forecast path</p><h3>Weekly probability</h3></div></div><div id="teamPageTimeline" class="movement-chart"></div></article>
+            <article class="panel"><div class="panel-head"><div><p class="small-label">Why this forecast</p><h3>Model explanation</h3></div></div><div id="teamExplanation" class="team-explanation"></div></article>
+          </div>
+          <section class="panel"><div class="panel-head"><div><p class="small-label">Complete season</p><h3>Schedule and game probabilities</h3></div></div><div id="teamSchedule" class="team-schedule"></div></section>
         </section>
 
         <section class="panel" id="advanced" data-view="overview">
@@ -241,6 +264,18 @@
           <div id="weeklyEvaluationChart" class="movement-chart"></div>
         </section>
 
+        <section class="panel-grid" data-view="models">
+          <article class="panel wide">
+            <div class="panel-head"><div><p class="small-label">Historical matchup model</p><h3>Game probability validation</h3></div><span class="model-chip" id="gameModelVersion">-</span></div>
+            <div id="gameModelMetrics" class="dataset-metrics"></div>
+            <div id="gameModelChart" class="movement-chart"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="small-label">Production tracking</p><h3>Model registry</h3></div></div>
+            <div id="modelRegistry" class="model-registry"></div>
+          </article>
+        </section>
+
         <section class="panel" id="weekly" data-view="weekly">
           <div class="panel-head">
             <div>
@@ -317,6 +352,12 @@
           </article>
         </section>
 
+        <section class="panel" data-view="simulator">
+          <div class="panel-head"><div><p class="small-label">Multi-game path</p><h3>Scenario builder</h3></div><button class="toolbar-button" id="clearScenario" type="button">Clear picks</button></div>
+          <p class="muted">Lock winners for upcoming ranked-team games, then rerun the Monte Carlo field.</p>
+          <div id="scenarioBuilder" class="scenario-builder"></div>
+        </section>
+
         <section class="panel-grid" id="research" data-view="data">
           <article class="panel wide">
             <div class="panel-head">
@@ -349,6 +390,17 @@
           </div>
           <div id="healthMetrics" class="dataset-metrics"></div>
           <div id="snapshotAudit" class="snapshot-audit"></div>
+        </section>
+
+        <section class="panel-grid" data-view="data">
+          <article class="panel wide">
+            <div class="panel-head"><div><p class="small-label">Weekly audit trail</p><h3>Prediction changelog</h3></div></div>
+            <div id="predictionChangelog" class="prediction-changelog"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="small-label">Automated checks</p><h3>Data quality console</h3></div></div>
+            <div id="dataQuality" class="data-quality"></div>
+          </article>
         </section>
 
         <section id="data" class="panel table-panel" data-view="data">

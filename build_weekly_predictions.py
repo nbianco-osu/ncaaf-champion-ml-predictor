@@ -6,6 +6,7 @@ import math
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, timezone
+from http.client import IncompleteRead
 from io import StringIO
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -18,6 +19,8 @@ import pandas as pd
 APP_DIR = Path(__file__).parent
 DATA_PATH = APP_DIR / "data" / "app-data.json"
 PUBLIC_DATA_PATH = APP_DIR / "public" / "data" / "app-data.json"
+GAME_HISTORY_PATH = APP_DIR / "data" / "game-history.json"
+PLAY_CACHE_PATH = APP_DIR / "data" / "play-metrics-cache.json"
 WEEKLY_FEATURES = ["SOR", "SOS", "FPI", "Game Control"]
 WEEKLY_MODEL_FEATURES = [
     "SOR Score",
@@ -97,6 +100,14 @@ TRAINED_MODEL_NAMES = [
     "Weekly Ridge Probability",
 ]
 TRAINED_ENSEMBLE = "Weekly ML Ensemble"
+GAME_MODEL_FEATURES = [
+    "Elo edge",
+    "Poll edge",
+    "Record edge",
+    "Recent margin edge",
+    "Home field",
+    "Conference game",
+]
 
 
 def current_college_football_season(today: date | None = None) -> int:
@@ -124,6 +135,15 @@ def norm_name(value: str) -> str:
         "Navy Midshipmen": "Navy",
         "North Texas Mean Green": "North Texas",
         "Notre Dame Fighting Irish": "Notre Dame",
+        "UCLA Bruins": "UCLA",
+        "Northwestern Wildcats": "Northwestern",
+        "Mississippi State Bulldogs": "Mississippi St",
+        "Mississippi State": "Mississippi St",
+        "Kentucky Wildcats": "Kentucky",
+        "Wake Forest Demon Deacons": "Wake Forest",
+        "Boise State Broncos": "Boise St",
+        "SMU Mustangs": "SMU",
+        "Oklahoma State Cowboys": "Oklahoma St",
         "Ohio State Buckeyes": "Ohio State",
         "Oklahoma Sooners": "Oklahoma",
         "Ole Miss Rebels": "Ole Miss",
@@ -229,7 +249,7 @@ def fetch_text(url: str) -> str | None:
         except HTTPError as exc:
             if exc.code == 404:
                 return None
-        except (ConnectionResetError, TimeoutError, URLError):
+        except (ConnectionResetError, TimeoutError, URLError, IncompleteRead):
             if attempt == 2:
                 return None
             time.sleep(2 * (attempt + 1))
@@ -544,9 +564,11 @@ def prediction_reasons(record: dict) -> dict:
         ("Game control", record.get("Game Control Score")),
         ("Schedule", record.get("SOS Score")),
         ("Poll", record.get("AP Poll Score")),
+        ("Play success", None if record.get("Play Success Rate") is None else float(record["Play Success Rate"]) * 100),
+        ("Game-model Elo", None if record.get("Game Elo") is None else max(0, min(100, (float(record["Game Elo"]) - 1200) / 6))),
     ]
     valid = [(label, float(value)) for label, value in signals if value is not None]
-    strongest = sorted(valid, key=lambda item: item[1], reverse=True)[:2]
+    strongest = sorted(valid, key=lambda item: item[1], reverse=True)[:3]
     weakest = min(valid, key=lambda item: item[1]) if valid else ("Unknown", 0)
     return {
         "strengths": [{"label": label, "score": score} for label, score in strongest],
@@ -614,6 +636,322 @@ def fetch_season_schedule(year: int) -> dict:
     }
 
 
+def load_game_history() -> list[dict]:
+    if GAME_HISTORY_PATH.exists():
+        cached = json.loads(GAME_HISTORY_PATH.read_text(encoding="utf-8"))
+        if cached.get("years") == COMPLETED_YEARS and cached.get("games"):
+            for game in cached["games"]:
+                for competitor in game.get("competitors", []):
+                    competitor["team"] = norm_name(competitor.get("team") or "")
+            return cached["games"]
+    schedules = {}
+    with ThreadPoolExecutor(max_workers=min(12, len(COMPLETED_YEARS))) as executor:
+        futures = {executor.submit(fetch_season_schedule, year): year for year in COMPLETED_YEARS}
+        for future in as_completed(futures):
+            year = futures[future]
+            schedules[year] = future.result()
+            print("game history", year, len(schedules[year].get("games", [])))
+    games = [
+        {**game, "year": year}
+        for year in sorted(schedules)
+        for game in schedules[year].get("games", [])
+        if game.get("completed")
+    ]
+    GAME_HISTORY_PATH.write_text(
+        json.dumps({"years": COMPLETED_YEARS, "games": games}, separators=(",", ":")),
+        encoding="utf-8",
+    )
+    return games
+
+
+def record_win_pct(value: str | None) -> float:
+    try:
+        wins, losses = [int(part) for part in str(value).split("-")[:2]]
+        return wins / max(1, wins + losses)
+    except (TypeError, ValueError):
+        return 0.5
+
+
+def game_feature_rows(games: list[dict], initial_elo: dict[str, float] | None = None) -> tuple[list[dict], dict[str, float], dict[str, list[float]]]:
+    elo = dict(initial_elo or {})
+    margins: dict[str, list[float]] = {}
+    season_records: dict[str, list[int]] = {}
+    active_year = None
+    rows = []
+    ordered = sorted(games, key=lambda item: (int(item.get("year", 0)), int(item.get("week", 0)), item.get("date") or "", item.get("id") or ""))
+    for game in ordered:
+        year = int(game.get("year", 0))
+        if year != active_year:
+            season_records = {}
+            active_year = year
+        competitors = game.get("competitors", [])
+        if len(competitors) != 2:
+            continue
+        a, b = competitors
+        team_a, team_b = a.get("team"), b.get("team")
+        if not team_a or not team_b:
+            continue
+        elo_a, elo_b = elo.get(team_a, 1500.0), elo.get(team_b, 1500.0)
+        recent_a = float(np.mean(margins.get(team_a, [0])[-3:]))
+        recent_b = float(np.mean(margins.get(team_b, [0])[-3:]))
+        rank_a = float(a.get("rank") or 35)
+        rank_b = float(b.get("rank") or 35)
+        home = 0 if game.get("neutralSite") else (1 if a.get("homeAway") == "home" else -1)
+        record_a = season_records.get(team_a, [0, 0])
+        record_b = season_records.get(team_b, [0, 0])
+        prior_pct_a = record_a[0] / max(1, sum(record_a)) if sum(record_a) else 0.5
+        prior_pct_b = record_b[0] / max(1, sum(record_b)) if sum(record_b) else 0.5
+        features = [
+            (elo_a - elo_b) / 100,
+            (rank_b - rank_a) / 10,
+            prior_pct_a - prior_pct_b,
+            (recent_a - recent_b) / 14,
+            home,
+            int(bool(game.get("conferenceGame"))),
+        ]
+        row = {
+            "year": int(game.get("year", 0)),
+            "week": int(game.get("week", 0)),
+            "gameId": game.get("id"),
+            "teamA": team_a,
+            "teamB": team_b,
+            "features": features,
+            "teamAWon": int(bool(a.get("winner"))),
+        }
+        rows.append(row)
+        if game.get("completed"):
+            score_a, score_b = float(a.get("score") or 0), float(b.get("score") or 0)
+            margin = score_a - score_b
+            result = 1.0 if margin > 0 else 0.0
+            expected = 1 / (1 + 10 ** ((elo_b - elo_a - home * 55) / 400))
+            multiplier = math.log(abs(margin) + 1) * (2.2 / ((elo_a - elo_b) * 0.001 + 2.2))
+            change = 24 * multiplier * (result - expected)
+            elo[team_a], elo[team_b] = elo_a + change, elo_b - change
+            margins.setdefault(team_a, []).append(margin)
+            margins.setdefault(team_b, []).append(-margin)
+            season_records.setdefault(team_a, [0, 0])[0 if result else 1] += 1
+            season_records.setdefault(team_b, [0, 0])[1 if result else 0] += 1
+    return rows, elo, margins
+
+
+def fit_game_model(rows: list[dict]) -> dict:
+    x = np.asarray([row["features"] for row in rows], dtype=float)
+    y = np.asarray([row["teamAWon"] for row in rows], dtype=float)
+    mean, scale = x.mean(axis=0), x.std(axis=0)
+    scale[scale < 1e-8] = 1.0
+    standardized = (x - mean) / scale
+    design = np.column_stack([np.ones(len(standardized)), standardized])
+    weights = np.zeros(design.shape[1])
+    regularization = 0.012
+    for _ in range(40):
+        predicted = 1 / (1 + np.exp(-np.clip(design @ weights, -20, 20)))
+        gradient = design.T @ (predicted - y) / len(y)
+        gradient[1:] += regularization * weights[1:]
+        curvature = np.clip(predicted * (1 - predicted), 1e-6, None)
+        hessian = (design.T @ (design * curvature[:, None])) / len(y)
+        hessian[1:, 1:] += np.eye(design.shape[1] - 1) * regularization
+        step = np.linalg.solve(hessian + np.eye(design.shape[1]) * 1e-8, gradient)
+        weights -= step
+        if float(np.linalg.norm(step)) < 1e-8:
+            break
+    return {"mean": mean, "scale": scale, "weights": weights}
+
+
+def game_probability(model: dict, features: list[float]) -> tuple[float, list[dict]]:
+    standardized = (np.asarray(features, dtype=float) - model["mean"]) / model["scale"]
+    contributions = standardized * model["weights"][1:]
+    logit = model["weights"][0] + contributions.sum()
+    probability = float(1 / (1 + math.exp(-float(np.clip(logit, -20, 20)))))
+    factors = sorted(
+        [{"feature": name, "impact": float(value)} for name, value in zip(GAME_MODEL_FEATURES, contributions)],
+        key=lambda item: abs(item["impact"]),
+        reverse=True,
+    )[:3]
+    return probability, factors
+
+
+def build_game_model(history_games: list[dict], current_schedule: dict) -> dict:
+    historical_rows, historical_elo, historical_margins = game_feature_rows(history_games)
+    evaluations = []
+    for year in range(2017, max(COMPLETED_YEARS) + 1):
+        train = [row for row in historical_rows if row["year"] < year]
+        test = [row for row in historical_rows if row["year"] == year]
+        if not train or not test:
+            continue
+        fold_model = fit_game_model(train)
+        probs = [game_probability(fold_model, row["features"])[0] for row in test]
+        labels = [row["teamAWon"] for row in test]
+        evaluations.append(
+            {
+                "year": year,
+                "games": len(test),
+                "accuracy": sum((prob >= 0.5) == bool(label) for prob, label in zip(probs, labels)) / len(test),
+                "brier": sum((prob - label) ** 2 for prob, label in zip(probs, labels)) / len(test),
+                "logLoss": sum(-(label * math.log(max(prob, 1e-9)) + (1 - label) * math.log(max(1 - prob, 1e-9))) for prob, label in zip(probs, labels)) / len(test),
+            }
+        )
+    model = fit_game_model(historical_rows)
+    current_games = [{**game, "year": int(current_schedule.get("year", 0))} for game in current_schedule.get("games", [])]
+    current_rows, current_elo, current_margins = game_feature_rows(current_games, historical_elo)
+    row_map = {row["gameId"]: row for row in current_rows}
+    expected_wins: dict[str, float] = {}
+    for game in current_schedule.get("games", []):
+        row = row_map.get(game.get("id"))
+        if not row:
+            continue
+        probability, factors = game_probability(model, row["features"])
+        game["gameModel"] = {
+            "teamA": row["teamA"],
+            "teamB": row["teamB"],
+            "teamAWinProbability": probability,
+            "teamBWinProbability": 1 - probability,
+            "factors": factors,
+        }
+        if not game.get("completed"):
+            expected_wins[row["teamA"]] = expected_wins.get(row["teamA"], 0) + probability
+            expected_wins[row["teamB"]] = expected_wins.get(row["teamB"], 0) + 1 - probability
+    digest = hashlib.sha256(
+        json.dumps(
+            {
+                "schema": "game-features-v2-prior-record",
+                "games": [[row["gameId"], row["teamAWon"]] for row in historical_rows],
+                "weights": [round(float(value), 8) for value in model["weights"]],
+            },
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()[:12]
+    current_team_names = {
+        competitor.get("team")
+        for game in current_schedule.get("games", [])
+        for competitor in game.get("competitors", [])
+        if competitor.get("team")
+    }
+    return {
+        "name": "Historical Game Logistic + Elo",
+        "version": f"game-{max(COMPLETED_YEARS)}-{digest}",
+        "trainingGames": len(historical_rows),
+        "trainingSeasons": f"{min(COMPLETED_YEARS)}-{max(COMPLETED_YEARS)}",
+        "features": GAME_MODEL_FEATURES,
+        "coefficients": [
+            {"feature": name, "coefficient": float(weight)}
+            for name, weight in zip(GAME_MODEL_FEATURES, model["weights"][1:])
+        ],
+        "forwardValidation": evaluations,
+        "accuracy": float(np.average([row["accuracy"] for row in evaluations], weights=[row["games"] for row in evaluations])),
+        "brier": float(np.average([row["brier"] for row in evaluations], weights=[row["games"] for row in evaluations])),
+        "logLoss": float(np.average([row["logLoss"] for row in evaluations], weights=[row["games"] for row in evaluations])),
+        "currentTeams": {
+            team: {
+                "elo": float(current_elo.get(team, historical_elo.get(team, 1500.0))),
+                "recentMargin": float(np.mean(current_margins.get(team, historical_margins.get(team, [0]))[-3:])),
+                "expectedRemainingWins": float(expected_wins.get(team, 0)),
+            }
+            for team in sorted(current_team_names)
+        },
+    }
+
+
+def expected_points(state: dict | None) -> float:
+    if not state:
+        return 0.0
+    yards = float(state.get("yardsToEndzone", 50) or 50)
+    down = float(state.get("down", 1) or 1)
+    distance = float(state.get("distance", 10) or 10)
+    return 6.2 * (1 - yards / 100) - 1.7 - (down - 1) * 0.55 - min(distance, 20) * 0.045
+
+
+def fetch_play_metrics(game: dict) -> dict:
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/summary?event={game['id']}"
+    text = fetch_text(url)
+    if not text:
+        return {}
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError:
+        return {}
+    competitors = game.get("competitors", [])
+    id_to_name = {str(item.get("teamId")): item.get("team") for item in competitors}
+    aggregates = {
+        name: {"plays": 0, "successes": 0, "explosives": 0, "epa": 0.0, "earlyPlays": 0, "earlySuccesses": 0, "havoc": 0, "opportunities": 0, "finishes": 0}
+        for name in id_to_name.values()
+        if name
+    }
+    for drive in (payload.get("drives") or {}).get("previous", []):
+        plays = drive.get("plays", [])
+        offense_ids = [str((play.get("start") or {}).get("team", {}).get("id")) for play in plays if (play.get("start") or {}).get("team")]
+        offense_id = next((value for value in offense_ids if value in id_to_name), None)
+        offense_name = id_to_name.get(offense_id)
+        if offense_name and any(float((play.get("start") or {}).get("yardsToEndzone", 100) or 100) <= 40 for play in plays):
+            aggregates[offense_name]["opportunities"] += 1
+            aggregates[offense_name]["finishes"] += int(bool(drive.get("isScore")))
+        for play in plays:
+            start = play.get("start") or {}
+            down = int(start.get("down") or 0)
+            if down not in [1, 2, 3, 4]:
+                continue
+            offense_id = str((start.get("team") or {}).get("id") or "")
+            offense_name = id_to_name.get(offense_id)
+            if not offense_name:
+                continue
+            defense_name = next((name for team_id, name in id_to_name.items() if team_id != offense_id), None)
+            period = int((play.get("period") or {}).get("number") or 1)
+            margin = abs(float(play.get("homeScore") or 0) - float(play.get("awayScore") or 0))
+            if margin > (28 if period <= 2 else 21):
+                continue
+            yards = float(play.get("statYardage") or 0)
+            distance = max(1.0, float(start.get("distance") or 10))
+            threshold = 0.5 if down == 1 else 0.7 if down == 2 else 1.0
+            success = yards >= distance * threshold and not play.get("isTurnover")
+            row = aggregates[offense_name]
+            row["plays"] += 1
+            row["successes"] += int(success)
+            row["explosives"] += int(yards >= 20)
+            row["epa"] += float(np.clip(expected_points(play.get("end")) - expected_points(start), -8, 8))
+            if down <= 2:
+                row["earlyPlays"] += 1
+                row["earlySuccesses"] += int(success)
+            text_value = str(play.get("text") or "").lower()
+            if defense_name and (play.get("isTurnover") or "sack" in text_value or (yards < 0 and not play.get("isPenalty"))):
+                aggregates[defense_name]["havoc"] += 1
+    return aggregates
+
+
+def build_play_level_metrics(schedule: dict, contender_names: set[str]) -> dict:
+    cache = json.loads(PLAY_CACHE_PATH.read_text(encoding="utf-8")) if PLAY_CACHE_PATH.exists() else {}
+    targets = [
+        game for game in schedule.get("games", [])
+        if game.get("completed") and any(item.get("team") in contender_names for item in game.get("competitors", []))
+    ]
+    missing = [game for game in targets if game.get("id") not in cache]
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(fetch_play_metrics, game): game for game in missing}
+        for future in as_completed(futures):
+            game = futures[future]
+            cache[game["id"]] = future.result()
+    PLAY_CACHE_PATH.write_text(json.dumps(cache, separators=(",", ":")), encoding="utf-8")
+    combined: dict[str, dict] = {}
+    for game in targets:
+        for team, values in cache.get(game["id"], {}).items():
+            normalized_team = norm_name(team)
+            row = combined.setdefault(normalized_team, {key: 0 for key in values})
+            for key, value in values.items():
+                row[key] += value
+    result = {}
+    for team, row in combined.items():
+        plays = max(1, row["plays"])
+        result[team] = {
+            "plays": int(row["plays"]),
+            "successRate": row["successes"] / plays,
+            "estimatedEpaPerPlay": row["epa"] / plays,
+            "explosivePlayRate": row["explosives"] / plays,
+            "earlyDownSuccessRate": row["earlySuccesses"] / max(1, row["earlyPlays"]),
+            "havocRate": row["havoc"] / plays,
+            "finishingDrives": row["finishes"] / max(1, row["opportunities"]),
+            "gamesCovered": sum(any(norm_name(name) == team for name in cache.get(game["id"], {})) for game in targets),
+        }
+    return result
+
+
 def add_score_metrics(payload: dict, year: int, records: list[dict]) -> None:
     aggregates: dict[str, dict] = {}
     schedule = payload.get("seasonSchedule", {})
@@ -655,6 +993,83 @@ def add_score_metrics(payload: dict, year: int, records: list[dict]) -> None:
         record["Offensive Index"] = min(100.0, metric["pointsFor"] / games / 0.45)
         record["Defensive Index"] = min(100.0, max(0.0, (45 - metric["pointsAgainst"] / games) / 0.45))
         record["Form Index"] = min(100.0, max(0.0, 50 + record["Recent Form"] * 2))
+
+
+def add_play_metrics(records: list[dict], metrics: dict[str, dict]) -> None:
+    for record in records:
+        row = metrics.get(record["Team"])
+        if not row:
+            continue
+        record["Play Success Rate"] = row["successRate"]
+        record["Estimated EPA Per Play"] = row["estimatedEpaPerPlay"]
+        record["Explosive Play Rate"] = row["explosivePlayRate"]
+        record["Early Down Success Rate"] = row["earlyDownSuccessRate"]
+        record["Havoc Rate"] = row["havocRate"]
+        record["Finishing Drives"] = row["finishingDrives"]
+        record["Play Data Games"] = row["gamesCovered"]
+
+
+def build_prediction_changelog(current_rows: list[dict]) -> list[dict]:
+    entries = []
+    for prior, current in zip(current_rows, current_rows[1:]):
+        prior_map = {row["Team"]: float(row.get("mlChampionProbability") or 0) for row in prior.get("records", [])}
+        current_map = {row["Team"]: float(row.get("mlChampionProbability") or 0) for row in current.get("records", [])}
+        moves = sorted(
+            [{"team": team, "change": probability - prior_map.get(team, 0)} for team, probability in current_map.items()],
+            key=lambda item: abs(item["change"]),
+            reverse=True,
+        )
+        prior_top12 = set(team for team, _ in sorted(prior_map.items(), key=lambda item: item[1], reverse=True)[:12])
+        current_top12 = set(team for team, _ in sorted(current_map.items(), key=lambda item: item[1], reverse=True)[:12])
+        entries.append(
+            {
+                "week": current.get("week"),
+                "snapshotId": current.get("snapshotId"),
+                "leader": current.get("predictedChampion"),
+                "leaderChanged": prior.get("predictedChampion") != current.get("predictedChampion"),
+                "largestMoves": moves[:5],
+                "enteredTop12": sorted(current_top12 - prior_top12),
+                "leftTop12": sorted(prior_top12 - current_top12),
+            }
+        )
+    return entries
+
+
+def build_data_quality(payload: dict, current_records: list[dict]) -> dict:
+    schedule = payload.get("seasonSchedule", {})
+    games = schedule.get("games", [])
+    ids = [game.get("id") for game in games]
+    scheduled_teams = {item.get("team") for game in games for item in game.get("competitors", [])}
+    issues = []
+    if len(ids) != len(set(ids)):
+        issues.append("Duplicate schedule event IDs detected.")
+    missing_teams = [row["Team"] for row in current_records if row["Team"] not in scheduled_teams]
+    if missing_teams:
+        issues.append(f"No schedule match for {len(missing_teams)} ranked teams.")
+    missing_play = [row["Team"] for row in current_records if not row.get("Play Data Games")]
+    if missing_play:
+        issues.append(f"Play-level coverage missing for {len(missing_play)} ranked teams.")
+    history = payload.get("weeklyPredictions", {})
+    current_year = str(payload.get("meta", {}).get("currentSeason"))
+    current_snapshots = history.get(current_year, [])
+    weeks = [int(row.get("week", 0)) for row in current_snapshots]
+    if weeks != sorted(set(weeks)):
+        issues.append("Current weekly snapshots are duplicated or out of order.")
+    prior_records = history.get(str(int(current_year) - 1), [{}])[-1].get("records", []) if history.get(str(int(current_year) - 1)) else []
+    drift = []
+    for feature in ["Resume Composite", "Power Composite", "Consensus Score", "Balance Score"]:
+        current_values = [float(row[feature]) for row in current_records if row.get(feature) is not None]
+        prior_values = [float(row[feature]) for row in prior_records if row.get(feature) is not None]
+        if current_values and prior_values:
+            drift.append({"feature": feature, "meanShift": float(np.mean(current_values) - np.mean(prior_values))})
+    coverage = {
+        "scheduleTeams": len(scheduled_teams),
+        "rankedTeamsMatched": len(current_records) - len(missing_teams),
+        "playLevelTeams": len(current_records) - len(missing_play),
+        "completedGames": sum(bool(game.get("completed")) for game in games),
+        "scheduledGames": len(games),
+    }
+    return {"status": "healthy" if not issues else "attention", "issues": issues, "coverage": coverage, "featureDrift": drift}
 
 
 def build_weekly_diagnostics(weekly: dict[str, list[dict]]) -> dict:
@@ -892,6 +1307,18 @@ def main() -> None:
     current_records = payload["seasonPredictions"].get(str(current_year), {}).get("records", [])
     payload["seasonSchedule"] = fetch_season_schedule(current_year)
     add_score_metrics(payload, current_year, current_records)
+    game_history = load_game_history()
+    payload["gameModel"] = build_game_model(game_history, payload["seasonSchedule"])
+    for record in current_records:
+        team_model = payload["gameModel"].get("currentTeams", {}).get(record["Team"], {})
+        record["Game Elo"] = team_model.get("elo")
+        record["Expected Remaining Wins"] = team_model.get("expectedRemainingWins")
+    payload["playLevelMetrics"] = build_play_level_metrics(
+        payload["seasonSchedule"], {record["Team"] for record in current_records}
+    )
+    add_play_metrics(current_records, payload["playLevelMetrics"])
+    for record in current_records:
+        record["predictionReasons"] = prediction_reasons(record)
     payload["meta"]["weeklyModels"] = [*MODEL_WEIGHTS.keys(), *TRAINED_MODEL_NAMES, TRAINED_ENSEMBLE]
     payload["meta"]["weeklySourceNote"] = (
         "Weekly predictions use frozen ESPN College Football Playoff Picture snapshots. "
@@ -921,6 +1348,27 @@ def main() -> None:
             reverse=True,
         ),
     }
+    payload["predictionChangelog"] = build_prediction_changelog(current_rows)
+    payload["dataQuality"] = build_data_quality(payload, current_records)
+    champion_version = hashlib.sha256(
+        json.dumps([row.get("snapshotId") for rows in weekly.values() for row in rows], separators=(",", ":")).encode()
+    ).hexdigest()[:12]
+    payload["modelRegistry"] = [
+        {
+            "name": "Weekly ML Ensemble",
+            "version": f"weekly-{champion_version}",
+            "status": "production",
+            "trainingCutoff": max(COMPLETED_YEARS),
+            "validation": "Forward-season champion ranking",
+        },
+        {
+            "name": payload["gameModel"]["name"],
+            "version": payload["gameModel"]["version"],
+            "status": "production",
+            "trainingCutoff": max(COMPLETED_YEARS),
+            "validation": "Forward-season game probability",
+        },
+    ]
     score_weeks = sum(len(weeks) for weeks in payload.get("scoreSnapshots", {}).values())
     payload["meta"]["dataHealth"] = {
         "lastUpdatedAt": latest.get("lastCheckedAt") if latest else None,
@@ -931,8 +1379,8 @@ def main() -> None:
         "provisionalSnapshots": sum(not bool(row.get("isFrozen")) for row in all_snapshots),
         "scoreWeeks": score_weeks,
         "sourceCoverage": len(all_snapshots) / max(1, len(years) * 16),
-        "status": "healthy" if latest else "needs attention",
-        "issues": [] if latest else ["No current-season weekly snapshot is available."],
+        "status": "healthy" if latest and payload["dataQuality"]["status"] == "healthy" else "needs attention",
+        "issues": ([] if latest else ["No current-season weekly snapshot is available."]) + payload["dataQuality"]["issues"],
     }
     payload["meta"]["weeklyModelMethod"] = (
         "Forward-season training: each historical season uses only earlier completed seasons; "
@@ -945,7 +1393,11 @@ def main() -> None:
         {"name": "Recent form", "status": "available", "source": "Last three completed games"},
         {"name": "Ranked wins", "status": "available", "source": "Opponent game-day rank"},
         {"name": "Close-game record", "status": "available", "source": "Games decided by 8 or fewer"},
-        {"name": "Play-level EPA", "status": "unavailable", "source": "No play-level feed in this pipeline"},
+        {"name": "Estimated EPA/play", "status": "available", "source": "ESPN play-by-play state model"},
+        {"name": "Success rate", "status": "available", "source": "ESPN play-by-play"},
+        {"name": "Explosiveness", "status": "available", "source": "20+ yard scrimmage plays"},
+        {"name": "Havoc rate", "status": "available", "source": "Turnovers, sacks and negative plays"},
+        {"name": "Finishing drives", "status": "available", "source": "Scoring opportunities inside the 40"},
         {"name": "Injury adjustments", "status": "unavailable", "source": "No stable injury feed"},
     ]
     write_data_files(payload)

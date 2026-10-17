@@ -1,6 +1,6 @@
 # NCAAF Champion ML Predictor
 
-Static and Streamlit web app for exploring machine-learning champion predictions. The static dashboard now includes weekly history from 2014 forward, 13 weekly models and baselines, forecast uncertainty, week-level evaluation, game-form metrics, a schedule-aware Monte Carlo playoff simulator, browser-local watchlists and alerts, live scores, and pipeline health.
+Static and Streamlit web app for exploring machine-learning champion predictions. The static dashboard includes weekly history from 2014 forward, 13 weekly models and baselines, a historical game win-probability model, play-level efficiency estimates, forecast uncertainty, team dossiers, a rules-aware playoff simulator, multi-game scenarios, browser alerts, live scores, prediction changelogs, exports, and pipeline health.
 
 ## Run locally
 
@@ -34,13 +34,15 @@ streamlit run streamlit_app.py
 
 - `index.html` - app shell
 - `styles.css` - dashboard styling
-- `app.js` - routed dashboard views, watchlists, uncertainty, schedule simulation, research, charts, search, and sorting
+- `app.js` - routed dashboard views, team dossiers, watchlists, schedule simulation, scenarios, research, charts, exports, search, and sorting
 - `streamlit_app.py` - Streamlit Cloud entrypoint
 - `requirements.txt` - Streamlit dependencies
-- `build_weekly_predictions.py` - freezes completed weekly snapshots, refreshes the provisional week, trains weekly models without look-ahead, and produces diagnostics
+- `build_weekly_predictions.py` - freezes completed weekly snapshots, refreshes the provisional week, trains weekly and game models without look-ahead, derives play-level metrics, and produces diagnostics
 - `train_models.py` - reproducible seven-model training, forward-season backtesting, and dashboard data refresh
 - `data/app-data.json` - trained model outputs and season prediction records
 - `data/app-core.json` and `data/weekly-*.json` - performance-oriented core and lazy-loaded weekly shards
+- `data/game-history.json` - cached ESPN game history used by the forward-season win-probability model
+- `data/play-metrics-cache.json` - cached play-by-play aggregates used for current efficiency metrics
 - `data/cfb_top25_2005_2025.csv` - augmented top-25 dataset
 
 ## Model
@@ -49,7 +51,9 @@ The app compares logistic regression, random forest, extra trees, gradient boost
 
 The weekly pipeline separately trains logistic regression, Gaussian naive Bayes, nearest-neighbor, and ridge-probability models from prior completed seasons. It also benchmarks six weighted blends plus AP and FPI baselines. Their ensemble powers the current weekly ranking. Historical diagnostics exclude seasons with no earlier training data. Prior weeks become immutable as soon as a newer week is captured; the latest week remains provisional so in-week ESPN changes can be incorporated.
 
-The season simulator uses the current ESPN FBS schedule, completed records, conference identifiers, and model strength to simulate remaining games, conference races, 12-team selection, and the playoff bracket. It is a scenario engine, not a betting market or injury-adjusted forecast.
+The game model is a standardized logistic regression trained on 2014-2025 results with Elo, poll, record, recent-margin, home-field, and conference-game signals. Forward-season validation reports accuracy, Brier score, and log loss. Current ESPN play-by-play is converted into estimated EPA per play, success rate, explosiveness, early-down success, havoc, and finishing-drives metrics with garbage-time filtering.
+
+The season simulator uses the current ESPN FBS schedule, trained game probabilities, completed records, and conference identifiers. It models the 2026 12-team format with five conference-champion automatic bids, the Notre Dame top-12 guarantee, seven at-large positions when applicable, four first-round byes, and the fixed playoff bracket. It is a scenario engine, not a betting market or injury-adjusted forecast.
 
 Regenerate the model outputs with:
 
