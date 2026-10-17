@@ -195,11 +195,21 @@ function deviceIdentity() {
   return value;
 }
 
+async function watchlistFetch(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 4000);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
 async function saveWatchlist() {
   localStorage.setItem("ncaaf-watchlist", JSON.stringify(state.watchlist));
   const status = document.getElementById("watchSyncStatus");
   try {
-    const response = await fetch("/api/watchlist", {
+    const response = await watchlistFetch("/api/watchlist", {
       method: "PUT",
       headers: { "content-type": "application/json", "x-ncaaf-device": deviceIdentity() },
       body: JSON.stringify({ watchlist: state.watchlist }),
@@ -215,7 +225,7 @@ async function saveWatchlist() {
 async function loadCloudWatchlist() {
   const status = document.getElementById("watchSyncStatus");
   try {
-    const response = await fetch("/api/watchlist", { headers: { "x-ncaaf-device": deviceIdentity() } });
+    const response = await watchlistFetch("/api/watchlist", { headers: { "x-ncaaf-device": deviceIdentity() } });
     if (!response.ok) throw new Error("sync unavailable");
     const payload = await response.json();
     if (payload.watchlist?.length) {
@@ -1244,7 +1254,6 @@ async function init() {
   state.selectedYear = String(state.data.meta.currentSeason || seasonYears()[0]);
   state.weeklyYear = state.selectedYear;
   await loadWeeklyYear(state.weeklyYear);
-  await loadCloudWatchlist();
   const history = document.getElementById("historyYear");
   history.innerHTML = (state.data.meta.weeklyYears || []).map((year) => `<option value="${year}">${year}</option>`).join("");
   history.value = state.weeklyYear;
@@ -1255,6 +1264,7 @@ async function init() {
   renderSeasonTabs();
   renderAll();
   setView(location.hash.slice(1) || "overview");
+  loadCloudWatchlist().then(renderWatchlist);
 
   document.getElementById("teamSearch").addEventListener("input", (event) => {
     state.query = event.target.value;
