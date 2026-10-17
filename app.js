@@ -197,7 +197,7 @@ function deviceIdentity() {
 
 async function watchlistFetch(url, options = {}) {
   const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 4000);
+  const timeout = window.setTimeout(() => controller.abort(), 10000);
   try {
     return await fetch(url, { ...options, signal: controller.signal });
   } finally {
