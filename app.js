@@ -209,9 +209,9 @@ async function saveWatchlist() {
   localStorage.setItem("ncaaf-watchlist", JSON.stringify(state.watchlist));
   const status = document.getElementById("watchSyncStatus");
   try {
-    const response = await watchlistFetch("/api/watchlist", {
+    const response = await watchlistFetch(`/api/watchlist?device=${encodeURIComponent(deviceIdentity())}`, {
       method: "PUT",
-      headers: { "content-type": "application/json", "x-ncaaf-device": deviceIdentity() },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ watchlist: state.watchlist }),
     });
     if (!response.ok) throw new Error("sync unavailable");
@@ -225,7 +225,7 @@ async function saveWatchlist() {
 async function loadCloudWatchlist() {
   const status = document.getElementById("watchSyncStatus");
   try {
-    const response = await watchlistFetch("/api/watchlist", { headers: { "x-ncaaf-device": deviceIdentity() } });
+    const response = await watchlistFetch(`/api/watchlist?device=${encodeURIComponent(deviceIdentity())}`);
     if (!response.ok) throw new Error("sync unavailable");
     const payload = await response.json();
     if (payload.watchlist?.length) {

@@ -223,7 +223,7 @@ async function fetchCoreScores() {
 function watchlistIdentity(request) {
   const authenticated = request.headers.get("oai-authenticated-user-email");
   if (authenticated) return "user:" + authenticated.toLowerCase();
-  const device = (request.headers.get("x-ncaaf-device") || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
+  const device = (request.headers.get("x-ncaaf-device") || new URL(request.url).searchParams.get("device") || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
   return device ? "device:" + device : null;
 }
 
