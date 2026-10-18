@@ -142,6 +142,7 @@ def norm_name(value: str) -> str:
         "Arizona Wildcats": "Arizona",
         "BYU Cougars": "BYU",
         "Clemson Tigers": "Clemson",
+        "Florida Gators": "Florida",
         "Florida State Seminoles": "Florida State",
         "Georgia Bulldogs": "Georgia",
         "Georgia Tech Yellow Jackets": "Georgia Tech",
